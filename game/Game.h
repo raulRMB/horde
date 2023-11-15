@@ -2,10 +2,11 @@
 #define GAME_H
 
 #include <raylib.h>
+#include <entt/entt.hpp>
 
 class Game
 {
-    class Scene* CurrentScene;
+    class Scene* ActiveScene;
     bool bRunning;
 
     Color BackgroundColor;
@@ -29,8 +30,10 @@ public:
 
     void Clean() const;
 
-    void SetScene(Scene* scene);
-    [[nodiscard]] inline Scene* GetCurrentScene() const { return CurrentScene; }
+    void SetActiveScene(Scene* scene);
+    [[nodiscard]] inline Scene* GetActiveScene() const { return ActiveScene; }
+
+    static entt::registry& GetRegistry();
 
     void Save();
     void Load();

@@ -14,6 +14,9 @@ file(GLOB_RECURSE CORE_HEADERS core/*.h)
 file(GLOB_RECURSE UI_SOURCES core/ui/*.cpp)
 file(GLOB_RECURSE UI_HEADERS core/ui/*.h)
 
+file(GLOB_RECURSE SYSTEMS_SOURCES core/systems/*.cpp)
+file(GLOB_RECURSE SYSTEMS_HEADERS core/systems/*.h)
+
 file(GLOB_RECURSE GAME_SOURCES game/*.cpp)
 file(GLOB_RECURSE GAME_HEADERS game/*.h)
 

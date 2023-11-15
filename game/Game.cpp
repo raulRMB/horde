@@ -6,7 +6,7 @@
 #include <raylib.h>
 #include "MainScene.h"
 
-Game::Game() : CurrentScene(nullptr), bRunning(false), BackgroundColor(BLACK)
+Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
     Camera.position = {0.0f, 10.0f, 10.0f};
     Camera.target = {0.0f, 0.0f, 0.0f};
@@ -49,7 +49,7 @@ bool Game::Init()
     InitWindow(800, 600, "Horde");
     bRunning = true;
 
-    SetScene(new MainScene());
+    SetActiveScene(new MainScene());
     Start();
 
     return true;
@@ -57,7 +57,7 @@ bool Game::Init()
 
 void Game::Start() const
 {
-    CurrentScene->Start();
+    ActiveScene->Start();
 }
 
 void Game::HandleInput()
@@ -67,33 +67,38 @@ void Game::HandleInput()
         bRunning = false;
     }
 
-    CurrentScene->HandleInput();
+    ActiveScene->HandleInput();
 }
 
 void Game::Update(float deltaTime) const
 {
-    CurrentScene->Update(deltaTime);
+    ActiveScene->Update(deltaTime);
 }
 
 void Game::Draw() const
 {
     BeginMode3D(Camera);
-    CurrentScene->Draw();
+    ActiveScene->Draw();
     EndMode3D();
 }
 
 void Game::DrawUI() const
 {
-    CurrentScene->DrawUI();
+    ActiveScene->DrawUI();
 }
 
 void Game::Clean() const
 {
-    CurrentScene->Clean();
-    delete CurrentScene;
+    ActiveScene->Clean();
+    delete ActiveScene;
 }
 
-void Game::SetScene(Scene* scene)
+void Game::SetActiveScene(Scene* scene)
 {
-    CurrentScene = scene;
+    ActiveScene = scene;
+}
+
+entt::registry& Game::GetRegistry()
+{
+    return Instance().ActiveScene->GetRegistry();
 }
