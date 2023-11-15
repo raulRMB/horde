@@ -4,7 +4,8 @@
 #include "../../Element.h"
 #include <raylib.h>
 
-class Button : public Element {
+class Button : public Element
+{
     Color baseBgColor = {35, 45, 130, 255};
     Color hoveredBgColor = {255, 50, 130, 255};
     Color baseTextColor = {184, 227, 195, 255};
