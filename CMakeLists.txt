@@ -8,15 +8,16 @@ add_subdirectory(libs/entt)
 add_subdirectory(libs/glm)
 add_subdirectory(libs/raylib)
 
-file(GLOB_RECURSE SOURCES core/*.cpp)
-file(GLOB_RECURSE HEADERS core/*.h)
+file(GLOB_RECURSE CORE_SOURCES core/*.cpp)
+file(GLOB_RECURSE CORE_HEADERS core/*.h)
 
-file(GLOB_RECURSE SOURCES ${SOURCES} game/*.cpp)
-file(GLOB_RECURSE HEADERS ${HEADERS} game/*.h)
+file(GLOB_RECURSE UI_SOURCES core/ui/*.cpp)
+file(GLOB_RECURSE UI_HEADERS core/ui/*.h)
 
-add_executable(horde main.cpp ${SOURCES} ${HEADERS}
-        core/Scene.cpp
-        core/Scene.h)
+file(GLOB_RECURSE GAME_SOURCES game/*.cpp)
+file(GLOB_RECURSE GAME_HEADERS game/*.h)
+
+add_executable(horde main.cpp ${CORE_SOURCES} ${CORE_HEADERS} ${GAME_SOURCES} ${GAME_HEADERS})
 
 target_include_directories(horde PUBLIC libs/enet/include glm raylib/src libs/entt/single_include)
 target_link_libraries(horde enet glm raylib)
