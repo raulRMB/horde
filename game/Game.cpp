@@ -45,6 +45,7 @@ bool Game::Run()
 
 bool Game::Init()
 {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 600, "Horde");
     bRunning = true;
 
