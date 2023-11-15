@@ -2,6 +2,7 @@
 #define MAINSCENE_H
 
 #include "../Core/Scene.h"
+#include "../Core/ui/Canvas.h"
 
 class MainScene final : public Scene
 {
@@ -10,6 +11,7 @@ public:
     ~MainScene() override;
 
 private:
+    Canvas* mainCanvas;
     void Start() override;
     void InitUI();
     void HandleInput() override;
