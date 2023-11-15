@@ -52,6 +52,7 @@ void MainScene::Draw()
 
 void MainScene::DrawUI()
 {
+    RLGameGUI::Manager::Update();
     RLGameGUI::Manager::Render();
 }
 
