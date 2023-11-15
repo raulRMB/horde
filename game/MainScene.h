@@ -7,7 +7,7 @@ class MainScene final : public Scene
 {
 private:
     void Start() override;
-
+    void InitUI();
     void HandleInput() override;
     void Update(float deltaTime) override;
     void Draw() override;
