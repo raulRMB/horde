@@ -10,7 +10,7 @@ class Button : public Element
     Color hoveredBgColor = {255, 50, 130, 255};
     Color baseTextColor = {184, 227, 195, 255};
     Color hoveredTextColor = {255, 255, 255, 255};
-    char* text = "";
+    char* text = nullptr;
     Rectangle box;
 
 public:

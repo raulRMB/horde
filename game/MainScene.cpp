@@ -6,6 +6,7 @@
 #include "../core/ui/elements/button/Button.h"
 #include "../core/util/Util.h"
 #include "../core/ui/elements/slot/Slot.h"
+#include "../core/Components.h"
 
 MainScene::MainScene()
 {
@@ -49,37 +50,113 @@ void MainScene::InitUI()
 
 void MainScene::HandleInput()
 {
-    IsMouseButtonPressed(MOUSE_BUTTON_RIGHT);
-
-    Vector3 start = GetCameraForward(&Game::Instance().GetActiveCamera());
-    Vector3 end = GetMouseWorldPosition();
-    Vector3 p = Navigation::Intersect({}, {0.0f, 1.0f, 0.0f}, start, end - start);
-    EndPoint = {p.x, p.z};
-
-    auto e = CreateEntity();
-    Transform transform{};
-    transform.translation = {p.x, 0.0f, p.z};
-
-    Cylinder
-    AddComponent(e, transform);
-    AddComponent(e, CLineMesh(1));
-
-    for(const entt::entity& ent : FollowEntities)
+    if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        std::vector<Navigation::TriangleNode*> path;
-        CFollow& follow = GetComponent<CFollow>(ent);
-        follow.bFollow = true;
-        follow.index = 1;
+        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
 
-        StartPoint = {GetComponent<CTransform3d>(ent).WorldPosition.x, GetComponent<CTransform3d>(ent).WorldPosition.z};
-        Navigation::AStar(StartPoint, EndPoint, path, Portals, Tris);
+        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
 
-        std::vector<v2>& StringPath = follow.StringPath;
+        auto e = CreateEntity();
+        CapsuleComponent capsule{};
+        capsule.Position = {Collision.point.x, 0.0f, Collision.point.z};
+        capsule.Radius = 0.5f;
+        capsule.Height = 1.0f;
+        capsule.Color = RED;
+        AddComponent(e, capsule);
 
-        StringPath = Navigation::StringPull(Portals, StartPoint, EndPoint);
-        Portals.clear();
+        FollowComponent follow{};
+        AddComponent(e, follow);
 
-        follow.TargetPos = StringPath[follow.index];
+        Transform transform{};
+        transform.translation = {Collision.point.x, 0.0f, Collision.point.z};
+        AddComponent(e, transform);
+
+        auto followEntities = Registry.view<FollowComponent, Transform>();
+
+        for(const entt::entity& ent : followEntities)
+        {
+            std::vector<Navigation::TriangleNode*> path;
+            FollowComponent& follow = GetComponent<FollowComponent>(ent);
+            follow.bFollow = true;
+            follow.Index = 1;
+
+            StartPoint = {GetComponent<Transform>(ent).translation.x, GetComponent<Transform>(ent).translation.z};
+            Navigation::AStar(StartPoint, EndPoint, path, Portals, Tris);
+
+            std::vector<Vector2>& StringPath = follow.StringPath;
+
+            StringPath = Navigation::StringPull(Portals, StartPoint, EndPoint);
+
+            entt::entity e = CreateEntity();
+            LineStripComponent lineStrip{};
+            lineStrip.Points.reserve(StringPath.size());
+            lineStrip.Color = GREEN;
+            for(const Vector2& point : StringPath)
+            {
+                lineStrip.Points.push_back({point.x, 0.0f, point.y});
+            }
+            AddComponent(e, lineStrip);
+
+            Portals.clear();
+
+            follow.TargetPos = StringPath[follow.Index];
+        }
+    }
+
+    if(IsKeyPressed(KEY_C))
+    {
+        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+
+        auto e = CreateEntity();
+        CapsuleComponent capsule{};
+        capsule.Position = {Collision.point.x, 0.0f, Collision.point.z};
+        capsule.Color = RED;
+        capsule.Radius = 0.5f;
+        capsule.Height = 1.0f;
+        AddComponent(e, capsule);
+
+        Points.push_back({Collision.point.x, Collision.point.z});
+
+    }
+    if(IsKeyPressed(KEY_X))
+    {
+        Points.push_back({-3.0f, -3.0f});
+        Points.push_back({0.0f, 3.0f});
+        Points.push_back({3.0f, -3.0f});
+    }
+
+    static bool bCursorEnabled = true;
+    if(IsKeyPressed(KEY_A))
+    {
+        if(bCursorEnabled)
+        {
+            DisableCursor();
+        }
+        else
+        {
+            EnableCursor();
+        }
+        bCursorEnabled = !bCursorEnabled;
+    }
+
+    if(IsKeyPressed(KEY_F))
+    {
+        Tris = Navigation::BowyerWatson(Points);
+
+        // for(const Navigation::TriangleNode& tri : Tris)
+        // {
+        //     auto e = CreateEntity();
+        //     AddComponent(e, tri.GetTriangle());
+        // }
     }
 }
 
@@ -87,11 +164,14 @@ void MainScene::Update(float deltaSeconds)
 {
     mainCanvas->Update();
     Scene::Update(deltaSeconds);
+    UpdateCamera(&Game::Instance().GetActiveCamera(), CAMERA_FIRST_PERSON);
 }
 
 void MainScene::Draw()
 {
     Scene::Draw();
+
+    DrawGrid(30, 1.0f);
     for(const entt::entity& entity : Registry.view<Model, Transform>())
     {
         const Model& model = Registry.get<Model>(entity);

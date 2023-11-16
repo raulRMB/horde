@@ -21,7 +21,10 @@ struct TargetComponent
 
 struct FollowComponent
 {
-    entt::entity Target;
+    std::vector<Vector2> StringPath;
+    Vector2 TargetPos;
+    bool bFollow;
+    int Index;
 };
 
 struct HealthComponent
@@ -54,6 +57,26 @@ struct SphereComponent
 {
     Vector3 Position;
     float Radius;
+    Color Color;
+};
+
+struct RayComponent
+{
+    Ray Ray;
+    Color Color;
+};
+
+struct TriangleComponent
+{
+    Vector3 V1;
+    Vector3 V2;
+    Vector3 V3;
+    Color Color;
+};
+
+struct LineStripComponent
+{
+    std::vector<Vector3> Points;
     Color Color;
 };
 

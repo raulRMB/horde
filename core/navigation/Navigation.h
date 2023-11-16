@@ -10,12 +10,7 @@ namespace Navigation
 {
 
 bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge);
-Vector3 Intersect(Vector3 planeP, Vector3 planeN, Vector3 rayP, Vector3 rayD)
-{
-    float d = Vector3DotProduct(planeP, -planeN);
-    float t = -(d + Vector3DotProduct(rayP, planeN)) / Vector3DotProduct(rayD, planeN);
-    return rayP + t * rayD;
-}
+Vector3 Intersect(Vector3 planeP, Vector3 planeN, Vector3 rayP, Vector3 rayD);
 
 class TriangleNode
 {

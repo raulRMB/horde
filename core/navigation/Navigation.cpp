@@ -19,7 +19,14 @@ bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge)
     return sharedVerts == 2;
 }
 
-    void FindIncenter(const Triangle2D& triangle, Vector2& incenter)
+Vector3 Intersect(Vector3 planeP, Vector3 planeN, Vector3 rayP, Vector3 rayD)
+{
+    float d = Vector3DotProduct(planeP, -planeN);
+    float t = -(d + Vector3DotProduct(rayP, planeN)) / Vector3DotProduct(rayD, planeN);
+    return rayP + rayD * t;
+}
+
+void FindIncenter(const Triangle2D& triangle, Vector2& incenter)
 {
     float a = Vector2Distance(triangle.Vertices.B, triangle.Vertices.C);
     float b = Vector2Distance(triangle.Vertices.A, triangle.Vertices.C);
@@ -28,7 +35,7 @@ bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge)
     incenter = (a * triangle.Vertices.A + b * triangle.Vertices.B + c * triangle.Vertices.C) / (a + b + c);
 }
 
-    void FindCircumcircle(const Triangle2D &triangle, Vector2 &circumcenter, float &circumradius)
+void FindCircumcircle(const Triangle2D &triangle, Vector2 &circumcenter, float &circumradius)
 {
     Vector2 A = triangle.Vertices.A;
     Vector2 B = triangle.Vertices.B;

@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <raylib.h>
+#include <chrono>
 #include <entt/entt.hpp>
 
 class Game
@@ -40,7 +41,7 @@ public:
     void SetActiveScene(Scene* scene);
     [[nodiscard]] inline Scene* GetActiveScene() const { return ActiveScene; }
 
-    [[nodiscard]] Camera3D& GetActiveCamera() const { return Camera; }
+    [[nodiscard]] Camera3D& GetActiveCamera() { return Camera; }
 
 
     static entt::registry& GetRegistry();
