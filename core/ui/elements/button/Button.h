@@ -10,13 +10,19 @@ class Button : public Element
     Color hoveredBgColor = {255, 50, 130, 255};
     Color baseTextColor = {184, 227, 195, 255};
     Color hoveredTextColor = {255, 255, 255, 255};
-    Rectangle box = {100, 100, 100, 50};
+    char* text = "";
+    Rectangle box;
 
 public:
+    Button(Rectangle box, char* text);
     virtual bool isHovered() override;
+    virtual void* OnDrag() override;
+    virtual void OnDragCancelled() override;
+    virtual void OnDrop(Element* source, void* payload) override;
     virtual void Draw() override;
     virtual void Update() override;
 private:
+    bool activeClick = false;
     Color GetBgColor();
     Color GetTextColor();
 };

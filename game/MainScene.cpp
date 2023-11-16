@@ -21,7 +21,17 @@ void MainScene::Start()
 void MainScene::InitUI()
 {
     mainCanvas = new Canvas();
-    mainCanvas->Add(new Button());
+    mainCanvas->Add(new Button({100, 100, 100, 50}, "1"));
+    mainCanvas->Add(new Button({205, 100, 100, 50}, "2"));
+    mainCanvas->Add(new Button({310, 100, 100, 50}, "3"));
+
+    mainCanvas->Add(new Button({100, 155, 100, 50}, "4"));
+    mainCanvas->Add(new Button({205, 155, 100, 50}, "5"));
+    mainCanvas->Add(new Button({310, 155, 100, 50}, "6"));
+
+    mainCanvas->Add(new Button({100, 210, 100, 50}, "7"));
+    mainCanvas->Add(new Button({205, 210, 100, 50}, "8"));
+    mainCanvas->Add(new Button({310, 210, 100, 50}, "9"));
 }
 
 void MainScene::HandleInput()
