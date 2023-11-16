@@ -11,11 +11,20 @@ void Canvas::Add(Element* element) {
 
 void Canvas::Draw() {
     for (Element* element : elements) {
-        element->Draw();
+        element->Draw(activeDrag);
     }
     if(activeDrag) {
         Vector2 currMouse = GetMousePosition();
-        DrawRectangle(currMouse.x, currMouse.y, 50, 50, {255, 255, 255, 255});
+        NPatchInfo npatchInfo = { 0 };
+        Texture2D dragImage = (*(Texture2D*)draggedPayload);
+        npatchInfo.source = { 0, 0, (float)dragImage.width, (float)dragImage.height };
+        npatchInfo.left = 0;
+        npatchInfo.top = 0;
+        npatchInfo.right = 0;
+        npatchInfo.bottom = 0;
+        int size = 40;
+        auto box = Rectangle{currMouse.x - (size / 2), currMouse.y - (size / 2), (float)size, (float)size};
+        DrawTextureNPatch(dragImage, npatchInfo, box, {0,0}, 0, {255,255,255,200});
     }
 }
 

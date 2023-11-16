@@ -12,7 +12,7 @@ public:
     virtual void* OnDrag() = 0;
     virtual void OnDragCancelled() = 0;
     virtual void OnDrop(Element* source, void* payload) = 0;
-    virtual void Draw() = 0;
+    virtual void Draw(bool DragActive) = 0;
     virtual void Update() = 0;
 };
 

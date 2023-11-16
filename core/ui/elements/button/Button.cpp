@@ -7,9 +7,9 @@ Button::Button(Rectangle box, char* text) {
 
 bool Button::isHovered() {
     return CheckCollisionPointRec(GetMousePosition(), box);
-} 
+}
 
-void Button::Draw() {
+void Button::Draw(bool dragActive) {
     DrawRectangleRounded(box, 0.2, 10, GetBgColor());
     DrawText(text, box.x, box.y, 28, GetTextColor());
 }
