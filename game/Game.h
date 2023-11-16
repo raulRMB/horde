@@ -6,6 +6,12 @@
 
 class Game
 {
+    int FrameCount = 0;
+    std::chrono::high_resolution_clock::time_point LastFPSTime;
+    std::chrono::high_resolution_clock::time_point CurrentTime;
+    int FPS = 0;
+    std::string fpsString;
+
     class Scene* ActiveScene;
     bool bRunning;
 
@@ -27,6 +33,7 @@ public:
     void Update(float deltaTime) const;
     void Draw() const;
     void DrawUI() const;
+    void CalculateFPS();
 
     void Clean() const;
 

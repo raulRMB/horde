@@ -36,11 +36,25 @@ bool Game::Run()
         ClearBackground(BackgroundColor);
         Draw();
         DrawUI();
+        CalculateFPS();
         EndDrawing();
         bRunning = bRunning ? !WindowShouldClose() : false;
     }
 
     return true;
+}
+
+void Game::CalculateFPS()
+{
+    FrameCount++;
+    CurrentTime = std::chrono::high_resolution_clock::now();
+    if (const long long dt = std::chrono::duration_cast<std::chrono::seconds>(CurrentTime - LastFPSTime).count(); dt >= 1)
+    {
+        FPS = FrameCount / dt;
+        fpsString = "FPS: " + std::to_string(FPS);
+        FrameCount = 0;
+        LastFPSTime = CurrentTime;
+    }
 }
 
 bool Game::Init()
@@ -85,6 +99,7 @@ void Game::Draw() const
 void Game::DrawUI() const
 {
     ActiveScene->DrawUI();
+    DrawText(fpsString.c_str(), 5, 5, 10, {237, 203, 102, 255});
 }
 
 void Game::Clean() const
