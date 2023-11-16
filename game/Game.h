@@ -40,6 +40,9 @@ public:
     void SetActiveScene(Scene* scene);
     [[nodiscard]] inline Scene* GetActiveScene() const { return ActiveScene; }
 
+    [[nodiscard]] Camera3D& GetActiveCamera() const { return Camera; }
+
+
     static entt::registry& GetRegistry();
 
     void Save();

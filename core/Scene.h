@@ -8,7 +8,8 @@ class Scene
 {
 protected:
     entt::registry Registry;
-    std::vector<System*> Systems;
+    std::vector<System*> UpdateSystems;
+    std::vector<DrawingSystem*> DrawingSystems;
 
 public:
     virtual ~Scene() = default;
@@ -17,7 +18,7 @@ public:
     virtual void Start();
     virtual void HandleInput() = 0;
     virtual void Update(float deltaSeconds);
-    virtual void Draw() = 0;
+    virtual void Draw();
     virtual void DrawUI() = 0;
     virtual void Clean() = 0;
     virtual void Save() = 0;

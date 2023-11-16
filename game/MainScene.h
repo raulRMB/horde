@@ -1,11 +1,22 @@
 #ifndef MAINSCENE_H
 #define MAINSCENE_H
 
-#include "../Core/Scene.h"
-#include "../Core/ui/Canvas.h"
+#include "../core/Scene.h"
+#include "../core/ui/Canvas.h"
+#include <raylib.h>
+#include "../core/primitives/Triangles.h"
+#include "../core/navigation/Navigation.h"
 
 class MainScene final : public Scene
 {
+    Vector2 StartPoint;
+    Vector2 EndPoint;
+
+    std::vector<Vector2> points;
+
+    std::vector<Edge2D> Portals = {};
+    std::vector<Navigation::TriangleNode> Tris = {};
+
 public:
     MainScene();
     ~MainScene() override;
@@ -21,9 +32,6 @@ private:
     void Clean() override;
     void Save() override;
     void Load() override;
-
-private:
-
 };
 
 

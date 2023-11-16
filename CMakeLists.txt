@@ -11,9 +11,6 @@ add_subdirectory(libs/raylib)
 file(GLOB_RECURSE CORE_SOURCES core/*.cpp)
 file(GLOB_RECURSE CORE_HEADERS core/*.h)
 
-file(GLOB_RECURSE SYSTEMS_SOURCES core/systems/*.cpp)
-file(GLOB_RECURSE SYSTEMS_HEADERS core/systems/*.h)
-
 file(GLOB_RECURSE GAME_SOURCES game/*.cpp)
 file(GLOB_RECURSE GAME_HEADERS game/*.h)
 

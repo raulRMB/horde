@@ -8,7 +8,7 @@
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
-    Camera.position = {0.0f, 10.0f, 10.0f};
+    Camera.position = {20.0f, 20.0f, 20.0f};
     Camera.target = {0.0f, 0.0f, 0.0f};
     Camera.up = {0.0f, 1.0f, 0.0f};
     Camera.fovy = 45.0f;
