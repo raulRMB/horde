@@ -11,6 +11,7 @@ class Canvas {
     Vector2 activeDragStartPos;
     Element* dragged;
     void* draggedPayload;
+    Texture2D dragImage;
 public:
     void Add(Element* element);
     void Draw();

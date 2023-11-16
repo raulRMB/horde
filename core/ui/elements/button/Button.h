@@ -19,7 +19,7 @@ public:
     virtual void* OnDrag() override;
     virtual void OnDragCancelled() override;
     virtual void OnDrop(Element* source, void* payload) override;
-    virtual void Draw() override;
+    virtual void Draw(bool dragActive) override;
     virtual void Update() override;
 private:
     bool activeClick = false;

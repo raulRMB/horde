@@ -1,12 +1,11 @@
 #include <raylib.h>
 #include "MainScene.h"
-
 #include <rcamera.h>
-
 #include "Player.h"
 #include "../core/navigation/Navigation.h"
 #include "../core/ui/elements/button/Button.h"
 #include "../core/util/Util.h"
+#include "../core/ui/elements/slot/Slot.h"
 
 MainScene::MainScene()
 {
@@ -26,17 +25,26 @@ void MainScene::Start()
 void MainScene::InitUI()
 {
     mainCanvas = new Canvas();
-    mainCanvas->Add(new Button({100, 100, 100, 50}, "1"));
-    mainCanvas->Add(new Button({205, 100, 100, 50}, "2"));
-    mainCanvas->Add(new Button({310, 100, 100, 50}, "3"));
 
-    mainCanvas->Add(new Button({100, 155, 100, 50}, "4"));
-    mainCanvas->Add(new Button({205, 155, 100, 50}, "5"));
-    mainCanvas->Add(new Button({310, 155, 100, 50}, "6"));
+    auto slot = new Slot({100, 100, 60, 60});
+    auto slotImg = LoadTexture("assets/ui/images/concept.png");
+    slot->SetImage(slotImg);
+    mainCanvas->Add(slot);
 
-    mainCanvas->Add(new Button({100, 210, 100, 50}, "7"));
-    mainCanvas->Add(new Button({205, 210, 100, 50}, "8"));
-    mainCanvas->Add(new Button({310, 210, 100, 50}, "9"));
+    auto slot2 = new Slot({170, 100, 60, 60});
+    auto slotImg2 = LoadTexture("assets/ui/images/map.png");
+    slot2->SetImage(slotImg2);
+    mainCanvas->Add(slot2);
+
+    auto slot3 = new Slot({240, 100, 60, 60});
+    auto slotImg3 = LoadTexture("assets/ui/images/arch.png");
+    slot3->SetImage(slotImg3);
+    mainCanvas->Add(slot3);
+
+    auto slot4 = new Slot({310, 100, 60, 60});
+    auto slotImg4 = LoadTexture("assets/ui/images/thresh.png");
+    slot4->SetImage(slotImg4);
+    mainCanvas->Add(slot4);
 }
 
 void MainScene::HandleInput()
