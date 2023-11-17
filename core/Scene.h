@@ -8,7 +8,7 @@ class Scene
 {
 protected:
     entt::registry Registry;
-    std::vector<System*> UpdateSystems;
+    std::vector<UpdateSystem*> UpdateSystems;
     std::vector<DrawingSystem*> DrawingSystems;
 
 public:

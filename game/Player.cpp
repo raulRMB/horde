@@ -1,34 +1,39 @@
 #include "Player.h"
 #include "raymath.h"
 #include "../core/Components.h"
+#include "../core/util/Util.h"
 
 Player::Player()
 {
-    // Model model = LoadModel("assets/anim.glb");
-    Transform transform{};
-    transform.translation = {10.0, 0.0, 10.0};
-    transform.scale = {0.1, 0.1, 0.1};
-    transform.rotation= {1.0, 0.0, 0.0, 1.0};
-    // model.transform = MatrixRotateXYZ({PI/2,0.f,0.f});
-    // AddComponent(model);
-    // AnimationComponent animationComponent{};
-    // animationComponent.AnimsIndex = 0;
-    // animationComponent.Animations = LoadModelAnimations("assets/anim.glb", &animationComponent.AnimsCount);
-    // AddComponent(animationComponent);
-    AddComponent(transform);
-    CapsuleComponent capsuleComponent{};
-    capsuleComponent.Position = transform.translation;
-    capsuleComponent.Radius = 0.5f;
-    capsuleComponent.Height = 1.0f;
-    capsuleComponent.Color = GRAY;
+    CapsuleComponent capsule{};
+    capsule.Radius = 0.5f;
+    capsule.Height = 1.0f;
+    capsule.Color = GREEN;
+    AddComponent(capsule);
+    AddComponent(FollowComponent{});
+    AddComponent(Transform{});
 
-    AddComponent(capsuleComponent);
+    Physics2DComponent physics{};
+    physics.Speed = 9.f;
+    physics.MaxSpeed = 9.f;
+    AddComponent(physics);
 }
 
 Player::~Player() = default;
 
 void Player::Start()
 {
+}
+
+void Player::HandleInput()
+{
+    if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    {
+        FollowComponent& followComponent = GetComponent<FollowComponent>();
+        followComponent.bFollow = true;
+        followComponent.Index = 1;
+        followComponent.TargetPos = Util::GetMouseWorldPosition2D();
+    }
 }
 
 void Player::Kill()

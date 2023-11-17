@@ -1,6 +1,6 @@
 #include "Util.h"
 
-glm::mat4 GLMMat4FromMatrix(const Matrix& matrix)
+glm::mat4 Util::GLMMat4FromMatrix(const Matrix& matrix)
 {
     glm::mat4 result{};
     result[0][0] = matrix.m0;
@@ -21,4 +21,21 @@ glm::mat4 GLMMat4FromMatrix(const Matrix& matrix)
     result[3][3] = matrix.m15;
 
     return result;
+}
+
+Vector3 Util::GetMouseWorldPosition()
+{
+    const Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+    constexpr Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+    constexpr Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+    constexpr Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+    constexpr Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+    const RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+    return Collision.point;
+}
+
+Vector2 Util::GetMouseWorldPosition2D()
+{
+    const Vector3 mousePos3d = GetMouseWorldPosition();
+    return {mousePos3d.x, mousePos3d.z};
 }
