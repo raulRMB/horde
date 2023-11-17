@@ -125,14 +125,21 @@ void MainScene::HandleInput()
 
     if(IsKeyPressed(KEY_R))
     {
+        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+
+        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
         auto e = CreateEntity();
         auto sc = CubeComponent{};
         sc.Color = RAYWHITE;
         sc.Position = Vector3{0,0,0};
         sc.Size = Vector3{1, 1, 1};
 
-        AddComponent(e, EmitterComponent{.Frequency=0.1, .MaxParticles=500});
-        AddComponent(e, Transform{});
+        AddComponent(e, EmitterComponent{.Frequency=0.1, .MaxParticles=100});
+        AddComponent(e, Transform{Collision.point.x, 0.0f, Collision.point.z});
         AddComponent(e, sc);
     }
 

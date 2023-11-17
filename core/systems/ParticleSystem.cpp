@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 #include <raymath.h>
+#include "../util/raymathEx.h"
 #include "../Components.h"
 #include "../../game/SmartEntity.h"
 
@@ -38,10 +39,11 @@ void ParticleSystem::Update(float deltaSeconds) {
 
             Transform t = {};
             t.translation = Vector3{
-                (float)GetRandomValue(-10, 10),
-                (float)GetRandomValue(-10, 10),  
-                (float)GetRandomValue(-10, 10)
+                (float)GetRandomValue(-1, 1),
+                (float)GetRandomValue(-1, 1),  
+                (float)GetRandomValue(-1, 1)
             };
+            t.translation = transform.translation + t.translation;
             registry.emplace<Transform>(e, t);
         }
     }
