@@ -76,6 +76,11 @@ void MainScene::HandleInput()
         Transform transform{};
         transform.translation = {Collision.point.x, 0.0f, Collision.point.z};
         AddComponent(e, transform);
+
+        Physics2DComponent physics{};
+        physics.Speed = 9.f;
+        physics.MaxSpeed = 9.f;
+        AddComponent(e, physics);
     }
 
     if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
@@ -140,13 +145,6 @@ void MainScene::HandleInput()
 
         Points.push_back({Collision.point.x, Collision.point.z});
     }
-    if(IsKeyPressed(KEY_X))
-    {
-        Points.push_back({-3.0f, -3.0f});
-        Points.push_back({0.0f, 3.0f});
-        Points.push_back({3.0f, -3.0f});
-    }
-
     static bool bCursorEnabled = true;
     if(IsKeyPressed(KEY_A))
     {
@@ -164,12 +162,6 @@ void MainScene::HandleInput()
     if(IsKeyPressed(KEY_F))
     {
         Tris = Navigation::BowyerWatson(Points);
-
-        // for(const Navigation::TriangleNode& tri : Tris)
-        // {
-        //     auto e = CreateEntity();
-        //     AddComponent(e, tri.GetTriangle());
-        // }
     }
 
     if(IsKeyPressed(KEY_G))

@@ -365,20 +365,15 @@ struct CFunnelApex
 } funnelApex;
 
 
-std::vector<Vector2> StringPull(const std::vector<Edge2D> &portals, const Vector2 &start, const Vector2 &end)
+std::vector<Vector2> StringPull(std::vector<Edge2D> &portals, const Vector2 &start, const Vector2 &end)
 {
     std::vector<Vector2> path;
 
     Vector2 portalApex = start;
-    if(portals.empty())
-    {
-        path.push_back(start);
-        return path;
-    }
     Vector2 portalLeft = portals[0].vertices[0];
     Vector2 portalRight = portals[0].vertices[1];
 
-    const_cast<std::vector<Edge2D>&>(portals).push_back({end, end});
+    portals.push_back({end, end});
     int apexIndex = 0, leftIndex = 0, rightIndex = 0;
 
     funnelLeft = portalLeft;

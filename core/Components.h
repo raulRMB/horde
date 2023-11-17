@@ -81,4 +81,12 @@ struct LineStripComponent
     Color Color;
 };
 
+struct Physics2DComponent
+{
+    float Speed = 0.f;
+    float MaxSpeed = 0.f;
+    Vector2 Velocity{};
+    Vector2 Acceleration{};
+};
+
 #endif //COMPONENTS_H

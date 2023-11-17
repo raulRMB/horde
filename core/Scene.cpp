@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "systems/FollowSystem.h"
+#include "systems/PhysicsSystem.h"
 #include "systems/ShapeDrawingSystem.h"
 
 void Scene::Start()
@@ -11,6 +12,7 @@ void Scene::Start()
     UpdateSystems.push_back(new EnemySystem());
     UpdateSystems.push_back(new AnimationSystem());
     UpdateSystems.push_back(new FollowSystem());
+    UpdateSystems.push_back(new PhysicsSystem());
 
     DrawingSystems.push_back(new ShapeDrawingSystem());
 }
