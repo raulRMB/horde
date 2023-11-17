@@ -35,6 +35,8 @@ public:
     void Draw() const;
     void DrawUI() const;
     void CalculateFPS();
+    void Fullscreen();
+    
 
     void Clean() const;
 

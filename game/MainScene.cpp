@@ -2,15 +2,14 @@
 #include "MainScene.h"
 
 #include <fstream>
-#include <rcamera.h>
+#include "../core/Components.h"
 #include <sstream>
 
 #include "Player.h"
-#include "../core/navigation/Navigation.h"
 #include "../core/ui/elements/button/Button.h"
-#include "../core/util/Util.h"
 #include "../core/ui/elements/slot/Slot.h"
-#include "../core/Components.h"
+#include "../core/ui/elements/hotbar/Hotbar.h"
+
 
 MainScene::MainScene()
 {
@@ -30,44 +29,32 @@ void MainScene::InitUI()
 {
     mainCanvas = new Canvas();
 
-    auto slot = new Slot({100, 100, 60, 60});
-    auto slotImg = LoadTexture("assets/ui/images/concept.png");
-    slot->SetImage(slotImg);
-    mainCanvas->Add(slot);
-
-    auto slot2 = new Slot({170, 100, 60, 60});
-    auto slotImg2 = LoadTexture("assets/ui/images/map.png");
-    slot2->SetImage(slotImg2);
-    mainCanvas->Add(slot2);
-
-    auto slot3 = new Slot({240, 100, 60, 60});
-    auto slotImg3 = LoadTexture("assets/ui/images/arch.png");
-    slot3->SetImage(slotImg3);
-    mainCanvas->Add(slot3);
-
-    auto slot4 = new Slot({310, 100, 60, 60});
-    auto slotImg4 = LoadTexture("assets/ui/images/thresh.png");
-    slot4->SetImage(slotImg4);
-    mainCanvas->Add(slot4);
+    auto hotbar = new Hotbar();
+    hotbar->AddSlot("assets/ui/images/concept.png");
+    hotbar->AddSlot("assets/ui/images/map.png");
+    hotbar->AddSlot("assets/ui/images/arch.png");
+    hotbar->AddSlot("assets/ui/images/thresh.png");    
+    mainCanvas->Add(hotbar);
 }
 
 void MainScene::HandleInput()
 {
-    Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
-    Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-    Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-    Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-    Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
-    RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
-
-    if(IsKeyPressed(KEY_S))
+    if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
+        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+
+        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+
         auto e = CreateEntity();
         CapsuleComponent capsule{};
         capsule.Position = {Collision.point.x, 0.0f, Collision.point.z};
         capsule.Radius = 0.5f;
         capsule.Height = 1.0f;
-        capsule.Color = GREEN;
+        capsule.Color = RED;
         AddComponent(e, capsule);
 
         FollowComponent follow{};
@@ -76,11 +63,6 @@ void MainScene::HandleInput()
         Transform transform{};
         transform.translation = {Collision.point.x, 0.0f, Collision.point.z};
         AddComponent(e, transform);
-    }
-
-    if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
-    {
-        EndPoint = {Collision.point.x, Collision.point.z};
 
         auto followEntities = Registry.view<FollowComponent, Transform>();
 
@@ -94,30 +76,23 @@ void MainScene::HandleInput()
             StartPoint = {GetComponent<Transform>(ent).translation.x, GetComponent<Transform>(ent).translation.z};
             Navigation::AStar(StartPoint, EndPoint, path, Portals, Tris);
 
-            for(Navigation::TriangleNode* tri : path)
-            {
-                auto e = CreateEntity();
-                Triangle2D t = tri->GetTriangle();
-                t.Color = YELLOW;
-                t.Color.a = 25;
-                AddComponent(e, t);
-            }
+            std::vector<Vector2>& StringPath = follow.StringPath;
 
-            std::vector<Vector2>& stringPath = follow.StringPath;
-            stringPath = Navigation::StringPull(Portals, StartPoint, EndPoint);
-
-            Portals.clear();
-            follow.TargetPos = stringPath[follow.Index];
+            StringPath = Navigation::StringPull(Portals, StartPoint, EndPoint);
 
             entt::entity e = CreateEntity();
             LineStripComponent lineStrip{};
-            lineStrip.Points.reserve(stringPath.size());
+            lineStrip.Points.reserve(StringPath.size());
             lineStrip.Color = GREEN;
-            for(const Vector2& point : stringPath)
+            for(const Vector2& point : StringPath)
             {
                 lineStrip.Points.push_back({point.x, 0.0f, point.y});
             }
             AddComponent(e, lineStrip);
+
+            Portals.clear();
+
+            follow.TargetPos = StringPath[follow.Index];
         }
     }
 
@@ -139,6 +114,7 @@ void MainScene::HandleInput()
         AddComponent(e, capsule);
 
         Points.push_back({Collision.point.x, Collision.point.z});
+
     }
     if(IsKeyPressed(KEY_X))
     {
@@ -171,47 +147,18 @@ void MainScene::HandleInput()
         //     AddComponent(e, tri.GetTriangle());
         // }
     }
-
-    if(IsKeyPressed(KEY_G))
-    {
-        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
-        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
-        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
-
-        for(Navigation::TriangleNode& tri : Tris)
-        {
-            if(Navigation::PointInTriangle({Collision.point.x, Collision.point.z}, tri.GetTriangle()))
-            {
-                tri.SetBlocked(true);
-                entt::entity e = CreateEntity();
-                AddComponent(e, tri.GetTriangle());
-            }
-        }
-    }
-
-    if(IsKeyPressed(KEY_NINE))
-    {
-        Save();
-    }
-    if(IsKeyPressed(KEY_ZERO))
-    {
-        Load();
-    }
 }
 
 void MainScene::Update(float deltaSeconds)
 {
     mainCanvas->Update();
     Scene::Update(deltaSeconds);
+    UpdateCamera(&Game::Instance().GetActiveCamera(), CAMERA_FIRST_PERSON);
 }
 
 void MainScene::Draw()
 {
     Scene::Draw();
-
     DrawGrid(30, 1.0f);
     for(const entt::entity& entity : Registry.view<Model, Transform>())
     {

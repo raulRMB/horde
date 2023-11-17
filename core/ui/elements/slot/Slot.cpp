@@ -8,12 +8,24 @@ bool Slot::isHovered() {
     return CheckCollisionPointRec(GetMousePosition(), box);
 }
 
+void Slot::OnHover() {
+    TraceLog(LOG_INFO, "Hovered slot");
+}
+
 void Slot::SetImage(Texture2D img) {
     image = img;
 }
 
-void Slot::Draw(bool dragActive) {
-    if(isHovered() && dragActive) {
+void Slot::OnHoverExit() {
+    TraceLog(LOG_INFO, "Exit hover slot");
+}
+
+void Slot::SetBox(Rectangle box) {
+    this->box = box;
+}
+
+void Slot::Draw(DrawData data) {
+    if(isHovered() && data.activeDrag) {
         int op = 3;
         int os = op * 2;
         DrawRectangleLines(box.x-op, box.y-op, box.width+os, box.height+os, {255,255,255,255});
@@ -35,17 +47,30 @@ void Slot::Update() {
     // TraceLog(LOG_INFO, "SLOT");
 }
 
-void* Slot::OnDrag() {
-    return (void*)&image;
+std::any Slot::OnDrag() {
+    return std::make_any<Texture2D*>(&image);
+}
+
+void Slot::OnAdded() {
+
+}
+
+void Slot::OnWindowResize(Vector2 screenSize) {
+
 }
 
 void Slot::OnDragCancelled() {
     TraceLog(LOG_INFO, "Drag Cancelled");
 }
 
-void Slot::OnDrop(Element* source, void* payload) {
+void Slot::OnDrop(Element* source, std::any payload) {
     auto tmp = image;
-    image = (*(Texture2D*)payload);
-    Slot* slot = (Slot*)source;
-    slot->image = tmp;
+    try {
+        Texture2D* texture = std::any_cast<Texture2D*>(payload);
+        if(texture != nullptr) {
+            image = *texture;
+            Slot* slot = (Slot*)source;
+            slot->image = tmp;
+        }
+    } catch (const std::bad_any_cast& e) {}
 }

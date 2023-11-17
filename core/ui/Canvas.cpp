@@ -3,28 +3,49 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "Canvas.h"
+#include <any>
+
+Canvas::Canvas() {
+    screenSize = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+}
 
 void Canvas::Add(Element* element) {
     elements.push_back(element);
     element->canvas = this;
+    element->OnAdded();
+    element->OnWindowResize(screenSize);
 }
 
 void Canvas::Draw() {
+    bool resize = IsWindowResized();
+    if (resize) {
+        screenSize = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+    }
     for (Element* element : elements) {
-        element->Draw(activeDrag);
+        element->Draw({activeDrag, screenSize});
+        if (resize) {
+            element->OnWindowResize(screenSize);
+        }
     }
     if(activeDrag) {
         Vector2 currMouse = GetMousePosition();
         NPatchInfo npatchInfo = { 0 };
-        Texture2D dragImage = (*(Texture2D*)draggedPayload);
-        npatchInfo.source = { 0, 0, (float)dragImage.width, (float)dragImage.height };
-        npatchInfo.left = 0;
-        npatchInfo.top = 0;
-        npatchInfo.right = 0;
-        npatchInfo.bottom = 0;
-        int size = 40;
-        auto box = Rectangle{currMouse.x - (size / 2), currMouse.y - (size / 2), (float)size, (float)size};
-        DrawTextureNPatch(dragImage, npatchInfo, box, {0,0}, 0, {255,255,255,200});
+        try {
+            Texture2D* payloadImage = std::any_cast<Texture2D*>(draggedPayload);
+            if(payloadImage != nullptr) {
+                Texture2D dragImage = *payloadImage;
+                npatchInfo.source = { 0, 0, (float)dragImage.width, (float)dragImage.height };
+                npatchInfo.left = 0;
+                npatchInfo.top = 0;
+                npatchInfo.right = 0;
+                npatchInfo.bottom = 0;
+                int size = 40;
+                auto box = Rectangle{currMouse.x - (size / 2), currMouse.y - (size / 2), (float)size, (float)size};
+                DrawTextureNPatch(dragImage, npatchInfo, box, {0,0}, 0, {255,255,255,200});
+            }
+        } catch (const std::bad_any_cast& e) {
+            DrawRectangle(currMouse.x - 15, currMouse.y - 15, 30, 30, {255,255,255,150});
+        }
     }
 }
 
@@ -32,6 +53,15 @@ void Canvas::Update() {
     HandleEvents();
     for (Element* element : elements) {
         element->Update();
+        if(element->isHovered()) {
+            if(!element->hoverActive) {
+                element->hoverActive = true;
+                element->OnHover();
+            }
+        } else if(element->hoverActive) {
+            element->hoverActive = false;
+            element->OnHoverExit();
+        }
     }
 }
 

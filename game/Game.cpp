@@ -57,10 +57,19 @@ void Game::CalculateFPS()
     }
 }
 
+void Game::Fullscreen() {
+    auto monitor = GetCurrentMonitor();
+    int monitorWidth = GetMonitorWidth(monitor);
+    int monitorHeight = GetMonitorHeight(monitor);
+    SetWindowSize(monitorWidth , monitorHeight);
+    ToggleFullscreen();
+}
+
 bool Game::Init()
 {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 600, "Horde");
+    // Fullscreen();
     bRunning = true;
 
     SetActiveScene(new MainScene());

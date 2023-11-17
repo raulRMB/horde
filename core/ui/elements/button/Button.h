@@ -16,10 +16,14 @@ class Button : public Element
 public:
     Button(Rectangle box, char* text);
     virtual bool isHovered() override;
-    virtual void* OnDrag() override;
+    virtual std::any OnDrag() override;
+    virtual void OnHover() override;
+    virtual void OnHoverExit() override;
+    virtual void OnAdded() override;
     virtual void OnDragCancelled() override;
-    virtual void OnDrop(Element* source, void* payload) override;
-    virtual void Draw(bool dragActive) override;
+    virtual void OnWindowResize(Vector2 screenSize) override;
+    virtual void OnDrop(Element* source, std::any payload) override;
+    virtual void Draw(DrawData data) override;
     virtual void Update() override;
 private:
     bool activeClick = false;
