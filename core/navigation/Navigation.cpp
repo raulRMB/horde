@@ -370,6 +370,11 @@ std::vector<Vector2> StringPull(const std::vector<Edge2D> &portals, const Vector
     std::vector<Vector2> path;
 
     Vector2 portalApex = start;
+    if(portals.empty())
+    {
+        path.push_back(start);
+        return path;
+    }
     Vector2 portalLeft = portals[0].vertices[0];
     Vector2 portalRight = portals[0].vertices[1];
 

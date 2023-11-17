@@ -2,6 +2,7 @@
 #define COMPONENTS_H
 
 #include <raylib.h>
+#include <vector>
 
 struct AnimationComponent
 {

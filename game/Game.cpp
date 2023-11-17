@@ -8,7 +8,7 @@
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
-    Camera.position = {20.0f, 20.0f, 20.0f};
+    Camera.position = {50.0f, 50.0f, 50.0f};
     Camera.target = {0.0f, 0.0f, 0.0f};
     Camera.up = {0.0f, 1.0f, 0.0f};
     Camera.fovy = 45.0f;
@@ -25,7 +25,7 @@ bool Game::Run()
 {
     if(!Init())
     {
-        return false;
+        return EXIT_FAILURE;
     }
 
     while(bRunning)
@@ -41,7 +41,7 @@ bool Game::Run()
         bRunning = bRunning ? !WindowShouldClose() : false;
     }
 
-    return true;
+    return EXIT_SUCCESS;
 }
 
 void Game::CalculateFPS()

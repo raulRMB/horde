@@ -14,16 +14,17 @@ void ShapeDrawingSystem::Draw()
         const CubeComponent& cubeComponent = Game::GetRegistry().get<CubeComponent>(entity);
         const Transform& transform = Game::GetRegistry().get<Transform>(entity);
 
-        DrawCube(cubeComponent.Position, cubeComponent.Size.x, cubeComponent.Size.y, cubeComponent.Size.z, cubeComponent.Color);
+        DrawCube(transform.translation, cubeComponent.Size.x, cubeComponent.Size.y, cubeComponent.Size.z, cubeComponent.Color);
     }
 
     // DrawCapsules
-    for(const entt::entity& entity : Game::GetRegistry().view<CapsuleComponent>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CapsuleComponent, Transform>())
     {
         const CapsuleComponent& capsuleComponent = Game::GetRegistry().get<CapsuleComponent>(entity);
+        const Transform& transform = Game::GetRegistry().get<Transform>(entity);
         Vector3 offset = {0.0f, capsuleComponent.Height / 2.0f, 0.0f};
-        Vector3 top = Vector3Add(capsuleComponent.Position, offset);
-        Vector3 bottom = Vector3Subtract(capsuleComponent.Position, offset);
+        Vector3 top = Vector3Add(transform.translation, offset);
+        Vector3 bottom = Vector3Subtract(transform.translation, offset);
         DrawCapsule(top, bottom,  capsuleComponent.Radius, 5, 3, capsuleComponent.Color);
     }
 
@@ -42,7 +43,7 @@ void ShapeDrawingSystem::Draw()
         triangle3D.A = {triangleComponent.Vertices.A.x, 0.0f, triangleComponent.Vertices.A.y};
         triangle3D.B = {triangleComponent.Vertices.B.x, 0.0f, triangleComponent.Vertices.B.y};
         triangle3D.C = {triangleComponent.Vertices.C.x, 0.0f, triangleComponent.Vertices.C.y};
-        DrawTriangle3D(triangle3D.C, triangle3D.B, triangle3D.A, BLUE);
+        DrawTriangle3D(triangle3D.C, triangle3D.B, triangle3D.A, triangleComponent.Color);
     }
 
     // Draw Linestrip

@@ -1,6 +1,10 @@
 #include <raylib.h>
 #include "MainScene.h"
+
+#include <fstream>
 #include <rcamera.h>
+#include <sstream>
+
 #include "Player.h"
 #include "../core/navigation/Navigation.h"
 #include "../core/ui/elements/button/Button.h"
@@ -10,7 +14,6 @@
 
 MainScene::MainScene()
 {
-
 
 }
 
@@ -50,22 +53,21 @@ void MainScene::InitUI()
 
 void MainScene::HandleInput()
 {
-    if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+    Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+    Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+    Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+    Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+    RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+
+    if(IsKeyPressed(KEY_S))
     {
-        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
-        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
-
-        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
-
         auto e = CreateEntity();
         CapsuleComponent capsule{};
         capsule.Position = {Collision.point.x, 0.0f, Collision.point.z};
         capsule.Radius = 0.5f;
         capsule.Height = 1.0f;
-        capsule.Color = RED;
+        capsule.Color = GREEN;
         AddComponent(e, capsule);
 
         FollowComponent follow{};
@@ -74,6 +76,11 @@ void MainScene::HandleInput()
         Transform transform{};
         transform.translation = {Collision.point.x, 0.0f, Collision.point.z};
         AddComponent(e, transform);
+    }
+
+    if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    {
+        EndPoint = {Collision.point.x, Collision.point.z};
 
         auto followEntities = Registry.view<FollowComponent, Transform>();
 
@@ -87,23 +94,30 @@ void MainScene::HandleInput()
             StartPoint = {GetComponent<Transform>(ent).translation.x, GetComponent<Transform>(ent).translation.z};
             Navigation::AStar(StartPoint, EndPoint, path, Portals, Tris);
 
-            std::vector<Vector2>& StringPath = follow.StringPath;
+            for(Navigation::TriangleNode* tri : path)
+            {
+                auto e = CreateEntity();
+                Triangle2D t = tri->GetTriangle();
+                t.Color = YELLOW;
+                t.Color.a = 25;
+                AddComponent(e, t);
+            }
 
-            StringPath = Navigation::StringPull(Portals, StartPoint, EndPoint);
+            std::vector<Vector2>& stringPath = follow.StringPath;
+            stringPath = Navigation::StringPull(Portals, StartPoint, EndPoint);
+
+            Portals.clear();
+            follow.TargetPos = stringPath[follow.Index];
 
             entt::entity e = CreateEntity();
             LineStripComponent lineStrip{};
-            lineStrip.Points.reserve(StringPath.size());
+            lineStrip.Points.reserve(stringPath.size());
             lineStrip.Color = GREEN;
-            for(const Vector2& point : StringPath)
+            for(const Vector2& point : stringPath)
             {
                 lineStrip.Points.push_back({point.x, 0.0f, point.y});
             }
             AddComponent(e, lineStrip);
-
-            Portals.clear();
-
-            follow.TargetPos = StringPath[follow.Index];
         }
     }
 
@@ -125,7 +139,6 @@ void MainScene::HandleInput()
         AddComponent(e, capsule);
 
         Points.push_back({Collision.point.x, Collision.point.z});
-
     }
     if(IsKeyPressed(KEY_X))
     {
@@ -158,13 +171,41 @@ void MainScene::HandleInput()
         //     AddComponent(e, tri.GetTriangle());
         // }
     }
+
+    if(IsKeyPressed(KEY_G))
+    {
+        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+
+        for(Navigation::TriangleNode& tri : Tris)
+        {
+            if(Navigation::PointInTriangle({Collision.point.x, Collision.point.z}, tri.GetTriangle()))
+            {
+                tri.SetBlocked(true);
+                entt::entity e = CreateEntity();
+                AddComponent(e, tri.GetTriangle());
+            }
+        }
+    }
+
+    if(IsKeyPressed(KEY_NINE))
+    {
+        Save();
+    }
+    if(IsKeyPressed(KEY_ZERO))
+    {
+        Load();
+    }
 }
 
 void MainScene::Update(float deltaSeconds)
 {
     mainCanvas->Update();
     Scene::Update(deltaSeconds);
-    UpdateCamera(&Game::Instance().GetActiveCamera(), CAMERA_FIRST_PERSON);
 }
 
 void MainScene::Draw()
@@ -191,8 +232,62 @@ void MainScene::Clean()
 
 void MainScene::Save()
 {
+    std::ofstream file;
+    file.open("../assets/save.txt");
+    for(const Vector2& point : Points)
+    {
+        file << point.x << " " << point.y << "\n";
+    }
+
+    file << "TRIANGLES\n";
+
+    for(const Navigation::TriangleNode& graphTriangle : Tris)
+    {
+        file << graphTriangle.GetIndex() << " ";
+        file << graphTriangle.IsBlocked() << "\n";
+    }
+
+    file.close();
 }
 
 void MainScene::Load()
 {
+    std::ifstream file;
+    file.open("../assets/save.txt");
+    if(file.is_open())
+    {
+        std::string line;
+        while(std::getline(file, line) && line != "TRIANGLES")
+        {
+            std::stringstream ss(line);
+            float x, y;
+            ss >> x >> y;
+            Points.push_back({x, y});
+        }
+
+        Tris = Navigation::BowyerWatson(Points);
+
+        while(std::getline(file, line))
+        {
+            std::stringstream ss(line);
+            unsigned int idx;
+            bool blocked;
+            ss >> idx >> blocked;
+            Tris[idx].SetBlocked(blocked);
+        }
+
+        file.close();
+
+        for(const Navigation::TriangleNode& graphTriangle : Tris)
+        {
+            auto e = CreateEntity();
+            AddComponent(e, Transform());
+            if(graphTriangle.IsBlocked())
+            {
+                Triangle2D triangle = graphTriangle.GetTriangle();
+                triangle.Color = RED;
+                AddComponent(e, triangle);
+            }
+        }
+    }
 }

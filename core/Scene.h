@@ -20,7 +20,7 @@ public:
     virtual void Update(float deltaSeconds);
     virtual void Draw();
     virtual void DrawUI() = 0;
-    virtual void Clean() = 0;
+    virtual void Clean();
     virtual void Save() = 0;
     virtual void Load() = 0;
 
