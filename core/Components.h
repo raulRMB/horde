@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <vector>
+#include <entt/entt.hpp>
 
 struct AnimationComponent
 {
@@ -13,6 +14,21 @@ struct AnimationComponent
     float CurrentFrameTime;
     float FrameTime;
     ModelAnimation* Animations;
+};
+
+struct ParticleComponent 
+{
+    float MaxLife;
+    float Lifetime;
+    entt::entity emitterId = entt::null;
+};
+
+struct EmitterComponent 
+{
+    float Frequency;
+    float Time;
+    int MaxParticles;
+    int ParticleCount;
 };
 
 struct TargetComponent

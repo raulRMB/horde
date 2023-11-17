@@ -51,6 +51,7 @@ void Hotbar::OnDrop(Element* source, std::any payload) {
 }
 
 void Hotbar::Draw(DrawData data) {
+//    DrawRectangleRec(hotbarBox, RAYWHITE);
 }
 
 void Hotbar::Update() {

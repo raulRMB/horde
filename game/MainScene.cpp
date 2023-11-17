@@ -30,10 +30,10 @@ void MainScene::InitUI()
     mainCanvas = new Canvas();
 
     auto hotbar = new Hotbar();
-    hotbar->AddSlot("assets/ui/images/concept.png");
-    hotbar->AddSlot("assets/ui/images/map.png");
-    hotbar->AddSlot("assets/ui/images/arch.png");
-    hotbar->AddSlot("assets/ui/images/thresh.png");    
+    hotbar->AddSlot("../assets/ui/images/concept.png");
+    hotbar->AddSlot("../assets/ui/images/map.png");
+    hotbar->AddSlot("../assets/ui/images/arch.png");
+    hotbar->AddSlot("../assets/ui/images/thresh.png");    
     mainCanvas->Add(hotbar);
 }
 
@@ -121,6 +121,19 @@ void MainScene::HandleInput()
         Points.push_back({-3.0f, -3.0f});
         Points.push_back({0.0f, 3.0f});
         Points.push_back({3.0f, -3.0f});
+    }
+
+    if(IsKeyPressed(KEY_R))
+    {
+        auto e = CreateEntity();
+        auto sc = CubeComponent{};
+        sc.Color = RAYWHITE;
+        sc.Position = Vector3{0,0,0};
+        sc.Size = Vector3{1, 1, 1};
+
+        AddComponent(e, EmitterComponent{.Frequency=0.1, .MaxParticles=500});
+        AddComponent(e, Transform{});
+        AddComponent(e, sc);
     }
 
     static bool bCursorEnabled = true;

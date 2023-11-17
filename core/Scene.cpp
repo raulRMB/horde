@@ -5,12 +5,14 @@
 
 #include "systems/FollowSystem.h"
 #include "systems/ShapeDrawingSystem.h"
+#include "systems/ParticleSystem.h"
 
 void Scene::Start()
 {
     UpdateSystems.push_back(new EnemySystem());
     UpdateSystems.push_back(new AnimationSystem());
     UpdateSystems.push_back(new FollowSystem());
+    UpdateSystems.push_back(new ParticleSystem());
 
     DrawingSystems.push_back(new ShapeDrawingSystem());
 }
