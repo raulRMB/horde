@@ -21,4 +21,12 @@ void PhysicsSystem::Update(float deltaSeconds)
         Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
         transform.translation += velocity * deltaSeconds;
     }
+    for(const entt::entity& entity : registry.view<Transform, Physics3DComponent>())
+    {
+        Transform& transform = registry.get<Transform>(entity);
+        Physics3DComponent& physics = registry.get<Physics3DComponent>(entity);
+        physics.Velocity += physics.Acceleration * deltaSeconds;
+        physics.Velocity = Vector3ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
+        transform.translation += physics.Velocity * deltaSeconds;
+    }
 }

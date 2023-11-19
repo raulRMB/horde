@@ -31,9 +31,24 @@ void ParticleSystem::Update(float deltaSeconds) {
             cc.Radius = 0.5;
             cc.Slices = 2;
 
+            Physics3DComponent phc = Physics3DComponent{};
+            phc.Velocity = Vector3 {
+                    (float)GetRandomValue(-5, 5),
+                    (float)GetRandomValue(-5, 5),
+                    (float)GetRandomValue(-5, 5)
+            };
+            phc.MaxSpeed = 100;
+            phc.Acceleration = Vector3 {
+                    (float)GetRandomValue(-2, 2),
+                    (float)GetRandomValue(-2, 2),
+                    (float)GetRandomValue(-2, 2)
+            };
+
+
             entt::entity e = registry.create();
             registry.emplace<ParticleComponent>(e, pc);
             registry.emplace<CapsuleComponent>(e, cc);
+            registry.emplace<Physics3DComponent>(e, phc);
 
             Transform t = {};
             t.translation = Vector3{

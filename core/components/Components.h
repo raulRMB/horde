@@ -97,4 +97,12 @@ struct Physics2DComponent
     Vector2 Acceleration{};
 };
 
+struct Physics3DComponent
+{
+    float Speed = 0.f;
+    float MaxSpeed = 0.f;
+    Vector3 Velocity{ };
+    Vector3 Acceleration{};
+};
+
 #endif //COMPONENTS_H
