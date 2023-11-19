@@ -14,6 +14,9 @@ namespace Util
     static glm::mat4 GLMMat4FromMatrix(const Matrix& matrix);
     Vector3 GetMouseWorldPosition();
     Vector2 GetMouseWorldPosition2D();
+    Vector3 RandVec3(int min, int max);
+    Color RandColor();
+    RayCollision GetMouseCollision();
 }
 
 #endif //UTIL_H

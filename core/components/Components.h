@@ -23,12 +23,15 @@ struct ParticleComponent
     entt::entity emitterId = entt::null;
 };
 
+typedef void (*Spawner)(entt::entity, Transform&, entt::registry&, ParticleComponent);
+
 struct EmitterComponent 
 {
     float Frequency;
     float Time;
     int MaxParticles;
     int ParticleCount;
+    Spawner spawner;
 };
 
 struct TargetComponent

@@ -3,6 +3,7 @@
 
 #include "components/Components.h"
 #include "Player.h"
+#include "../core/util/Util.h"
 #include "../core/ui/elements/slot/Slot.h"
 #include "../core/ui/elements/hotbar/Hotbar.h"
 #include "../core/systems/NavigationSystem.h"
@@ -34,26 +35,75 @@ void MainScene::InitUI()
     mainCanvas->Add(hotbar);
 }
 
+Spawner spawnParticle = [](entt::entity e, Transform& transform, entt::registry& registry, ParticleComponent pc) {
+
+    pc.MaxLife = 2;
+
+    CapsuleComponent cc = {};
+    cc.Color = Util::RandColor();
+    cc.Height = 0.5;
+    cc.Position = Vector3{0,0,0};
+    cc.Radius = 0.5;
+    cc.Slices = 1;
+
+    Physics3DComponent phc = {};
+    phc.Velocity = Util::RandVec3(-5, 5);
+    phc.MaxSpeed = 100;
+    phc.Acceleration = Util::RandVec3(-2, 2);
+
+    Transform t = {};
+    t.translation = Util::RandVec3(-1, 1);
+    t.translation = transform.translation + t.translation;
+
+    registry.emplace<ParticleComponent>(e, pc);
+    registry.emplace<CapsuleComponent>(e, cc);
+    registry.emplace<Physics3DComponent>(e, phc);
+    registry.emplace<Transform>(e, t);
+};
+
+Spawner spawnParticle2 = [](entt::entity e, Transform& transform, entt::registry& registry, ParticleComponent pc) {
+
+    pc.MaxLife = 0.3;
+
+    CapsuleComponent cc = {};
+    cc.Color = Util::RandColor();
+    cc.Height = 0.5;
+    cc.Position = Vector3{0,0,0};
+    cc.Radius = 0.5;
+    cc.Slices = 1;
+
+    Physics3DComponent phc = {};
+    phc.Velocity = Util::RandVec3(-50, 50);
+    phc.MaxSpeed = 100;
+    phc.Acceleration = Util::RandVec3(-20, 20);
+
+    Transform t = {};
+    t.translation = Util::RandVec3(-1, 1);
+    t.translation = transform.translation + t.translation;
+
+    registry.emplace<ParticleComponent>(e, pc);
+    registry.emplace<CapsuleComponent>(e, cc);
+    registry.emplace<Physics3DComponent>(e, phc);
+    registry.emplace<Transform>(e, t);
+};
+
 void MainScene::HandleInput()
 {
     pPlayer->HandleInput();
 
     if(IsKeyPressed(KEY_R))
     {
-        Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
-        Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-        Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-        Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-        Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
-        RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+        RayCollision Collision = Util::GetMouseCollision();
         auto e = CreateEntity();
-        auto sc = CubeComponent{};
-        sc.Color = RAYWHITE;
-        sc.Position = Vector3{0,0,0};
-        sc.Size = Vector3{1, 1, 1};
-        AddComponent(e, EmitterComponent{.Frequency=0.1, .MaxParticles=100});
+        AddComponent(e, EmitterComponent{.Frequency=0.1, .MaxParticles=100, .spawner=spawnParticle});
         AddComponent(e, Transform{Collision.point.x, 0.0f, Collision.point.z});
-        AddComponent(e, sc);
+    }
+    if(IsKeyPressed(KEY_T))
+    {
+        RayCollision Collision = Util::GetMouseCollision();
+        auto e = CreateEntity();
+        AddComponent(e, EmitterComponent{.Frequency=0.1, .MaxParticles=100, .spawner=spawnParticle2});
+        AddComponent(e, Transform{Collision.point.x, 0.0f, Collision.point.z});
     }
 }
 

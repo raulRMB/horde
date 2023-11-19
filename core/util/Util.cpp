@@ -23,6 +23,32 @@ glm::mat4 Util::GLMMat4FromMatrix(const Matrix& matrix)
     return result;
 }
 
+Vector3 Util::RandVec3(int min, int max) {
+    return Vector3 {
+            (float)GetRandomValue(min, max),
+            (float)GetRandomValue(min, max),
+            (float)GetRandomValue(min, max)
+    };
+}
+
+RayCollision Util::GetMouseCollision() {
+    Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+    Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+    Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+    Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+    Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+    return GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
+}
+
+Color Util::RandColor() {
+    return Color {
+            (unsigned char) GetRandomValue(1, 255),
+            (unsigned char) GetRandomValue(1, 255),
+            (unsigned char) GetRandomValue(1, 255),
+            255
+    };
+}
+
 Vector3 Util::GetMouseWorldPosition()
 {
     const Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());

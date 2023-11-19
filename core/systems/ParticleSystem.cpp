@@ -14,50 +14,10 @@ void ParticleSystem::Update(float deltaSeconds) {
         if(emitter.Time > emitter.Frequency && emitter.ParticleCount < emitter.MaxParticles) {
             emitter.ParticleCount++;
             emitter.Time = 0;
+            entt::entity e = registry.create();
             ParticleComponent pc = {};
             pc.emitterId = entity;
-            pc.MaxLife = 3;
-            pc.Lifetime = 0;
-
-            CapsuleComponent cc = {};
-
-            cc.Color = Color{
-                    (unsigned char)GetRandomValue(1, 255),
-                    (unsigned char)GetRandomValue(1, 255),
-                    (unsigned char)GetRandomValue(1, 255),
-                    255};
-            cc.Height = 0.5;
-            cc.Position = Vector3{0,0,0};
-            cc.Radius = 0.5;
-            cc.Slices = 2;
-
-            Physics3DComponent phc = Physics3DComponent{};
-            phc.Velocity = Vector3 {
-                    (float)GetRandomValue(-5, 5),
-                    (float)GetRandomValue(-5, 5),
-                    (float)GetRandomValue(-5, 5)
-            };
-            phc.MaxSpeed = 100;
-            phc.Acceleration = Vector3 {
-                    (float)GetRandomValue(-2, 2),
-                    (float)GetRandomValue(-2, 2),
-                    (float)GetRandomValue(-2, 2)
-            };
-
-
-            entt::entity e = registry.create();
-            registry.emplace<ParticleComponent>(e, pc);
-            registry.emplace<CapsuleComponent>(e, cc);
-            registry.emplace<Physics3DComponent>(e, phc);
-
-            Transform t = {};
-            t.translation = Vector3{
-                (float)GetRandomValue(-1, 1),
-                (float)GetRandomValue(-1, 1),  
-                (float)GetRandomValue(-1, 1)
-            };
-            t.translation = transform.translation + t.translation;
-            registry.emplace<Transform>(e, t);
+            emitter.spawner(e, transform, registry, pc);
         }
     }
 
