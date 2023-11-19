@@ -38,7 +38,7 @@ bool Game::Run()
         DrawUI();
         CalculateFPS();
         EndDrawing();
-        bRunning = bRunning ? !WindowShouldClose() : false;
+        bRunning = bRunning && !WindowShouldClose();
     }
 
     return EXIT_SUCCESS;

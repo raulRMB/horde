@@ -11,11 +11,13 @@
 class NavigationSystem final : public UpdateSystem
 {
 private:
-    std::vector<Navigation::TriangleNode> MapTriangles{};
+    std::vector<Navigation::TriangleNode> NavMesh{};
+    std::vector<Vector2> Points;
 public:
-    void SetMapTriangles(const std::vector<Navigation::TriangleNode>& mapTriangles);
-    const std::vector<Navigation::TriangleNode>& GetMapTriangles() { return MapTriangles; }
+    const std::vector<Navigation::TriangleNode>& GetMapTriangles() { return NavMesh; }
     void Update(float deltaSeconds) override;
+    void LoadNavMesh();
+    void SaveNavMesh();
 };
 
 

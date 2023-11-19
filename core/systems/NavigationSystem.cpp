@@ -3,31 +3,106 @@
 //
 
 #include "NavigationSystem.h"
-#include "../Components.h"
+
+#include <fstream>
+#include <sstream>
+
+#include "components/FollowComponent.h"
 #include "../navigation/Navigation.h"
 #include "../../game/Game.h"
-
-void NavigationSystem::SetMapTriangles(const std::vector<Navigation::TriangleNode>& mapTriangles)
-{
-    MapTriangles = mapTriangles;
-}
+#include "components/Components.h"
+#include <raylib.h>
 
 void NavigationSystem::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
     const auto followEntities = registry.view<FollowComponent, Transform>();
-    for(const entt::entity& ent : followEntities)
+    for(const entt::entity& followEntity : followEntities)
     {
-        std::vector<Navigation::TriangleNode*> path;
-        FollowComponent& follow = GetComponent<FollowComponent>(ent);
+        FollowComponent& followComponent = GetComponent<FollowComponent>(followEntity);
+        EFollowState& bFollowing = followComponent.FollowState;
+        if(bFollowing != EFollowState::Dirty)
+            continue;
 
-        Vector2 startPoint = {GetComponent<Transform>(ent).translation.x, GetComponent<Transform>(ent).translation.z};
+        std::vector<Vector2>& stringPath = followComponent.StringPath;
+        stringPath.clear();
+        Vector2& goal = followComponent.Goal;
+        Vector2& targetPos = followComponent.TargetPos;
+        unsigned int& followIndex = followComponent.Index;
+        Vector2 startPoint = {GetComponent<Transform>(followEntity).translation.x, GetComponent<Transform>(followEntity).translation.z};
+
         std::vector<Edge2D> portals;
-        Navigation::AStar(startPoint, follow.TargetPos, path, portals, MapTriangles);
+        std::vector<Navigation::TriangleNode*> path;
+        Navigation::AStar(startPoint, goal, path, portals, NavMesh);
+        stringPath = Navigation::StringPull(portals, startPoint, goal);
 
-        std::vector<Vector2>& stringPath = follow.StringPath;
-        stringPath = Navigation::StringPull(portals, startPoint, follow.TargetPos);
-
-        follow.TargetPos = stringPath[follow.Index];
+        targetPos = stringPath[followIndex];
+        followIndex = 1;
+        bFollowing = EFollowState::Following;
     }
+}
+
+void NavigationSystem::LoadNavMesh()
+{
+    std::ifstream file;
+    file.open("../assets/save.txt");
+    if(file.is_open())
+    {
+        std::string line;
+        while(std::getline(file, line) && line != "TRIANGLES")
+        {
+            TraceLog(LOG_INFO, line.c_str());
+            std::stringstream ss(line);
+            float x, y;
+            ss >> x >> y;
+            Points.push_back({x, y});
+        }
+
+        NavMesh = Navigation::BowyerWatson(Points);
+
+        while(std::getline(file, line))
+        {
+            std::stringstream ss(line);
+            unsigned int idx;
+            bool blocked;
+            ss >> idx >> blocked;
+            NavMesh[idx].SetBlocked(blocked);
+        }
+
+        file.close();
+
+        for(const Navigation::TriangleNode& graphTriangle : NavMesh)
+        {
+            auto e = CreateEntity();
+            Transform transform;
+            transform.translation = {graphTriangle.GetCenter().x, 0.f, graphTriangle.GetCenter().y};
+            AddComponent(e, transform);
+            if(graphTriangle.IsBlocked())
+            {
+                Triangle2D triangle = graphTriangle.GetTriangle();
+                triangle.Color = RED;
+                AddComponent(e, triangle);
+            }
+        }
+    }
+}
+
+void NavigationSystem::SaveNavMesh()
+{
+    std::ofstream file;
+    file.open("../assets/save.txt");
+    for(const Vector2& point : Points)
+    {
+        file << point.x << " " << point.y << "\n";
+    }
+
+    file << "TRIANGLES\n";
+
+    for(const Navigation::TriangleNode& graphTriangle : NavMesh)
+    {
+        file << graphTriangle.GetIndex() << " ";
+        file << graphTriangle.IsBlocked() << "\n";
+    }
+
+    file.close();
 }

@@ -13,6 +13,9 @@ class MainScene final : public Scene
 
     std::vector<Edge2D> Portals = {};
     class Player* pPlayer;
+
+
+
 public:
     MainScene();
     ~MainScene() override;

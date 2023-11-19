@@ -20,14 +20,6 @@ struct TargetComponent
     Vector3 Position;
 };
 
-struct FollowComponent
-{
-    std::vector<Vector2> StringPath;
-    Vector2 TargetPos;
-    bool bFollow;
-    int Index;
-};
-
 struct HealthComponent
 {
     float Health;

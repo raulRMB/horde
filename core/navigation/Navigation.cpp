@@ -165,7 +165,10 @@ std::vector<TriangleNode*> ReconstructPath(TriangleNode* end, TriangleNode* star
     while(current != start)
     {
         path.push_back(current);
-        current = current->GetParent();
+        if(current->GetParent())
+        {
+            current = current->GetParent();
+        }
     }
     path.push_back(start);
 

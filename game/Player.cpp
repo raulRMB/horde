@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "raymath.h"
-#include "../core/Components.h"
+#include "../core/components/FollowComponent.h"
+#include "../core/components/Components.h"
 #include "../core/util/Util.h"
 
 Player::Player()
@@ -10,8 +11,15 @@ Player::Player()
     capsule.Height = 1.0f;
     capsule.Color = GREEN;
     AddComponent(capsule);
-    AddComponent(FollowComponent{});
-    AddComponent(Transform{});
+
+    Transform transform{};
+    AddComponent(transform);
+
+    FollowComponent follow{};
+    follow.Index = 0;
+    follow.FollowState = EFollowState::Idle;
+    follow.Goal = {transform.translation.x, transform.translation.z};
+    AddComponent(follow);
 
     Physics2DComponent physics{};
     physics.Speed = 9.f;
@@ -30,9 +38,9 @@ void Player::HandleInput()
     if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
         FollowComponent& followComponent = GetComponent<FollowComponent>();
-        followComponent.bFollow = true;
+        followComponent.FollowState = EFollowState::Dirty;
         followComponent.Index = 1;
-        followComponent.TargetPos = Util::GetMouseWorldPosition2D();
+        followComponent.Goal = Util::GetMouseWorldPosition2D();
     }
 }
 

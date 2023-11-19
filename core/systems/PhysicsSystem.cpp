@@ -3,12 +3,10 @@
 //
 
 #include "PhysicsSystem.h"
-#include "../../game/Game.h"
 #include <entt/entt.hpp>
-
 #include "raymath.h"
-#include "../Components.h"
-#include "../util/raymathEx.h"
+#include "components/Components.h"
+#include "util/raymathEx.h"
 
 
 void PhysicsSystem::Update(float deltaSeconds)

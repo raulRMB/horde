@@ -26,6 +26,7 @@ class TriangleNode
     bool bBlocked = false;
 
 public:
+
     TriangleNode(const Triangle2D& triangle, unsigned int index = 0);
     ~TriangleNode() = default;
 
