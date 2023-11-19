@@ -1,8 +1,9 @@
+#include <string>
 #include "../../Canvas.h"
 #include "Hotbar.h"
 
 bool Hotbar::isHovered()  {
-
+    return false;
 }
 
 std::any Hotbar::OnDrag() {
@@ -64,9 +65,9 @@ void Hotbar::OnAdded() {
     }
 }
 
-void Hotbar::AddSlot(char* texturePath) {
+void Hotbar::AddSlot(std::string texturePath) {
     Slot* slot = new Slot({0, 0, 0, 0});
-    auto slotImg = LoadTexture(texturePath);
+    auto slotImg = LoadTexture(texturePath.c_str());
     slot->SetImage(slotImg);
     slots.push_back(slot);
 }

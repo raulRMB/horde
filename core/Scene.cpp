@@ -1,8 +1,8 @@
 #include "Scene.h"
-#include "systems/AnimationSystem.h"
-#include "systems/EnemySystem.h"
 #include <vector>
 
+#include "systems/AnimationSystem.h"
+#include "systems/EnemySystem.h"
 #include "systems/FollowSystem.h"
 #include "systems/PhysicsSystem.h"
 #include "systems/ShapeDrawingSystem.h"
@@ -11,19 +11,12 @@
 
 void Scene::Start()
 {
-    UpdateSystems.push_back(new EnemySystem());
-    UpdateSystems.push_back(new AnimationSystem());
-    UpdateSystems.push_back(new FollowSystem());
-    UpdateSystems.push_back(new ParticleSystem());
-}
-
-void Scene::Start()
-{
     UpdateSystems.push_back(&System::Get<AnimationSystem>());
     UpdateSystems.push_back(&System::Get<EnemySystem>());
     UpdateSystems.push_back(&System::Get<FollowSystem>());
     UpdateSystems.push_back(&System::Get<PhysicsSystem>());
     UpdateSystems.push_back(&System::Get<NavigationSystem>());
+    UpdateSystems.push_back(&System::Get<ParticleSystem>());
 
     DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
 }

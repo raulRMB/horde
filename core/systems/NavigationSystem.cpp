@@ -8,8 +8,6 @@
 #include <sstream>
 
 #include "components/FollowComponent.h"
-#include "../navigation/Navigation.h"
-#include "../../game/Game.h"
 #include "components/Components.h"
 #include <raylib.h>
 

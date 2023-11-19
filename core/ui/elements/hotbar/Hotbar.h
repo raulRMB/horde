@@ -18,5 +18,5 @@ public:
     virtual void OnDrop(Element* source, std::any payload) override;
     virtual void Draw(DrawData data) override;
     virtual void Update() override;
-    void AddSlot(char* texturePath);
+    void AddSlot(std::string texturePath);
 };

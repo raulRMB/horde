@@ -1,9 +1,7 @@
 #include "ParticleSystem.h"
-
 #include <raylib.h>
-#include <raymath.h>
 #include "../util/raymathEx.h"
-#include "../Components.h"
+#include "components/Components.h"
 #include "../../game/SmartEntity.h"
 
 void ParticleSystem::Update(float deltaSeconds) {
