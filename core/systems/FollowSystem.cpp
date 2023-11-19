@@ -2,36 +2,47 @@
 
 #include <raylib.h>
 #include <raymath.h>
-#include "../Components.h"
+#include "components/Components.h"
+#include "components/FollowComponent.h"
 #include "../../game/SmartEntity.h"
+#include "../util/raymathEx.h"
+
 
 void FollowSystem::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity : registry.view<FollowComponent, Transform>())
+    for(const entt::entity& entity : registry.view<FollowComponent, Transform, Physics2DComponent>())
     {
-        FollowComponent& follow = registry.get<FollowComponent>(entity);
-        Vector2& targetPos = registry.get<FollowComponent>(entity).TargetPos;
-        const Vector3 targetPos3d = {targetPos.x, 0.f, targetPos.y};
-        Vector3& followPos = registry.get<Transform>(entity).translation;
+        FollowComponent& followComponent = registry.get<FollowComponent>(entity);
+        EFollowState& followState = followComponent.FollowState;
 
-        if(!follow.bFollow)
-        {
+        if(followState != EFollowState::Following)
             continue;
-        }
 
-        std::vector<Vector2>& StringPath = follow.StringPath;
+        std::vector<Vector2>& stringPath = followComponent.StringPath;
+        Vector2& targetPos = followComponent.TargetPos;
+        unsigned int& followIndex = followComponent.Index;
+        Vector3& followPos = registry.get<Transform>(entity).translation;
+        Vector2 followPos2d = {followPos.x, followPos.z};
+        Physics2DComponent& physics = registry.get<Physics2DComponent>(entity);
 
-        if(Vector3Distance(followPos, targetPos3d) > 0.01f)
+        if(constexpr float minDist = 0.1f; Vector2DistanceSqr(followPos2d, targetPos) > minDist * minDist)
         {
-            followPos = Vector3Add(followPos, Vector3Scale(Vector3Subtract(targetPos3d, followPos), 2.0f * deltaSeconds));
+            Vector2 direction = Vector2Normalize(Vector2Subtract(targetPos, followPos2d));
+            direction = Vector2Scale(direction, physics.Speed);
+            physics.Velocity = Vector2Add(physics.Acceleration, direction);
         }
         else
         {
-            follow.Index++;
-            if(StringPath.size() > follow.Index)
+            followIndex++;
+            if(followIndex < stringPath.size())
             {
-                targetPos = StringPath[follow.Index];
+                targetPos = stringPath[followIndex];
+            }
+            else
+            {
+                followState = EFollowState::Idle;
+                physics.Velocity = {0.f, 0.f};
             }
         }
     }

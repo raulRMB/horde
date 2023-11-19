@@ -9,13 +9,12 @@
 
 class MainScene final : public Scene
 {
-    Vector2 StartPoint;
-    Vector2 EndPoint;
-
     std::vector<Vector2> Points;
 
     std::vector<Edge2D> Portals = {};
-    std::vector<Navigation::TriangleNode> Tris = {};
+    class Player* pPlayer;
+
+
 
 public:
     MainScene();

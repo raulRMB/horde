@@ -3,7 +3,7 @@
 
 #include "System.h"
 
-class EnemySystem final : public System
+class EnemySystem final : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;

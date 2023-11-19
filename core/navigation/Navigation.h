@@ -26,6 +26,7 @@ class TriangleNode
     bool bBlocked = false;
 
 public:
+
     TriangleNode(const Triangle2D& triangle, unsigned int index = 0);
     ~TriangleNode() = default;
 
@@ -65,7 +66,7 @@ bool PointInTriangle(const Vector2& p, const Triangle2D& t);
 void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<Vector2>& points);
 void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<TriangleNode>& triangles);
 float TriangleArea2(const Vector2& A, const Vector2& B, const Vector2& C);
-std::vector<Vector2> StringPull(const std::vector<Edge2D>& portals, const Vector2& start, const Vector2& end);
+std::vector<Vector2> StringPull(std::vector<Edge2D>& portals, const Vector2& start, const Vector2& end);
 const Edge2D* GetSharedEdge(const Triangle2D& t1, const Triangle2D& t2);
 
 bool IsOnRight(const Vector2& O, const Vector2& A, const Vector2& B);

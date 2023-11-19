@@ -128,6 +128,30 @@ inline Vector3 operator-(const Vector3& v)
     return Vector3Negate(v);
 }
 
+inline Vector3& operator+=(Vector3& v1, const Vector3& v2)
+{
+    v1 = Vector3Add(v1, v2);
+    return v1;
+}
+
+inline Vector3& operator-=(Vector3& v1, const Vector3& v2)
+{
+    v1 = Vector3Subtract(v1, v2);
+    return v1;
+}
+
+inline Vector3& operator*=(Vector3& v1, const Vector3& v2)
+{
+    v1 = Vector3Multiply(v1, v2);
+    return v1;
+}
+
+inline Vector3& operator*=(Vector3& v, const float& f)
+{
+    v = Vector3Scale(v, f);
+    return v;
+}
+
 
 
 #endif //RAYMATHEX_H

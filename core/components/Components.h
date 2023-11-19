@@ -36,14 +36,6 @@ struct TargetComponent
     Vector3 Position;
 };
 
-struct FollowComponent
-{
-    std::vector<Vector2> StringPath;
-    Vector2 TargetPos;
-    bool bFollow;
-    int Index;
-};
-
 struct HealthComponent
 {
     float Health;
@@ -95,6 +87,14 @@ struct LineStripComponent
 {
     std::vector<Vector3> Points;
     Color Color;
+};
+
+struct Physics2DComponent
+{
+    float Speed = 0.f;
+    float MaxSpeed = 0.f;
+    Vector2 Velocity{ };
+    Vector2 Acceleration{};
 };
 
 #endif //COMPONENTS_H

@@ -1,6 +1,6 @@
 #include "AnimationSystem.h"
 #include <entt/entt.hpp>
-#include "../Components.h"
+#include "../components/Components.h"
 #include "../../game/Game.h"
 
 void AnimationSystem::Update(float deltaSeconds)

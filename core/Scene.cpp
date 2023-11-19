@@ -4,8 +4,10 @@
 #include <vector>
 
 #include "systems/FollowSystem.h"
+#include "systems/PhysicsSystem.h"
 #include "systems/ShapeDrawingSystem.h"
 #include "systems/ParticleSystem.h"
+#include "systems/NavigationSystem.h"
 
 void Scene::Start()
 {
@@ -13,13 +15,22 @@ void Scene::Start()
     UpdateSystems.push_back(new AnimationSystem());
     UpdateSystems.push_back(new FollowSystem());
     UpdateSystems.push_back(new ParticleSystem());
+}
 
-    DrawingSystems.push_back(new ShapeDrawingSystem());
+void Scene::Start()
+{
+    UpdateSystems.push_back(&System::Get<AnimationSystem>());
+    UpdateSystems.push_back(&System::Get<EnemySystem>());
+    UpdateSystems.push_back(&System::Get<FollowSystem>());
+    UpdateSystems.push_back(&System::Get<PhysicsSystem>());
+    UpdateSystems.push_back(&System::Get<NavigationSystem>());
+
+    DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
 }
 
 void Scene::Update(float deltaSeconds)
 {
-    for (System* system : UpdateSystems)
+    for (UpdateSystem* system : UpdateSystems)
     {
         system->Update(deltaSeconds);
     }
