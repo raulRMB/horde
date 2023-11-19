@@ -61,6 +61,11 @@ void MainScene::Update(float deltaSeconds)
 {
     mainCanvas->Update();
     Scene::Update(deltaSeconds);
+
+    Camera3D& cam = Game::Instance().GetActiveCamera();
+    Vector3 playerPos = pPlayer->GetComponent<Transform>().translation;
+    cam.position = Vector3{playerPos.x - 20, cam.position.y, playerPos.z - 40};
+    cam.target = playerPos;
 }
 
 void MainScene::Draw()
