@@ -53,7 +53,7 @@ struct CubeComponent
 {
     Vector3 Position;
     Vector3 Size;
-    Color Color;
+    Color color;
 };
 
 struct CapsuleComponent
@@ -62,20 +62,20 @@ struct CapsuleComponent
     float Radius;
     float Height;
     int Slices;
-    Color Color;
+    Color color;
 };
 
 struct SphereComponent
 {
     Vector3 Position;
     float Radius;
-    Color Color;
+    Color color;
 };
 
 struct RayComponent
 {
-    Ray Ray;
-    Color Color;
+    Ray ray;
+    Color color;
 };
 
 struct TriangleComponent
@@ -83,13 +83,13 @@ struct TriangleComponent
     Vector3 V1;
     Vector3 V2;
     Vector3 V3;
-    Color Color;
+    Color color;
 };
 
 struct LineStripComponent
 {
     std::vector<Vector3> Points;
-    Color Color;
+    Color color;
 };
 
 struct Physics2DComponent

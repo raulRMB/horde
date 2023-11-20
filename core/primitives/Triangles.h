@@ -26,7 +26,7 @@ struct Triangle2D
         Vector2 Indecies[3]{};
     };
 
-    Color Color;
+    Color color;
     Edge2D Edges[3]{};
 
     Triangle2D();

@@ -40,7 +40,7 @@ Spawner spawnParticle = [](entt::entity e, Transform& transform, entt::registry&
     pc.MaxLife = 2;
 
     CapsuleComponent cc = {};
-    cc.Color = Util::RandColor();
+    cc.color = Util::RandColor();
     cc.Height = 0.5;
     cc.Position = Vector3{0,0,0};
     cc.Radius = 0.5;
@@ -66,7 +66,7 @@ Spawner spawnParticle2 = [](entt::entity e, Transform& transform, entt::registry
     pc.MaxLife = 0.3;
 
     CapsuleComponent cc = {};
-    cc.Color = Util::RandColor();
+    cc.color = Util::RandColor();
     cc.Height = 0.5;
     cc.Position = Vector3{0,0,0};
     cc.Radius = 0.5;

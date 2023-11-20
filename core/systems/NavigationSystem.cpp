@@ -78,7 +78,7 @@ void NavigationSystem::LoadNavMesh()
             if(graphTriangle.IsBlocked())
             {
                 Triangle2D triangle = graphTriangle.GetTriangle();
-                triangle.Color = RED;
+                triangle.color = RED;
                 AddComponent(e, triangle);
             }
         }

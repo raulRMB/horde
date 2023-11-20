@@ -9,7 +9,7 @@ Player::Player()
     CapsuleComponent capsule{};
     capsule.Radius = 0.5f;
     capsule.Height = 1.0f;
-    capsule.Color = GREEN;
+    capsule.color = GREEN;
     AddComponent(capsule);
 
     Transform transform{};

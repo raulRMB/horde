@@ -10,7 +10,7 @@ void ShapeDrawingSystem::Draw()
     for(const entt::entity& entity : Game::GetRegistry().view<CubeComponent>())
     {
         const CubeComponent& cubeComponent = Game::GetRegistry().get<CubeComponent>(entity);
-        DrawCube(cubeComponent.Position, cubeComponent.Size.x, cubeComponent.Size.y, cubeComponent.Size.z, cubeComponent.Color);
+        DrawCube(cubeComponent.Position, cubeComponent.Size.x, cubeComponent.Size.y, cubeComponent.Size.z, cubeComponent.color);
     }
 
     // DrawCapsules
@@ -21,14 +21,14 @@ void ShapeDrawingSystem::Draw()
         Vector3 offset = {0.0f, capsuleComponent.Height / 2.0f, 0.0f};
         Vector3 top = Vector3Add(transform.translation, offset);
         Vector3 bottom = Vector3Subtract(transform.translation, offset);
-        DrawCapsule(top, bottom,  capsuleComponent.Radius, 5, 3, capsuleComponent.Color);
+        DrawCapsule(top, bottom,  capsuleComponent.Radius, 5, 3, capsuleComponent.color);
     }
 
     // Rays
     for(const entt::entity& entity : Game::GetRegistry().view<RayComponent>())
     {
         const RayComponent& rayComponent = Game::GetRegistry().get<RayComponent>(entity);
-        DrawRay(rayComponent.Ray, rayComponent.Color);
+        DrawRay(rayComponent.ray, rayComponent.color);
     }
 
     // Draw Triangles
@@ -39,7 +39,7 @@ void ShapeDrawingSystem::Draw()
         triangle3D.A = {triangleComponent.Vertices.A.x, 0.0f, triangleComponent.Vertices.A.y};
         triangle3D.B = {triangleComponent.Vertices.B.x, 0.0f, triangleComponent.Vertices.B.y};
         triangle3D.C = {triangleComponent.Vertices.C.x, 0.0f, triangleComponent.Vertices.C.y};
-        DrawTriangle3D(triangle3D.C, triangle3D.B, triangle3D.A, triangleComponent.Color);
+        DrawTriangle3D(triangle3D.C, triangle3D.B, triangle3D.A, triangleComponent.color);
     }
 
     // Draw Linestrip
@@ -48,7 +48,7 @@ void ShapeDrawingSystem::Draw()
         const LineStripComponent& lineStripComponent = Game::GetRegistry().get<LineStripComponent>(entity);
         for(int i = 0; i < lineStripComponent.Points.size() - 1; i++)
         {
-            DrawLine3D(lineStripComponent.Points[i], lineStripComponent.Points[i + 1], lineStripComponent.Color);
+            DrawLine3D(lineStripComponent.Points[i], lineStripComponent.Points[i + 1], lineStripComponent.color);
         }
     }
 }
