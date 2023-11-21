@@ -23,6 +23,13 @@ struct ParticleComponent
     entt::entity emitterId = entt::null;
 };
 
+struct ModelComponent
+{
+    Model model;
+    float scale;
+    bool hidden;
+};
+
 typedef void (*Spawner)(entt::entity, Transform&, entt::registry&, ParticleComponent);
 
 struct EmitterComponent 

@@ -5,10 +5,10 @@
 
 void AnimationSystem::Update(float deltaSeconds)
 {
-    for(const entt::entity& entity : Game::GetRegistry().view<AnimationComponent, Model>())
+    for(const entt::entity& entity : Game::GetRegistry().view<AnimationComponent, ModelComponent>())
     {
         AnimationComponent& animationComponent = Game::GetRegistry().get<AnimationComponent>(entity);
-        const Model& model = Game::GetRegistry().get<Model>(entity);
+        const Model& model = Game::GetRegistry().get<ModelComponent>(entity).model;
 
         ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
 

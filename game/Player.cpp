@@ -6,11 +6,14 @@
 
 Player::Player()
 {
-    CapsuleComponent capsule{};
-    capsule.Radius = 0.5f;
-    capsule.Height = 1.0f;
-    capsule.color = GREEN;
-    AddComponent(capsule);
+    AnimationComponent animation{};
+    ModelComponent mc = {LoadModel("../assets/anim.glb"), 0.05, false};
+    mc.model.transform = MatrixRotateX(PI/2);
+    animation.Animations = LoadModelAnimations("../assets/anim.glb", &animation.AnimsCount);
+    animation.AnimsIndex = 1;
+    animation.bPlaying = true;
+    AddComponent(animation);
+    AddComponent(mc);
 
     Transform transform{};
     AddComponent(transform);

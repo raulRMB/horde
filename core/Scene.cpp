@@ -8,6 +8,7 @@
 #include "systems/ShapeDrawingSystem.h"
 #include "systems/ParticleSystem.h"
 #include "systems/NavigationSystem.h"
+#include "systems/ModelDrawingSystem.h"
 
 void Scene::Start()
 {
@@ -19,6 +20,8 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<ParticleSystem>());
 
     DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
+    DrawingSystems.push_back(&System::Get<ModelDrawingSystem>());
+
 }
 
 void Scene::Update(float deltaSeconds)
