@@ -12,7 +12,12 @@ class MainScene final : public Scene
     std::vector<Vector2> Points;
 
     std::vector<Edge2D> Portals = {};
+
+    bool p1Active = true;
+    class Player* GetActivePlayer();
+
     class Player* pPlayer;
+    class Player* p2Player;
 
 
 

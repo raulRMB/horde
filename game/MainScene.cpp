@@ -21,6 +21,7 @@ void MainScene::Start()
     Scene::Start();
     InitUI();
     pPlayer = new Player();
+    p2Player = new Player();
 }
 
 void MainScene::InitUI()
@@ -89,7 +90,11 @@ Spawner spawnParticle2 = [](entt::entity e, Transform& transform, entt::registry
 
 void MainScene::HandleInput()
 {
-    pPlayer->HandleInput();
+    GetActivePlayer()->HandleInput();
+
+    if(IsKeyPressed(KEY_SPACE)) {
+        p1Active = !p1Active;
+    }
 
     if(IsKeyPressed(KEY_R))
     {
@@ -107,13 +112,17 @@ void MainScene::HandleInput()
     }
 }
 
+Player* MainScene::GetActivePlayer() {
+    return p1Active ? pPlayer : p2Player;
+}
+
 void MainScene::Update(float deltaSeconds)
 {
     mainCanvas->Update();
     Scene::Update(deltaSeconds);
 
     Camera3D& cam = Game::Instance().GetActiveCamera();
-    Vector3 playerPos = pPlayer->GetComponent<Transform>().translation;
+    Vector3 playerPos = GetActivePlayer()->GetComponent<Transform>().translation;
     cam.position = Vector3{playerPos.x - 20, cam.position.y, playerPos.z - 40};
     cam.target = playerPos;
 }
@@ -133,12 +142,14 @@ void MainScene::Draw()
 void MainScene::DrawUI()
 {
     pPlayer->DrawUI();
+    p2Player->DrawUI();
     mainCanvas->Draw();
 }
 
 void MainScene::Clean()
 {
     delete pPlayer;
+    delete p2Player;
     delete mainCanvas;
     Scene::Clean();
 }
