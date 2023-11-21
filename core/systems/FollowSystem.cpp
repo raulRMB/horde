@@ -11,6 +11,17 @@
 void FollowSystem::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
+    for(const entt::entity& entity : registry.view<FollowComponent, Transform, Physics2DComponent, ModelComponent>())
+    {
+        ModelComponent& modelComponent = GetComponent<ModelComponent>(entity);
+        Physics2DComponent& pc = GetComponent<Physics2DComponent>(entity);
+        Transform & t = GetComponent<Transform>(entity);
+
+        Vector3 dir = {pc.Velocity.x, 0, pc.Velocity.y};
+        dir = Vector3Normalize(dir);
+        t.rotation.z = atan2(dir.x, -dir.z) + PI;
+        modelComponent.model.transform = MatrixRotateXYZ(Vector3{PI/2, 0, t.rotation.z});
+    }
     for(const entt::entity& entity : registry.view<FollowComponent, Transform, Physics2DComponent>())
     {
         FollowComponent& followComponent = registry.get<FollowComponent>(entity);
