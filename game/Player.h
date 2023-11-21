@@ -11,7 +11,7 @@ public:
     Font font = LoadFont("../assets/ui/fonts/Roboto-Bold.ttf");
     void Start() override;
 
-    void HandleInput();
+    void HandleInput(entt::registry* Registry);
     void DrawUI();
 
     void Kill() override;

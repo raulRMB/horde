@@ -3,6 +3,7 @@
 #include "../core/components/FollowComponent.h"
 #include "../core/components/Components.h"
 #include "../core/util/Util.h"
+#include "Particles.h"
 
 Player::Player()
 {
@@ -36,7 +37,7 @@ void Player::Start()
 {
 }
 
-void Player::HandleInput()
+void Player::HandleInput(entt::registry* Registry)
 {
     if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
@@ -44,6 +45,30 @@ void Player::HandleInput()
         followComponent.FollowState = EFollowState::Dirty;
         followComponent.Index = 1;
         followComponent.Goal = Util::GetMouseWorldPosition2D();
+    }
+    if(IsKeyPressed(KEY_Q))
+    {
+        RayCollision Collision = Util::GetMouseCollision();
+        Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
+
+        auto e = Registry->create();
+        Registry->emplace<EmitterComponent>(e, EmitterComponent{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
+        Physics3DComponent phc = {};
+        phc.Velocity = Vector3Normalize(clickPoint.translation - GetComponent<Transform>().translation) * 50;
+        phc.MaxSpeed = 100;
+        phc.Acceleration = Vector3 {1, 1, 1};
+        Registry->emplace<Physics3DComponent>(e,phc);
+
+        Registry->emplace<Transform>(e, GetComponent<Transform>().translation);
+    }
+    if(IsKeyPressed(KEY_W))
+    {
+    }
+    if(IsKeyPressed(KEY_E))
+    {
+    }
+    if(IsKeyPressed(KEY_R))
+    {
     }
 }
 
