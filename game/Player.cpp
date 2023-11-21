@@ -47,6 +47,18 @@ void Player::HandleInput()
     }
 }
 
+void Player::DrawUI() {
+    Transform & t = GetComponent<Transform>();
+    Vector2 healthBarPos = GetWorldToScreen(
+            (Vector3){ t.translation.x, t.translation.y + 10.0f, t.translation.z },
+            Game::Instance().GetActiveCamera());
+    float maxHealth = 1000;
+    float currHealth = 800;
+    DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
+    DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * currHealth/maxHealth, 10, GREEN);
+    DrawTextEx(font, "Username", Vector2{healthBarPos.x, healthBarPos.y - 13}, 13, 1, WHITE);
+}
+
 void Player::Kill()
 {
     SmartEntity::Kill();

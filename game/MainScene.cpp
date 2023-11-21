@@ -132,6 +132,7 @@ void MainScene::Draw()
 
 void MainScene::DrawUI()
 {
+    pPlayer->DrawUI();
     mainCanvas->Draw();
 }
 
