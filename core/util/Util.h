@@ -8,6 +8,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include "../../game/Game.h"
+#include "../components/Components.h"
 
 namespace Util
 {
@@ -17,6 +18,8 @@ namespace Util
     Vector3 RandVec3(int min, int max);
     Color RandColor();
     RayCollision GetMouseCollision();
+    Attribute& GetAttribute(AttributesComponent& ac, const std::string& attr);
+    void ApplyEffect(AttributesComponent& ac, const Effect& effect);
 }
 
 #endif //UTIL_H

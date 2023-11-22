@@ -31,6 +31,33 @@ Vector3 Util::RandVec3(int min, int max) {
     };
 }
 
+Attribute& Util::GetAttribute(AttributesComponent& ac, const std::string& attr) {
+    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const Attribute& a) {
+        return a.id == attr;
+    });
+    if(it != ac.attributes.end()) {
+        return (*it);
+    }
+    Attribute empty = Attribute{"empty"};
+    return empty;
+}
+
+void Util::ApplyEffect(AttributesComponent& ac, const Effect& effect) {
+    Attribute& attr = Util::GetAttribute(ac, effect.attribute);
+    if (attr.id != "empty") {
+        if(effect.type == INSTANT) {
+            float newVal;
+            if(effect.operation == ADD) {
+                newVal = attr.value + effect.value;
+            }
+            else if(effect.operation == MULTIPLY) {
+                newVal = attr.value * effect.value;
+            }
+            attr.value = std::min(attr.max, std::max(newVal, attr.min));
+        }
+    }
+}
+
 RayCollision Util::GetMouseCollision() {
     Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
     Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};

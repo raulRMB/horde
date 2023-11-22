@@ -16,12 +16,14 @@ protected:
     static C& GetComponent(const entt::entity& entity) { return Game::GetRegistry().get<C>(entity); }
     template <typename C>
     static void AddComponent(const entt::entity& entity, C& Component) { Game::GetRegistry().emplace<C>(entity, Component); }
+    virtual void Init() {};
 };
 
 template <typename T>
 T& System::Get()
 {
     static T instance;
+    instance.Init();
     return instance;
 }
 

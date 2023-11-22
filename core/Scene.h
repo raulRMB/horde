@@ -8,6 +8,7 @@ class Scene
 {
 protected:
     entt::registry Registry;
+    entt::dispatcher Dispatcher;
     std::vector<UpdateSystem*> UpdateSystems;
     std::vector<DrawingSystem*> DrawingSystems;
 
@@ -25,6 +26,8 @@ public:
     virtual void Load() = 0;
 
     inline entt::registry& GetRegistry() { return Registry; }
+
+    inline entt::dispatcher& GetDispatcher() { return Dispatcher; }
 
     entt::entity CreateEntity()
     {

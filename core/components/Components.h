@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <vector>
+#include <string>
 #include <entt/entt.hpp>
 
 struct AnimationComponent
@@ -46,10 +47,41 @@ struct TargetComponent
     Vector3 Position;
 };
 
-struct HealthComponent
-{
-    float Health;
+/* Attribute/GameplayEffect */
+
+enum EffectType {
+    INSTANT  = 0,
+    DURATION,
+    INFINITE
 };
+
+enum EffectOperation {
+    ADD = 0,
+    MULTIPLY
+};
+
+struct Effect {
+    entt::entity target;
+    entt::entity source;
+    std::string attribute;
+    EffectType type;
+    EffectOperation operation;
+    float value;
+};
+
+struct Attribute {
+    std::string id;
+    float value;
+    float max;
+    float min;
+    std::vector<Effect*> effects;
+};
+
+struct AttributesComponent {
+    std::vector<Attribute> attributes;
+};
+
+/* End Attribute/GameplayEffect */
 
 struct EnemyComponent
 {

@@ -9,6 +9,7 @@
 #include "systems/ParticleSystem.h"
 #include "systems/NavigationSystem.h"
 #include "systems/ModelDrawingSystem.h"
+#include "systems/AttributeSystem.h"
 
 void Scene::Start()
 {
@@ -18,6 +19,7 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<PhysicsSystem>());
     UpdateSystems.push_back(&System::Get<NavigationSystem>());
     UpdateSystems.push_back(&System::Get<ParticleSystem>());
+    UpdateSystems.push_back(&System::Get<AttributeSystem>());
 
     DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
     DrawingSystems.push_back(&System::Get<ModelDrawingSystem>());

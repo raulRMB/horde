@@ -126,3 +126,8 @@ entt::registry& Game::GetRegistry()
 {
     return Instance().ActiveScene->GetRegistry();
 }
+
+entt::dispatcher& Game::GetDispatcher()
+{
+    return Instance().ActiveScene->GetDispatcher();
+}

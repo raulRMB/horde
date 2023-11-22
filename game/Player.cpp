@@ -19,6 +19,24 @@ Player::Player()
     Transform transform{};
     AddComponent(transform);
 
+    std::vector<Attribute> attributes;
+    Attribute Health = {
+            .id="health",
+            .min=0,
+            .max=1000,
+            .value=500,
+    };
+    attributes.push_back(Health);
+    Attribute MoveSpeed = {
+            .id="moveSpeed",
+            .min=100,
+            .max=1000,
+            .value=500,
+    };
+    attributes.push_back(MoveSpeed);
+    AttributesComponent ac{attributes};
+    AddComponent(ac);
+
     FollowComponent follow{};
     follow.Index = 0;
     follow.FollowState = EFollowState::Idle;
@@ -48,6 +66,15 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(IsKeyPressed(KEY_Q))
     {
+        Effect effect;
+        effect.target = GetEntity();
+        effect.source = GetEntity();
+        effect.attribute = "health";
+        effect.type = INSTANT;
+        effect.operation = ADD;
+        effect.value = 100;
+        Game::GetDispatcher().trigger(effect);
+
         RayCollision Collision = Util::GetMouseCollision();
         Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
 
@@ -63,6 +90,14 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(IsKeyPressed(KEY_W))
     {
+        Effect effect;
+        effect.target = GetEntity();
+        effect.source = GetEntity();
+        effect.attribute = "health";
+        effect.type = INSTANT;
+        effect.operation = MULTIPLY;
+        effect.value = 0.8;
+        Game::GetDispatcher().trigger(effect);
     }
     if(IsKeyPressed(KEY_E))
     {
@@ -77,11 +112,13 @@ void Player::DrawUI() {
     Vector2 healthBarPos = GetWorldToScreen(
             (Vector3){ t.translation.x, t.translation.y + 10.0f, t.translation.z },
             Game::Instance().GetActiveCamera());
-    float maxHealth = 1000;
-    float currHealth = 800;
-    DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
-    DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * currHealth/maxHealth, 10, GREEN);
-    DrawTextEx(font, "Username", Vector2{healthBarPos.x, healthBarPos.y - 13}, 13, 1, WHITE);
+    AttributesComponent ac = GetComponent<AttributesComponent>();
+    Attribute health = Util::GetAttribute(ac, "health");
+    if (health.id != "empty") {
+        DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
+        DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * health.value/health.max, 10, GREEN);
+        DrawTextEx(font, "Username", Vector2{healthBarPos.x, healthBarPos.y - 13}, 13, 1, WHITE);
+    }
 }
 
 void Player::Kill()

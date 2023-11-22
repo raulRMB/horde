@@ -47,6 +47,7 @@ public:
 
 
     static entt::registry& GetRegistry();
+    static entt::dispatcher& GetDispatcher();
 
     void Save();
     void Load();
