@@ -36,7 +36,7 @@ void FollowSystem::Update(float deltaSeconds)
         Vector2 followPos2d = {followPos.x, followPos.z};
         Physics2DComponent& physics = registry.get<Physics2DComponent>(entity);
 
-        if(constexpr float minDist = 0.1f; Vector2DistanceSqr(followPos2d, targetPos) > minDist * minDist)
+        if(constexpr float minDist = 0.3f; Vector2DistanceSqr(followPos2d, targetPos) > minDist * minDist)
         {
             Vector2 direction = targetPos - followPos2d;
             Vector2 nDirection = Vector2Normalize(direction);
