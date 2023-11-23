@@ -1,12 +1,12 @@
-#include <raylib.h>
+#include "raylib.h"
 #include "MainScene.h"
 
 #include "components/Components.h"
 #include "Player.h"
-#include "../core/util/Util.h"
-#include "../core/ui/elements/slot/Slot.h"
-#include "../core/ui/elements/hotbar/Hotbar.h"
-#include "../core/systems/NavigationSystem.h"
+#include "util/Util.h"
+#include "ui/elements/slot/Slot.h"
+#include "ui/elements/hotbar/Hotbar.h"
+#include "systems/moba/NavigationSystem.h"
 
 MainScene::MainScene()
 {

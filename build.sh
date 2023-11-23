@@ -2,4 +2,4 @@
 
 cmake . -B ./build
 make -C ./build
-./build/horde
+# ./build/horde

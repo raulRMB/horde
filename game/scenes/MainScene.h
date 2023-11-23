@@ -1,11 +1,11 @@
 #ifndef MAINSCENE_H
 #define MAINSCENE_H
 
-#include "../core/Scene.h"
-#include "../core/ui/Canvas.h"
-#include <raylib.h>
-#include "../core/primitives/Triangles.h"
-#include "../core/navigation/Navigation.h"
+#include "Scene.h"
+#include "ui/Canvas.h"
+#include "raylib.h"
+#include "primitives/Triangles.h"
+#include "navigation/Navigation.h"
 
 class MainScene final : public Scene
 {

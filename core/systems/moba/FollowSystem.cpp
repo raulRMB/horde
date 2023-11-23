@@ -1,10 +1,10 @@
 #include "FollowSystem.h"
 
-#include <raylib.h>
-#include <raymath.h>
+#include "raylib.h"
+#include "raymath.h"
 #include "components/Components.h"
 #include "components/FollowComponent.h"
-#include "../util/raymathEx.h"
+#include "util/raymathEx.h"
 
 
 void FollowSystem::Update(float deltaSeconds)

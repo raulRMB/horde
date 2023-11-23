@@ -5,7 +5,7 @@
 #ifndef PHYSICSSYSTEM_H
 #define PHYSICSSYSTEM_H
 
-#include "System.h"
+#include "systems/System.h"
 
 class PhysicsSystem : public UpdateSystem
 {

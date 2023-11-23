@@ -1,8 +1,8 @@
 #include "AttributeSystem.h"
-#include <entt/entt.hpp>
-#include "../components/Components.h"
-#include "../../game/Game.h"
-#include "../util/Util.h"
+#include "entt/entt.hpp"
+#include "components/Components.h"
+#include "Game.h"
+#include "util/Util.h"
 #include <algorithm>
 
 void AttributeSystem::Init()

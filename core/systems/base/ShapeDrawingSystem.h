@@ -1,7 +1,7 @@
 #ifndef SHAPEDRAWINGSYSTEM_H
 #define SHAPEDRAWINGSYSTEM_H
 
-#include "System.h"
+#include "systems/System.h"
 
 class ShapeDrawingSystem final : public DrawingSystem
 {

@@ -1,7 +1,7 @@
 #ifndef SPAWN_SYSTEM_H
 #define SPAWN_SYSTEM_H
 
-#include "System.h"
+#include "systems/System.h"
 
 class SpawnSystem : public UpdateSystem
 {

@@ -1,6 +1,6 @@
 #include "ParticleSystem.h"
-#include <raylib.h>
-#include "../util/raymathEx.h"
+#include "raylib.h"
+#include "util/raymathEx.h"
 #include "components/Components.h"
 
 void ParticleSystem::Update(float deltaSeconds) {

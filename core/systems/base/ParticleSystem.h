@@ -1,7 +1,7 @@
 #ifndef PARTICLE_SYSTEM_H
 #define PARTICLE_SYSTEM_H
 
-#include "System.h"
+#include "systems/System.h"
 
 class ParticleSystem final : public UpdateSystem
 {

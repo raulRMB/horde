@@ -1,8 +1,8 @@
 #ifndef ATTRIBUTESYSTEM_H
 #define ATTRIBUTESYSTEM_H
 
-#include "System.h"
-#include "../components/Components.h"
+#include "systems/System.h"
+#include "components/Components.h"
 
 class AttributeSystem final : public UpdateSystem
 {

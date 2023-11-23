@@ -3,8 +3,8 @@
 //
 
 #include "Game.h"
-#include "MainScene.h"
-#include "TestScene.h"
+#include "scenes/MainScene.h"
+#include "scenes/TestScene.h"
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {

@@ -5,8 +5,8 @@
 #ifndef NAVIGATIONSYSTEM_H
 #define NAVIGATIONSYSTEM_H
 
-#include "System.h"
-#include "../navigation/Navigation.h"
+#include "systems/System.h"
+#include "navigation/Navigation.h"
 
 class NavigationSystem final : public UpdateSystem
 {

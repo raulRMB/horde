@@ -1,15 +1,15 @@
 #include "Scene.h"
 #include <vector>
 
-#include "systems/AnimationSystem.h"
-#include "systems/FollowSystem.h"
-#include "systems/PhysicsSystem.h"
-#include "systems/ShapeDrawingSystem.h"
-#include "systems/ParticleSystem.h"
-#include "systems/NavigationSystem.h"
-#include "systems/ModelDrawingSystem.h"
-#include "systems/AttributeSystem.h"
-#include "systems/SpawnSystem.h"
+#include "systems/base/AnimationSystem.h"
+#include "systems/moba/FollowSystem.h"
+#include "systems/base/PhysicsSystem.h"
+#include "systems/base/ShapeDrawingSystem.h"
+#include "systems/base/ParticleSystem.h"
+#include "systems/moba/NavigationSystem.h"
+#include "systems/base/ModelDrawingSystem.h"
+#include "systems/moba/AttributeSystem.h"
+#include "systems/moba/SpawnSystem.h"
 
 void Scene::Start()
 {

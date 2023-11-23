@@ -1,7 +1,7 @@
 #include "AnimationSystem.h"
-#include <entt/entt.hpp>
-#include "../components/Components.h"
-#include "../../game/Game.h"
+#include "entt/entt.hpp"
+#include "components/Components.h"
+#include "Game.h"
 #include <algorithm>
 
 void AnimationSystem::Update(float deltaSeconds)

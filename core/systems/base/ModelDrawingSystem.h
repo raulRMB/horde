@@ -1,7 +1,7 @@
 #ifndef MODELDRAWINGSYSTEM_H
 #define MODELDRAWINGSYSTEM_H
 
-#include "System.h"
+#include "systems/System.h"
 
 class ModelDrawingSystem final : public DrawingSystem
 {

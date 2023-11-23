@@ -9,7 +9,7 @@
 
 #include "components/FollowComponent.h"
 #include "components/Components.h"
-#include <raylib.h>
+#include "raylib.h"
 
 void NavigationSystem::Update(float deltaSeconds)
 {
