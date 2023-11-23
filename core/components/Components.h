@@ -49,7 +49,7 @@ struct TargetComponent
 
 /* Attribute/GameplayEffect */
 
-struct Effect;
+class Effect;
 struct AttributesComponent;
 
 enum EffectType {
@@ -63,19 +63,38 @@ struct Attribute {
     float value;
     float max;
     float min;
-    std::vector<Effect*> effects;
 };
 
 using OnApply = void (*)(AttributesComponent&, AttributesComponent&);
-struct Effect {
+class Effect {
+public:
     entt::entity target;
     entt::entity source;
     EffectType type;
     OnApply callback;
+    float rate;
+    float duration;
+    bool isExpired() {
+        return elapsedLifetime > duration;
+    }
+    bool isReady() {
+        return elapsedSince >= rate;
+    }
+    void reset() {
+        elapsedSince = 0;
+    }
+    void addElapsed(float deltaSeconds) {
+        elapsedSince += deltaSeconds;
+        elapsedLifetime += deltaSeconds;
+    }
+private:
+    float elapsedSince;
+    float elapsedLifetime;
 };
 
 struct AttributesComponent {
     std::vector<Attribute> attributes;
+    std::vector<Effect> effects;
 };
 
 /* End Attribute/GameplayEffect */

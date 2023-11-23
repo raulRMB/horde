@@ -68,10 +68,16 @@ void Player::HandleInput(entt::registry* Registry)
     {
         OnApply effectCallback =[](AttributesComponent& target, AttributesComponent& source) {
             Attribute& health = Util::GetAttribute(target, "health");
-            float newHealth = health.value + 100;
+            float newHealth = health.value + 20;
             health.value = std::clamp(newHealth, health.min, health.max);
         };
-        Effect effect = Effect{GetEntity(), GetEntity(), INSTANT, effectCallback};
+        Effect effect = Effect{};
+        effect.type = DURATION;
+        effect.target = GetEntity();
+        effect.source = GetEntity();
+        effect.callback = effectCallback;
+        effect.rate = 0.5;
+        effect.duration = 3;
         Game::GetDispatcher().trigger(effect);
 
         RayCollision Collision = Util::GetMouseCollision();
@@ -94,7 +100,11 @@ void Player::HandleInput(entt::registry* Registry)
             float newHealth = health.value - (0.2f * health.max);
             health.value = std::clamp(newHealth, health.min, health.max);
         };
-        Effect effect = Effect{GetEntity(), GetEntity(), INSTANT, effectCallback};
+        Effect effect = Effect{};
+        effect.type = INSTANT;
+        effect.target = GetEntity();
+        effect.source = GetEntity();
+        effect.callback = effectCallback;
         Game::GetDispatcher().trigger(effect);
     }
     if(IsKeyPressed(KEY_E))
@@ -104,7 +114,11 @@ void Player::HandleInput(entt::registry* Registry)
             float newMoveSpeed = moveSpeed.value * 1.15f;
             moveSpeed.value = std::clamp(newMoveSpeed, moveSpeed.min, moveSpeed.max);
         };
-        Effect effect = Effect{GetEntity(), GetEntity(), INSTANT, effectCallback};
+        Effect effect = Effect{};
+        effect.type = INSTANT;
+        effect.target = GetEntity();
+        effect.source = GetEntity();
+        effect.callback = effectCallback;
         Game::GetDispatcher().trigger(effect);
     }
     if(IsKeyPressed(KEY_R))
