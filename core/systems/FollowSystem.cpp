@@ -4,7 +4,6 @@
 #include <raymath.h>
 #include "components/Components.h"
 #include "components/FollowComponent.h"
-#include "../../game/SmartEntity.h"
 #include "../util/raymathEx.h"
 
 
@@ -39,9 +38,14 @@ void FollowSystem::Update(float deltaSeconds)
 
         if(constexpr float minDist = 0.1f; Vector2DistanceSqr(followPos2d, targetPos) > minDist * minDist)
         {
-            Vector2 direction = Vector2Normalize(Vector2Subtract(targetPos, followPos2d));
-            direction = Vector2Scale(direction, physics.Speed);
-            physics.Velocity = Vector2Add(physics.Acceleration, direction);
+            Vector2 direction = targetPos - followPos2d;
+            Vector2 nDirection = Vector2Normalize(direction);
+            nDirection = Vector2Scale(nDirection, physics.Speed);
+            physics.Velocity = Vector2Add(physics.Acceleration, nDirection);
+            if(abs(Vector2Length(physics.Velocity)) > abs(Vector2Length(direction)))
+            {
+                physics.Velocity = direction / deltaSeconds;
+            }
         }
         else
         {

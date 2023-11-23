@@ -22,16 +22,16 @@ Player::Player()
     std::vector<Attribute> attributes;
     Attribute Health = {
             .id="health",
-            .min=0,
-            .max=1000,
             .value=500,
+            .max=1000,
+            .min=0,
     };
     attributes.push_back(Health);
     Attribute MoveSpeed = {
             .id="moveSpeed",
-            .min=0,
-            .max=500,
             .value=1,
+            .max=500,
+            .min=0,
     };
     attributes.push_back(MoveSpeed);
     AttributesComponent ac{attributes};

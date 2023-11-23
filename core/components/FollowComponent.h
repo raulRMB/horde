@@ -1,7 +1,3 @@
-//
-// Created by Raul Romero on 2023-11-18.
-//
-
 #ifndef HORDE_FOLLOW_COMPONENT_H
 #define HORDE_FOLLOW_COMPONENT_H
 

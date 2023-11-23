@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "systems/AnimationSystem.h"
-#include "systems/EnemySystem.h"
 #include "systems/FollowSystem.h"
 #include "systems/PhysicsSystem.h"
 #include "systems/ShapeDrawingSystem.h"
@@ -10,16 +9,17 @@
 #include "systems/NavigationSystem.h"
 #include "systems/ModelDrawingSystem.h"
 #include "systems/AttributeSystem.h"
+#include "systems/SpawnSystem.h"
 
 void Scene::Start()
 {
     UpdateSystems.push_back(&System::Get<AnimationSystem>());
-    UpdateSystems.push_back(&System::Get<EnemySystem>());
+    UpdateSystems.push_back(&System::Get<NavigationSystem>());
     UpdateSystems.push_back(&System::Get<FollowSystem>());
     UpdateSystems.push_back(&System::Get<PhysicsSystem>());
-    UpdateSystems.push_back(&System::Get<NavigationSystem>());
     UpdateSystems.push_back(&System::Get<ParticleSystem>());
     UpdateSystems.push_back(&System::Get<AttributeSystem>());
+    UpdateSystems.push_back(&System::Get<SpawnSystem>());
 
     DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
     DrawingSystems.push_back(&System::Get<ModelDrawingSystem>());

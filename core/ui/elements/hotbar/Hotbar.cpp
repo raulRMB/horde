@@ -7,7 +7,7 @@ bool Hotbar::isHovered()  {
 }
 
 std::any Hotbar::OnDrag() {
-
+    return nullptr;
 }
 
 void Hotbar::OnDragCancelled() {

@@ -17,6 +17,8 @@ protected:
     template <typename C>
     static void AddComponent(const entt::entity& entity, C& Component) { Game::GetRegistry().emplace<C>(entity, Component); }
     virtual void Init() {};
+    template <typename...C>
+    static auto GetView() { return Game::GetRegistry().view<C...>(); }
 };
 
 template <typename T>

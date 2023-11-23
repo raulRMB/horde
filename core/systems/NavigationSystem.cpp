@@ -25,6 +25,7 @@ void NavigationSystem::Update(float deltaSeconds)
         std::vector<Vector2>& stringPath = followComponent.StringPath;
         stringPath.clear();
         Vector2& goal = followComponent.Goal;
+
         Vector2& targetPos = followComponent.TargetPos;
         unsigned int& followIndex = followComponent.Index;
         Vector2 startPoint = {GetComponent<Transform>(followEntity).translation.x, GetComponent<Transform>(followEntity).translation.z};

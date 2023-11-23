@@ -2,7 +2,6 @@
 #include <raylib.h>
 #include "../util/raymathEx.h"
 #include "components/Components.h"
-#include "../../game/SmartEntity.h"
 
 void ParticleSystem::Update(float deltaSeconds) {
     entt::registry& registry = Game::GetRegistry();

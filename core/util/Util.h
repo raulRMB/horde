@@ -9,6 +9,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include "../../game/Game.h"
 #include "../components/Components.h"
+#include "primitives/Triangles.h"
+#include "primitives/Polygon.h"
 
 namespace Util
 {
@@ -20,6 +22,10 @@ namespace Util
     RayCollision GetMouseCollision();
     Attribute& GetAttribute(AttributesComponent& ac, const std::string& attr);
     void ApplyEffect(AttributesComponent& ac, const Effect& effect);
+    Vector2 GetClosetPointOusideTriangle(Vector2 p, const Triangle2D& t);
+    bool IsPointInsideTriangle(const Triangle2D& triangle, const Vector2& point);
+    Vector2 ClosestPointOnLine(const Vector2& start, const Vector2& end, Vector2 P);
+    Vector2 MinimumTranslationVector(const Polygon2D& polygon, const Vector2& point);
 }
 
 #endif //UTIL_H

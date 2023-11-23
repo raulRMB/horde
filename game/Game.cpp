@@ -3,8 +3,8 @@
 //
 
 #include "Game.h"
-#include <raylib.h>
 #include "MainScene.h"
+#include "TestScene.h"
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {

@@ -3,6 +3,7 @@
 #include "components/Components.h"
 #include <raymath.h>
 #include "primitives/Triangles.h"
+#include "primitives/Polygon.h"
 
 void ShapeDrawingSystem::Draw()
 {
@@ -49,6 +50,23 @@ void ShapeDrawingSystem::Draw()
         for(int i = 0; i < lineStripComponent.Points.size() - 1; i++)
         {
             DrawLine3D(lineStripComponent.Points[i], lineStripComponent.Points[i + 1], lineStripComponent.color);
+        }
+    }
+
+    for(const entt::entity& entity : Game::GetRegistry().view<SphereComponent, Transform>())
+    {
+        const SphereComponent sphere = GetComponent<SphereComponent>(entity);
+        DrawSphere(GetComponent<Transform>(entity).translation, sphere.Radius, sphere.color);   
+    }
+
+    for(const entt::entity& entity : Game::GetRegistry().view<Polygon2D>())
+    {
+        const Polygon2D poly = GetComponent<Polygon2D>(entity);
+        for(int i = 0; i < poly.Vertices.size() - 1; i++)
+        {
+            Vector3 v1 = {poly.Vertices[i].x, 0.0f, poly.Vertices[i].y};
+            Vector3 v2 = {poly.Vertices[i + 1].x, 0.0f, poly.Vertices[i + 1].y};
+            DrawLine3D(v1, v2, GREEN);
         }
     }
 }
