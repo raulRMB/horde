@@ -29,9 +29,9 @@ Player::Player()
     attributes.push_back(Health);
     Attribute MoveSpeed = {
             .id="moveSpeed",
-            .min=100,
-            .max=1000,
-            .value=500,
+            .min=0,
+            .max=500,
+            .value=1,
     };
     attributes.push_back(MoveSpeed);
     AttributesComponent ac{attributes};
@@ -101,6 +101,14 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(IsKeyPressed(KEY_E))
     {
+        Effect effect;
+        effect.target = GetEntity();
+        effect.source = GetEntity();
+        effect.attribute = "moveSpeed";
+        effect.type = INSTANT;
+        effect.operation = MULTIPLY;
+        effect.value = 2;
+        Game::GetDispatcher().trigger(effect);
     }
     if(IsKeyPressed(KEY_R))
     {
