@@ -49,24 +49,13 @@ struct TargetComponent
 
 /* Attribute/GameplayEffect */
 
+struct Effect;
+struct AttributesComponent;
+
 enum EffectType {
     INSTANT  = 0,
     DURATION,
     INFINITE
-};
-
-enum EffectOperation {
-    ADD = 0,
-    MULTIPLY
-};
-
-struct Effect {
-    entt::entity target;
-    entt::entity source;
-    std::string attribute;
-    EffectType type;
-    EffectOperation operation;
-    float value;
 };
 
 struct Attribute {
@@ -75,6 +64,14 @@ struct Attribute {
     float max;
     float min;
     std::vector<Effect*> effects;
+};
+
+using OnApply = void (*)(AttributesComponent&, AttributesComponent&);
+struct Effect {
+    entt::entity target;
+    entt::entity source;
+    EffectType type;
+    OnApply callback;
 };
 
 struct AttributesComponent {

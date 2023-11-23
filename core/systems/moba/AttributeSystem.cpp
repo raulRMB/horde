@@ -15,6 +15,9 @@ void AttributeSystem::Update(float deltaSeconds)
 }
 
 void AttributeSystem::OnEffect(const Effect &effect) {
-    AttributesComponent& ac = Game::GetRegistry().get<AttributesComponent>(effect.target);
-    Util::ApplyEffect(ac, effect);
+    AttributesComponent& target = Game::GetRegistry().get<AttributesComponent>(effect.target);
+    AttributesComponent& source = Game::GetRegistry().get<AttributesComponent>(effect.source);
+    if(effect.type == INSTANT) {
+        effect.callback(target, source);
+    }
 }

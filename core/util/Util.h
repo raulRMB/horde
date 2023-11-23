@@ -21,7 +21,6 @@ namespace Util
     Color RandColor();
     RayCollision GetMouseCollision();
     Attribute& GetAttribute(AttributesComponent& ac, const std::string& attr);
-    void ApplyEffect(AttributesComponent& ac, const Effect& effect);
     Vector2 GetClosetPointOusideTriangle(Vector2 p, const Triangle2D& t);
     bool IsPointInsideTriangle(const Triangle2D& triangle, const Vector2& point);
     Vector2 ClosestPointOnLine(const Vector2& start, const Vector2& end, Vector2 P);
