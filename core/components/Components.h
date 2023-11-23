@@ -2,8 +2,10 @@
 #define COMPONENTS_H
 
 #include <raylib.h>
+#include <utility>
 #include <vector>
 #include <string>
+#include "../util/Util.h"
 #include <entt/entt.hpp>
 
 struct AnimationComponent
@@ -46,39 +48,6 @@ struct TargetComponent
 {
     Vector3 Position;
 };
-
-/* Attribute/GameplayEffect */
-
-struct Effect;
-struct AttributesComponent;
-
-enum EffectType {
-    INSTANT  = 0,
-    DURATION,
-    INFINITE
-};
-
-struct Attribute {
-    std::string id;
-    float value;
-    float max;
-    float min;
-    std::vector<Effect*> effects;
-};
-
-using OnApply = void (*)(AttributesComponent&, AttributesComponent&);
-struct Effect {
-    entt::entity target;
-    entt::entity source;
-    EffectType type;
-    OnApply callback;
-};
-
-struct AttributesComponent {
-    std::vector<Attribute> attributes;
-};
-
-/* End Attribute/GameplayEffect */
 
 struct EnemyComponent
 {

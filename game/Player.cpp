@@ -68,10 +68,12 @@ void Player::HandleInput(entt::registry* Registry)
     {
         OnApply effectCallback =[](AttributesComponent& target, AttributesComponent& source) {
             Attribute& health = Util::GetAttribute(target, "health");
-            float newHealth = health.value + 100;
+            float newHealth = health.value + 50;
             health.value = std::clamp(newHealth, health.min, health.max);
         };
-        Effect effect = Effect{GetEntity(), GetEntity(), INSTANT, effectCallback};
+        Effect effect = Effect{GetEntity(), GetEntity(), DURATION, effectCallback};
+        effect.duration = 3;
+        effect.rate = 0.5;
         Game::GetDispatcher().trigger(effect);
 
         RayCollision Collision = Util::GetMouseCollision();

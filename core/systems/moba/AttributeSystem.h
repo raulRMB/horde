@@ -8,7 +8,7 @@ class AttributeSystem final : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;
-    static void OnEffect(const Effect& effect);
+    static void OnEffect(Effect& effect);
     void Init() override;
 };
 

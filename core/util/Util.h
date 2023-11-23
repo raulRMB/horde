@@ -9,6 +9,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include "../../game/Game.h"
 #include "../components/Components.h"
+#include "../components/AbilitySystemComponent.h"
 #include "primitives/Triangles.h"
 #include "primitives/Polygon.h"
 
