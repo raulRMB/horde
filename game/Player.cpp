@@ -37,6 +37,19 @@ Player::Player()
     AttributesComponent ac{attributes};
     AddComponent(ac);
 
+    OnApply healthRegenCallback =[](AttributesComponent& target, AttributesComponent& source) {
+        Attribute& health = Util::GetAttribute(target, "health");
+        float newHealth = health.base + 5;
+        health.base = std::clamp(newHealth, health.min, health.max);
+    };
+    Effect healthRegen = Effect{};
+    healthRegen.type = INFINITE;
+    healthRegen.target = GetEntity();
+    healthRegen.source = GetEntity();
+    healthRegen.callback = healthRegenCallback;
+    healthRegen.rate = 1;
+    Game::GetDispatcher().trigger(healthRegen);
+
     FollowComponent follow{};
     follow.Index = 0;
     follow.FollowState = EFollowState::Idle;

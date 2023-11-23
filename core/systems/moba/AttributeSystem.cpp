@@ -32,7 +32,7 @@ void AttributeSystem::Update(float deltaSeconds)
         AttributesComponent& ac = registry.get<AttributesComponent>(entity);
         for (auto it = ac.effects.begin(); it != ac.effects.end();) {
             Effect& effect = *it;
-            if(effect.isExpired()) {
+            if(effect.isExpired() && effect.type == DURATION) {
                 removeEffect(effect);
                 it = ac.effects.erase(it);
             } else {
@@ -54,7 +54,7 @@ void AttributeSystem::OnEffect(const Effect &effect) {
     AttributesComponent& source = Game::GetRegistry().get<AttributesComponent>(effect.source);
     if(effect.type == INSTANT) {
         effect.callback(target, source);
-    } else if(effect.type == DURATION) {
+    } else if(effect.type == DURATION || effect.type == INFINITE) {
         if(effect.callOnInit) {
             effect.callback(target, source);
         }

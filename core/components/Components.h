@@ -99,6 +99,9 @@ public:
     float rate;
     float duration;
     bool isExpired() {
+        if(type != DURATION) {
+            return false;
+        }
         return elapsedLifetime > duration;
     }
     bool isReady() {
