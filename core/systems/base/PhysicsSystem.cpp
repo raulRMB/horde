@@ -24,7 +24,7 @@ void PhysicsSystem::Update(float deltaSeconds)
             physics.Velocity += physics.Acceleration * deltaSeconds;
             physics.Velocity = Vector2ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
             Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
-            velocity *= moveSpeed.value;
+            velocity *= moveSpeed.get();
             transform.translation += velocity * deltaSeconds;
         }
     }

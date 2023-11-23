@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <vector>
+#include <list>
 #include <string>
 #include <entt/entt.hpp>
 
@@ -58,26 +59,52 @@ enum EffectType {
     INFINITE
 };
 
-struct Attribute {
-    std::string id;
-    float value;
-    float max;
-    float min;
+
+using AttrModCallback = std::function<float(float)>;
+
+struct AttrMod {
+    int effectId;
+    AttrModCallback callback;
 };
 
-using OnApply = void (*)(AttributesComponent&, AttributesComponent&);
+inline bool operator==(const AttrMod& x, const AttrMod& y)
+{
+    return x.effectId == y.effectId;
+}
+
+struct Attribute {
+    std::string id;
+    float base;
+    float max;
+    float min;
+    std::list<AttrMod> mods;
+    float get() {
+        float x = base;
+        for(AttrMod mod : mods) {
+            x = mod.callback(x);
+        }
+        return x;
+    }
+};
+
+using OnApply = std::function<void(AttributesComponent&, AttributesComponent&)>;
 class Effect {
 public:
+    int id = GetRandomValue(0, INT_MAX);
     entt::entity target;
     entt::entity source;
     EffectType type;
     OnApply callback;
+    bool callOnInit;
     float rate;
     float duration;
     bool isExpired() {
         return elapsedLifetime > duration;
     }
     bool isReady() {
+        if(rate <= 0) {
+            return false;
+        }
         return elapsedSince >= rate;
     }
     void reset() {
@@ -92,9 +119,14 @@ private:
     float elapsedLifetime;
 };
 
+inline bool operator==(const Effect& x, const Effect& y)
+{
+    return x.id == y.id;
+}
+
 struct AttributesComponent {
-    std::vector<Attribute> attributes;
-    std::vector<Effect> effects;
+    std::list<Attribute> attributes;
+    std::list<Effect> effects;
 };
 
 /* End Attribute/GameplayEffect */

@@ -19,17 +19,17 @@ Player::Player()
     Transform transform{};
     AddComponent(transform);
 
-    std::vector<Attribute> attributes;
+    std::list<Attribute> attributes;
     Attribute Health = {
             .id="health",
-            .value=500,
+            .base=500,
             .max=1000,
             .min=0,
     };
     attributes.push_back(Health);
     Attribute MoveSpeed = {
             .id="moveSpeed",
-            .value=1,
+            .base=1,
             .max=500,
             .min=0,
     };
@@ -68,8 +68,8 @@ void Player::HandleInput(entt::registry* Registry)
     {
         OnApply effectCallback =[](AttributesComponent& target, AttributesComponent& source) {
             Attribute& health = Util::GetAttribute(target, "health");
-            float newHealth = health.value + 20;
-            health.value = std::clamp(newHealth, health.min, health.max);
+            float newHealth = health.base + 20;
+            health.base = std::clamp(newHealth, health.min, health.max);
         };
         Effect effect = Effect{};
         effect.type = DURATION;
@@ -97,8 +97,8 @@ void Player::HandleInput(entt::registry* Registry)
     {
         OnApply effectCallback = [](AttributesComponent& target, AttributesComponent& source) {
             Attribute& health = Util::GetAttribute(target, "health");
-            float newHealth = health.value - (0.2f * health.max);
-            health.value = std::clamp(newHealth, health.min, health.max);
+            float newHealth = health.base - (0.2f * health.max);
+            health.base = std::clamp(newHealth, health.min, health.max);
         };
         Effect effect = Effect{};
         effect.type = INSTANT;
@@ -109,13 +109,22 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(IsKeyPressed(KEY_E))
     {
-        OnApply effectCallback = [](AttributesComponent& target, AttributesComponent& source) {
-            Attribute& moveSpeed = Util::GetAttribute(target, "moveSpeed");
-            float newMoveSpeed = moveSpeed.value * 1.15f;
-            moveSpeed.value = std::clamp(newMoveSpeed, moveSpeed.min, moveSpeed.max);
-        };
         Effect effect = Effect{};
-        effect.type = INSTANT;
+        OnApply effectCallback = [&effect](AttributesComponent& target, AttributesComponent& source) {
+            Attribute& moveSpeed = Util::GetAttribute(target, "moveSpeed");
+            AttrMod moveSpeedMod = AttrMod{
+                    effect.id,
+                    [&moveSpeed](float x) -> float {
+                        float newVal = std::clamp(x * 3.50f, moveSpeed.min, moveSpeed.max);
+                        return newVal;
+                    }
+            };
+            moveSpeed.mods.push_back(moveSpeedMod);
+        };
+        effect.type = DURATION;
+        effect.duration = 4;
+        effect.rate = -1;
+        effect.callOnInit = true;
         effect.target = GetEntity();
         effect.source = GetEntity();
         effect.callback = effectCallback;
@@ -135,7 +144,7 @@ void Player::DrawUI() {
     Attribute health = Util::GetAttribute(ac, "health");
     if (health.id != "empty") {
         DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
-        DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * health.value/health.max, 10, GREEN);
+        DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * health.get()/health.max, 10, GREEN);
         DrawTextEx(font, "Username", Vector2{healthBarPos.x, healthBarPos.y - 13}, 13, 1, WHITE);
     }
 }
