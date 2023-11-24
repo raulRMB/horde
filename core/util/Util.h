@@ -25,6 +25,8 @@ namespace Util
     bool IsPointInsideTriangle(const Triangle2D& triangle, const Vector2& point);
     Vector2 ClosestPointOnLine(const Vector2& start, const Vector2& end, Vector2 P);
     Vector2 MinimumTranslationVector(const Polygon2D& polygon, const Vector2& point);
+
+    bool Check2DCollision(Physics2DComponent &x, Transform &xT, Physics2DComponent &y, Transform &yT);
 }
 
 #endif //UTIL_H

@@ -51,6 +51,15 @@ RayCollision Util::GetMouseCollision() {
     return GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
 }
 
+bool Util::Check2DCollision(Physics2DComponent& x, Transform& xT, Physics2DComponent& y, Transform& yT) {
+    Vector2 xVec = Vector2{xT.translation.x, xT.translation.z};
+    Vector2 yVec = Vector2{yT.translation.x, yT.translation.z};
+    if(x.CollisionType == Circle && y.CollisionType == Circle) {
+        return CheckCollisionCircles(xVec, x.CollisionRadius, yVec, y.CollisionRadius);
+    }
+    return false;
+}
+
 Color Util::RandColor() {
     return Color {
             (unsigned char) GetRandomValue(1, 255),

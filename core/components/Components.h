@@ -182,10 +182,20 @@ struct LineStripComponent
     Color color;
 };
 
+enum Collision2DType {
+    Circle = 0,
+    Rect
+};
+
 struct Physics2DComponent
 {
     float Speed = 0.f;
     float MaxSpeed = 0.f;
+
+    Collision2DType CollisionType;
+    float CollisionRadius;
+    Rectangle CollisionBox;
+
     Vector2 Velocity{ };
     Vector2 Acceleration{};
 };

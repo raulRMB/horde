@@ -59,6 +59,15 @@ void ShapeDrawingSystem::Draw()
         DrawSphere(GetComponent<Transform>(entity).translation, sphere.Radius, sphere.color);   
     }
 
+    for(const entt::entity& entity : Game::GetRegistry().view<Physics2DComponent, Transform>())
+    {
+        auto physics = GetComponent<Physics2DComponent>(entity);
+        auto transform = GetComponent<Transform>(entity);
+        if(physics.CollisionType == Circle) {
+            DrawCircle3D(transform.translation, physics.CollisionRadius, Vector3{1.0f, 0.0f, 0.0f}, 90.0f, BLUE);
+        }
+    }
+
     for(const entt::entity& entity : Game::GetRegistry().view<Polygon2D>())
     {
         const Polygon2D poly = GetComponent<Polygon2D>(entity);

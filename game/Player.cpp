@@ -4,6 +4,7 @@
 #include "../core/components/Components.h"
 #include "../core/util/Util.h"
 #include "Particles.h"
+#include "abilities/Projectile.h"
 
 Player::Player()
 {
@@ -59,6 +60,8 @@ Player::Player()
     Physics2DComponent physics{};
     physics.Speed = 9.f;
     physics.MaxSpeed = 9.f;
+    physics.CollisionType = Circle;
+    physics.CollisionRadius = 1.5f;
     AddComponent(physics);
 }
 
@@ -79,32 +82,10 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(IsKeyPressed(KEY_Q))
     {
-        OnApply effectCallback =[](AttributesComponent& target, AttributesComponent& source) {
-            Attribute& health = Util::GetAttribute(target, "health");
-            float newHealth = health.base + 20;
-            health.base = std::clamp(newHealth, health.min, health.max);
-        };
-        Effect effect = Effect{};
-        effect.type = DURATION;
-        effect.target = GetEntity();
-        effect.source = GetEntity();
-        effect.callback = effectCallback;
-        effect.rate = 0.5;
-        effect.duration = 3;
-        Game::GetDispatcher().trigger(effect);
-
         RayCollision Collision = Util::GetMouseCollision();
         Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
-
-        auto e = Registry->create();
-        Registry->emplace<EmitterComponent>(e, EmitterComponent{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
-        Physics3DComponent phc = {};
-        phc.Velocity = Vector3Normalize(clickPoint.translation - GetComponent<Transform>().translation) * 50;
-        phc.MaxSpeed = 100;
-        phc.Acceleration = Vector3 {1, 1, 1};
-        Registry->emplace<Physics3DComponent>(e,phc);
-
-        Registry->emplace<Transform>(e, GetComponent<Transform>().translation);
+        Transform t = GetComponent<Transform>();
+        Projectile(GetEntity(), clickPoint.translation, t.translation);
     }
     if(IsKeyPressed(KEY_W))
     {

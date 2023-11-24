@@ -25,8 +25,10 @@ void ParticleSystem::Update(float deltaSeconds) {
         ParticleComponent& pc = registry.get<ParticleComponent>(entity);
         pc.Lifetime += deltaSeconds;
         if(pc.Lifetime > pc.MaxLife) {
-            EmitterComponent& ec = registry.get<EmitterComponent>(pc.emitterId);
-            ec.ParticleCount--;
+            auto ec = registry.try_get<EmitterComponent>(pc.emitterId);
+            if(ec != nullptr) {
+                ec->ParticleCount--;
+            }
             registry.destroy(entity);
         }
     }
