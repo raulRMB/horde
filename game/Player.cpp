@@ -5,6 +5,7 @@
 #include "../core/util/Util.h"
 #include "Particles.h"
 #include "abilities/Projectile.h"
+#include "systems/moba/NavigationSystem.h"
 
 Player::Player()
 {
@@ -75,10 +76,14 @@ void Player::HandleInput(entt::registry* Registry)
 {
     if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        FollowComponent& followComponent = GetComponent<FollowComponent>();
-        followComponent.FollowState = EFollowState::Dirty;
-        followComponent.Index = 1;
-        followComponent.Goal = Util::GetMouseWorldPosition2D();
+        Vector2 mousePos = Util::GetMouseWorldPosition2D();
+        if(System::Get<NavigationSystem>().IsValidPoint(mousePos))
+        {
+            FollowComponent& followComponent = GetComponent<FollowComponent>();
+            followComponent.FollowState = EFollowState::Dirty;
+            followComponent.Index = 1;
+            followComponent.Goal = mousePos;
+        }
     }
     if(IsKeyPressed(KEY_Q))
     {

@@ -18,6 +18,7 @@ public:
     void Update(float deltaSeconds) override;
     void LoadNavMesh();
     void SaveNavMesh();
+    bool IsValidPoint(const Vector2& point);
 };
 
 

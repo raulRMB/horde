@@ -10,6 +10,7 @@
 #include "components/FollowComponent.h"
 #include "components/Components.h"
 #include "raylib.h"
+#include "util/Util.h"
 
 void NavigationSystem::Update(float deltaSeconds)
 {
@@ -104,4 +105,16 @@ void NavigationSystem::SaveNavMesh()
     }
 
     file.close();
+}
+
+bool NavigationSystem::IsValidPoint(const Vector2 &point)
+{
+    for(const Navigation::TriangleNode& graphTriangle : NavMesh)
+    {
+        if (Util::IsPointInsideTriangle(graphTriangle.GetTriangle(), point))
+        {
+            return !graphTriangle.IsBlocked();
+        }
+    }
+    return false;
 }

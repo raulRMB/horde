@@ -90,7 +90,7 @@ struct Attribute {
 using OnApply = std::function<void(AttributesComponent&, AttributesComponent&)>;
 class Effect {
 public:
-    int id = GetRandomValue(0, INT_MAX);
+    int id = GetRandomValue(0, std::numeric_limits<int>::max());
     entt::entity target;
     entt::entity source;
     EffectType type;
