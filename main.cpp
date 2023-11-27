@@ -1,6 +1,12 @@
 #include "game/Game.h"
+#include <cstring>
 
-int main()
+int main(int argc, char* argv[])
 {
-    return Game::Instance().Run();
+    if(argc <= 1) {
+        return Game::Instance().Run(false);
+    }
+    else {
+       return Game::Instance().Run(std::strcmp(argv[1], "-s") == 0);
+    }
 }

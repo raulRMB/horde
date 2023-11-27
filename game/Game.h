@@ -25,7 +25,10 @@ public:
 
     static Game& Instance();
 
-    bool Run();
+    bool isServer;
+    static bool IsServer();
+
+    bool Run(bool bServer);
 
     bool Init();
 

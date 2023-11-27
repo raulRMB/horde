@@ -6,6 +6,8 @@
 #include "scenes/MainScene.h"
 #include "scenes/TestScene.h"
 
+static Game instance;
+
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
     Camera.position = {50.0f, 50.0f, 50.0f};
@@ -17,12 +19,16 @@ Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 
 Game& Game::Instance()
 {
-    static Game instance;
     return instance;
 }
 
-bool Game::Run()
+bool Game::IsServer() {
+    return instance.isServer;
+}
+
+bool Game::Run(bool bServer)
 {
+    isServer = bServer;
     if(!Init())
     {
         return EXIT_FAILURE;
