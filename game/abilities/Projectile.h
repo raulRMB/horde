@@ -35,6 +35,8 @@ void Projectile(entt::entity source, Vector3 cursorLocation, Vector3 playerLocat
 
     entt::registry& registry = Game::GetRegistry();
 
+
+    Game::GetClient()->Send();
     OnApply effectCallback = [](AttributesComponent &target, AttributesComponent &source) {
         Attribute &health = Util::GetAttribute(target, "health");
         float newHealth = health.base - 150;

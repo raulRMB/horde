@@ -5,6 +5,8 @@
 #include "Game.h"
 #include "scenes/MainScene.h"
 #include "scenes/TestScene.h"
+#include <thread>
+#include <chrono>
 
 static Game instance;
 
@@ -77,6 +79,56 @@ void Game::Fullscreen() {
     ToggleFullscreen();
 }
 
+Server* Game::GetServer() {
+    return instance.server;
+}
+
+Client* Game::GetClient() {
+    return instance.client;
+}
+
+void Game::InitNetworking() {
+    if(Game::IsServer()) {
+        server = new Server();
+        std::thread networkThread([]()
+      {
+          double netFreq = 120.0;
+          auto periodMicroseconds = static_cast<long long>(1e6 / netFreq);
+          while(1)
+          {
+              auto startTime = std::chrono::high_resolution_clock::now();
+              Game::GetServer()->Loop();
+              auto endTime = std::chrono::high_resolution_clock::now();
+              auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+              auto sleepTime = periodMicroseconds - elapsedTime;
+              if (sleepTime > 0) {
+                  std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+              }
+          }
+      });
+        networkThread.detach();
+    } else {
+        client = new Client();
+        std::thread networkThread([]()
+        {
+          double netFreq = 120.0;
+          auto periodMicroseconds = static_cast<long long>(1e6 / netFreq);
+          while(1)
+          {
+              auto startTime = std::chrono::high_resolution_clock::now();
+              Game::GetClient()->Loop();
+              auto endTime = std::chrono::high_resolution_clock::now();
+              auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+              auto sleepTime = periodMicroseconds - elapsedTime;
+              if (sleepTime > 0) {
+                  std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+              }
+          }
+      });
+        networkThread.detach();
+    }
+}
+
 bool Game::Init()
 {
     if(!Game::IsServer()) {
@@ -86,6 +138,8 @@ bool Game::Init()
     }
 
     bRunning = true;
+    InitNetworking();
+
     SetActiveScene(new MainScene());
     Start();
 

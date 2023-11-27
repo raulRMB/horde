@@ -4,6 +4,8 @@
 #include <raylib.h>
 #include <chrono>
 #include <entt/entt.hpp>
+#include "networking/Server.h"
+#include "networking/Client.h"
 
 class Game
 {
@@ -27,6 +29,8 @@ public:
 
     bool isServer;
     static bool IsServer();
+    Client* client;
+    Server* server;
 
     bool Run(bool bServer);
 
@@ -39,7 +43,7 @@ public:
     void DrawUI() const;
     void CalculateFPS();
     void Fullscreen();
-    
+    void InitNetworking();
 
     void Clean() const;
 
@@ -51,6 +55,9 @@ public:
 
     static entt::registry& GetRegistry();
     static entt::dispatcher& GetDispatcher();
+
+    static Server* GetServer();
+    static Client* GetClient();
 
     void Save();
     void Load();
