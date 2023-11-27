@@ -36,15 +36,21 @@ bool Game::Run(bool bServer)
 
     while(bRunning)
     {
-        HandleInput();
+        if(!Game::IsServer()) {
+            HandleInput();
+        }
+
         Update(GetFrameTime());
-        BeginDrawing();
-        ClearBackground(BackgroundColor);
-        Draw();
-        DrawUI();
-        CalculateFPS();
-        EndDrawing();
-        bRunning = bRunning && !WindowShouldClose();
+
+        if(!Game::IsServer()) {
+            BeginDrawing();
+            ClearBackground(BackgroundColor);
+            Draw();
+            DrawUI();
+            CalculateFPS();
+            EndDrawing();
+            bRunning = bRunning && !WindowShouldClose();
+        }
     }
 
     return EXIT_SUCCESS;
@@ -73,11 +79,13 @@ void Game::Fullscreen() {
 
 bool Game::Init()
 {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(800, 600, "Horde");
-    // Fullscreen();
-    bRunning = true;
+    if(!Game::IsServer()) {
+        SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+        InitWindow(800, 600, "Horde");
+        // Fullscreen();
+    }
 
+    bRunning = true;
     SetActiveScene(new MainScene());
     Start();
 

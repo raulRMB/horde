@@ -8,7 +8,7 @@ class Player final : public SmartEntity
 public:
     Player();
     ~Player();
-    Font font = LoadFont("../assets/ui/fonts/Roboto-Bold.ttf");
+    Font font;
     void Start() override;
 
     void HandleInput(entt::registry* Registry);

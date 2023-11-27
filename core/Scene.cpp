@@ -13,16 +13,20 @@
 
 void Scene::Start()
 {
-    UpdateSystems.push_back(&System::Get<AnimationSystem>());
+
     UpdateSystems.push_back(&System::Get<NavigationSystem>());
     UpdateSystems.push_back(&System::Get<FollowSystem>());
     UpdateSystems.push_back(&System::Get<PhysicsSystem>());
-    UpdateSystems.push_back(&System::Get<ParticleSystem>());
+
     UpdateSystems.push_back(&System::Get<AttributeSystem>());
     UpdateSystems.push_back(&System::Get<SpawnSystem>());
+    if(!Game::IsServer()) {
+        UpdateSystems.push_back(&System::Get<AnimationSystem>());
+        UpdateSystems.push_back(&System::Get<ParticleSystem>());
 
-    DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
-    DrawingSystems.push_back(&System::Get<ModelDrawingSystem>());
+        DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
+        DrawingSystems.push_back(&System::Get<ModelDrawingSystem>());
+    }
 
 }
 

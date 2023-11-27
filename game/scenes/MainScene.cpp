@@ -19,7 +19,9 @@ void MainScene::Start()
 {
     Load();
     Scene::Start();
-    InitUI();
+    if(!Game::IsServer()) {
+        InitUI();
+    }
     pPlayer = new Player();
     p2Player = new Player();
 }
@@ -52,13 +54,15 @@ Player* MainScene::GetActivePlayer() {
 
 void MainScene::Update(float deltaSeconds)
 {
-    mainCanvas->Update();
-    Scene::Update(deltaSeconds);
 
-    Camera3D& cam = Game::Instance().GetActiveCamera();
-    Vector3 playerPos = GetActivePlayer()->GetComponent<Transform>().translation;
-    cam.position = Vector3{playerPos.x - 20, cam.position.y, playerPos.z - 40};
-    cam.target = playerPos;
+    Scene::Update(deltaSeconds);
+    if(!Game::IsServer()) {
+        mainCanvas->Update();
+        Camera3D &cam = Game::Instance().GetActiveCamera();
+        Vector3 playerPos = GetActivePlayer()->GetComponent<Transform>().translation;
+        cam.position = Vector3{playerPos.x - 20, cam.position.y, playerPos.z - 40};
+        cam.target = playerPos;
+    }
 }
 
 void MainScene::Draw()
