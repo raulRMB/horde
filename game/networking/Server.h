@@ -11,7 +11,7 @@ public:
     void Loop();
     void Close();
 
-    void ConnectResponse(ENetPeer* peer, entt::entity connection);
+    void ConnectResponse(ENetPeer* peer, uint32_t netId);
 };
 
 #endif

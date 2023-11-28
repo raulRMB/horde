@@ -33,11 +33,12 @@ Client::Client() {
     TraceLog(LOG_INFO, "Client Running");
 }
 
-void Client::SendMoveTo(Vector2 pos) {
+void Client::SendMoveTo(Vector2 pos, u_int32_t NetworkId) {
     NetMessageTransform* mt = new NetMessageTransform{};
     mt->pos = pos;
     mt->Type = ENetMsg::MoveTo;
-    mt->EntityNetworkId = 6;
+    mt->NetworkId = NetworkId;
+    TraceLog(LOG_INFO, "NetId: %u", NetworkId);
     void* payload = (void*)mt;
     ENetPacket* packet = enet_packet_create(payload, sizeof(*mt), ENET_PACKET_FLAG_RELIABLE);
     enet_peer_send(peer, 0, packet);

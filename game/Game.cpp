@@ -1,12 +1,12 @@
-//
-// Created by Raul Romero on 2023-11-15.
-//
-
 #include "Game.h"
 #include "scenes/MainScene.h"
 #include "scenes/TestScene.h"
+#include "Player.h"
 #include <thread>
 #include <chrono>
+#include "../core/components/Components.h"
+#include "components/FollowComponent.h"
+#include "systems/moba/NavigationSystem.h"
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
@@ -32,27 +32,67 @@ bool Game::IsOfflineMode() {
 }
 
 void Game::OnConnect(ENetPeer* peer) {
-    entt::entity connection = GetRegistry().create();
-    Game::GetServer()->ConnectResponse(peer, connection);
+    Player* player = new Player();
+    uint32_t netId = Instance().networkedEntities.Add(player->GetEntity());
+    Game::GetServer()->ConnectResponse(peer, netId);
 }
 
-void Game::SpawnPlayer(entt::entity networkId) {
+void Game::SpawnPlayer(u_int32_t networkId) {
     Instance().Spawn(networkId);
 }
 
-void Game::Spawn(entt::entity networkId) {
-    ActiveScene->SpawnPlayer(networkId);
+NetworkedEntities& Game::GetNetworkedEntities() {
+    return Instance().networkedEntities;
+}
+
+void Game::Spawn(u_int32_t networkId) {
+    if(!IsServer()) {
+        ownedPlayer = new Player();
+        networkedEntities.Add(ownedPlayer->GetEntity(), networkId);
+    }
+}
+
+Player* Game::GetPlayer() {
+    return Instance().ownedPlayer;
 }
 
 void Game::ProcessNetworkingQueue() {
     while(!GetNetworkingQueue().empty()) {
-        auto data = GetNetworkingQueue().front();
+        enet_uint8 *data;
+        data = GetNetworkingQueue().front();
         ENetMsg type = *(ENetMsg *) data;
-        switch(type) {
-            case ENetMsg::ConnectionResponse:
-                NetConnectionResponse msg = *(NetConnectionResponse *) data;
-                SpawnPlayer(msg.NetworkId);
-                break;
+
+        NetMessageTransform msg = *(NetMessageTransform *) data;
+        InitialConnection x = *(InitialConnection *) data;
+
+        if(IsServer()) {
+            switch (type)
+            {
+                case ENetMsg::MoveTo:
+                    if(System::Get<NavigationSystem>().IsValidPoint(msg.pos)) {
+                        auto e = GetNetworkedEntities().Get(msg.NetworkId);
+                        FollowComponent &followComponent = GetRegistry().get<FollowComponent>(e);
+                        followComponent.FollowState = EFollowState::Dirty;
+                        followComponent.Index = 1;
+                        TraceLog(LOG_INFO, "x: %f y %f", msg.pos.x, msg.pos.y);
+                        followComponent.Goal = msg.pos;
+                    }
+                    break;
+                case ENetMsg::InitialConnection:
+                    OnConnect(x.peer);
+                    break;
+                default:
+                    TraceLog(LOG_INFO, "DEFAULT");
+                    break;
+            }
+        } else {
+            switch (type) {
+                case ENetMsg::ConnectionResponse:
+                    NetConnectionResponse msg = *(NetConnectionResponse *) data;
+                    SpawnPlayer(msg.NetworkId);
+                    TraceLog(LOG_INFO, "entt: %d", msg.NetworkId);
+                    break;
+            }
         }
         GetNetworkingQueue().pop();
     }
@@ -74,9 +114,9 @@ bool Game::Run(bool bServer)
         }
 
         Update(GetFrameTime());
+        ProcessNetworkingQueue();
 
         if(!Game::IsServer()) {
-            ProcessNetworkingQueue();
             BeginDrawing();
             ClearBackground(BackgroundColor);
             Draw();
@@ -181,6 +221,9 @@ bool Game::Init()
 
 void Game::Start() const
 {
+    if(Game::IsOfflineMode()) {
+        SpawnPlayer(GetRandomValue(1, UINT32_MAX));
+    }
     ActiveScene->Start();
 }
 
@@ -216,6 +259,7 @@ void Game::Clean() const
 {
     ActiveScene->Clean();
     delete ActiveScene;
+    delete ownedPlayer;
 }
 
 void Game::SetActiveScene(Scene* scene)

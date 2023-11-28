@@ -22,10 +22,6 @@ void MainScene::Start()
     if(!Game::IsServer()) {
         InitUI();
     }
-    if(Game::IsOfflineMode()) {
-        entt::entity fakeNetworkId = Game::GetRegistry().create();
-        SpawnPlayer(fakeNetworkId);
-    }
 }
 
 void MainScene::InitUI()
@@ -49,7 +45,7 @@ void MainScene::HandleInput()
 }
 
 Player* MainScene::GetActivePlayer() {
-    return ownedPlayer;
+    return Game::GetPlayer();
 }
 
 void MainScene::Update(float deltaSeconds)
@@ -82,15 +78,15 @@ void MainScene::Draw()
 
 void MainScene::DrawUI()
 {
-    if(ownedPlayer != nullptr) {
-        ownedPlayer->DrawUI();
+    Player* player = Game::GetPlayer();
+    if(player != nullptr) {
+        player->DrawUI();
     }
     mainCanvas->Draw();
 }
 
 void MainScene::Clean()
 {
-    delete ownedPlayer;
     delete mainCanvas;
     Scene::Clean();
 }
@@ -103,10 +99,4 @@ void MainScene::Save()
 void MainScene::Load()
 {
     System::Get<NavigationSystem>().LoadNavMesh();
-}
-
-void MainScene::SpawnPlayer(entt::entity networkId) {
-    if(!Game::IsServer()) {
-        ownedPlayer = new Player();
-    }
 }

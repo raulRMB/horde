@@ -22,7 +22,7 @@ Player::Player()
     }
 
     Transform transform{};
-    AddComponent(transform);
+
 
     std::list<Attribute> attributes;
     Attribute Health = {
@@ -40,7 +40,6 @@ Player::Player()
     };
     attributes.push_back(MoveSpeed);
     AttributesComponent ac{attributes};
-    AddComponent(ac);
 
     OnApply healthRegenCallback = [](AttributesComponent& target, AttributesComponent& source){
 
@@ -56,20 +55,25 @@ Player::Player()
     healthRegen.source = GetEntity();
     healthRegen.callback = healthRegenCallback;
     healthRegen.rate = 1;
-    Game::GetDispatcher().trigger(healthRegen);
+
 
     FollowComponent follow{};
     follow.Index = 0;
     follow.FollowState = EFollowState::Idle;
     follow.Goal = {transform.translation.x, transform.translation.z};
-    AddComponent(follow);
+
 
     Physics2DComponent physics{};
     physics.Speed = 9.f;
     physics.MaxSpeed = 9.f;
     physics.CollisionType = Circle;
     physics.CollisionRadius = 1.5f;
+    AddComponent(transform);
+    AddComponent(ac);
     AddComponent(physics);
+    AddComponent(follow);
+
+    Game::GetDispatcher().trigger(healthRegen);
 }
 
 Player::~Player() = default;
@@ -92,7 +96,8 @@ void Player::HandleInput(entt::registry* Registry)
                 followComponent.Index = 1;
                 followComponent.Goal = mousePos;
             } else {
-                Game::GetClient()->SendMoveTo(mousePos);
+                auto NetId = Game::GetNetworkedEntities().Get(GetEntity());
+                Game::GetClient()->SendMoveTo(mousePos, NetId);
             }
         }
     }

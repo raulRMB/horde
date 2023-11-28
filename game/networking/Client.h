@@ -2,6 +2,7 @@
 #define HORDE_CLIENT_H
 
 #include <enet/enet.h>
+#include "entt/entt.hpp"
 
 class Client {
 public:
@@ -9,7 +10,7 @@ public:
     ENetPeer* peer;
     Client();
     void Loop();
-    void SendMoveTo(Vector2 pos);
+    void SendMoveTo(Vector2 pos, u_int32_t NetworkId);
     void Close();
 };
 

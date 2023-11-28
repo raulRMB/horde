@@ -7,6 +7,7 @@
 enum class ENetMsg
 {
     None = 0,
+    InitialConnection,
     ConnectionResponse,
     MoveTo,
 };
@@ -17,14 +18,18 @@ struct NetMessage
     NetMessage(ENetMsg type = ENetMsg::None) : Type(type) {}
 };
 
+struct InitialConnection : public NetMessage {
+    ENetPeer* peer;
+};
+
 struct NetConnectionResponse : public NetMessage
 {
-    entt::entity NetworkId;
+    u_int32_t NetworkId;
 };
 
 struct NetMessageTransform : public NetMessage
 {
-    int EntityNetworkId;
+    u_int32_t NetworkId;
     Vector2 pos;
     // NetUpdateMessage(u32 entity = 0, Transform transform = Transform{}) : NetMessage(ENetMsg::UpdateEntity),
     //     EntityNetworkId(entity), Transform(transform) {}

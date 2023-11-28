@@ -30,17 +30,13 @@ void Server::Loop() {
      {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECTED!");
-            Game::OnConnect(event.peer);
+            InitialConnection* c = new InitialConnection;
+            c->peer = event.peer;
+            c->Type = ENetMsg::InitialConnection;
+            Game::GetNetworkingQueue().push((enet_uint8*)c);
         }
         else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            ENetMsg type = *(ENetMsg *) event.packet->data;
-            switch (type)
-            {
-                case ENetMsg::MoveTo:
-                    NetMessageTransform msg = *(NetMessageTransform *) event.packet->data;
-                    TraceLog(LOG_INFO, "x: %f, y: %f", msg.pos.x, msg.pos.y);
-                    break;
-            }
+            Game::GetNetworkingQueue().push(event.packet->data);
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECTED!");
@@ -48,13 +44,13 @@ void Server::Loop() {
      }
 }
 
-void Server::ConnectResponse(ENetPeer* peer, entt::entity connection) {
+void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
     NetConnectionResponse* res = new NetConnectionResponse{};
     res->Type = ENetMsg::ConnectionResponse;
-    res->NetworkId = connection;
+    res->NetworkId = netId;
     void* payload = (void*)res;
     ENetPacket* packet = enet_packet_create(payload, sizeof(payload), ENET_PACKET_FLAG_RELIABLE);
-    TraceLog(LOG_INFO, "entt: %d", res->NetworkId);
+    TraceLog(LOG_INFO, "netId: %u", res->NetworkId);
     enet_peer_send(peer, 0, packet);
     //Game::SpawnPlayer(res->NetworkId);
 }

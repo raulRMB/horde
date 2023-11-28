@@ -6,13 +6,17 @@
 #include <entt/entt.hpp>
 #include <queue>
 #include <mutex>
+#include <map>
 #include "networking/Server.h"
 #include "networking/Client.h"
 #include "networking/NetMessage.h"
+#include "networking/base/NetworkedEntities.h"
 
 class Game
 {
+    class Player* ownedPlayer;
     int FrameCount = 0;
+
     std::chrono::high_resolution_clock::time_point LastFPSTime;
     std::chrono::high_resolution_clock::time_point CurrentTime;
     int FPS = 0;
@@ -20,6 +24,8 @@ class Game
 
     class Scene* ActiveScene;
     bool bRunning;
+
+    NetworkedEntities networkedEntities;
 
     Color BackgroundColor;
 
@@ -29,6 +35,7 @@ public:
     Game();
 
     static Game& Instance();
+    static NetworkedEntities& GetNetworkedEntities();
 
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
@@ -40,6 +47,7 @@ public:
 
     static bool IsServer();
     static bool IsOfflineMode();
+    static class Player* GetPlayer();
     Client* client;
     Server* server;
 
@@ -74,14 +82,13 @@ public:
     static Client* GetClient();
 
 
-
     static void OnConnect(ENetPeer* peer);
-    static void SpawnPlayer(entt::entity networkId);
+    static void SpawnPlayer(u_int32_t networkId);
+    void Spawn(u_int32_t networkId);
 
     void Save();
     void Load();
 
-    void Spawn(entt::entity networkId);
 
     static void ProcessNetworkingQueue();
 };
