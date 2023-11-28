@@ -9,7 +9,7 @@ public:
     ENetPeer* peer;
     Client();
     void Loop();
-    void Send();
+    void SendMoveTo(Vector2 pos);
     void Close();
 };
 

@@ -82,10 +82,15 @@ void Player::HandleInput(entt::registry* Registry)
         Vector2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<NavigationSystem>().IsValidPoint(mousePos))
         {
-            FollowComponent& followComponent = GetComponent<FollowComponent>();
-            followComponent.FollowState = EFollowState::Dirty;
-            followComponent.Index = 1;
-            followComponent.Goal = mousePos;
+            TraceLog(LOG_INFO, "x: %f, y: %f", mousePos.x, mousePos.y);
+            if(Game::IsOfflineMode()) {
+                FollowComponent& followComponent = GetComponent<FollowComponent>();
+                followComponent.FollowState = EFollowState::Dirty;
+                followComponent.Index = 1;
+                followComponent.Goal = mousePos;
+            } else {
+                Game::GetClient()->SendMoveTo(mousePos);
+            }
         }
     }
     if(IsKeyPressed(KEY_Q))

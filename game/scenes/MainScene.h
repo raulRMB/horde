@@ -9,17 +9,12 @@
 
 class MainScene final : public Scene
 {
+    class Player* ownedPlayer;
     std::vector<Vector2> Points;
 
     std::vector<Edge2D> Portals = {};
 
-    bool p1Active = true;
     class Player* GetActivePlayer();
-
-    class Player* pPlayer;
-    class Player* p2Player;
-
-
 
 public:
     MainScene();
@@ -36,6 +31,7 @@ private:
     void Clean() override;
     void Save() override;
     void Load() override;
+    void SpawnPlayer(entt::entity networkId) override;
 };
 
 

@@ -187,6 +187,10 @@ enum Collision2DType {
     Rect
 };
 
+struct NetworkEntity {
+    entt::entity id;
+};
+
 struct Physics2DComponent
 {
     float Speed = 0.f;

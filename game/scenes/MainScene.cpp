@@ -22,8 +22,10 @@ void MainScene::Start()
     if(!Game::IsServer()) {
         InitUI();
     }
-    pPlayer = new Player();
-    p2Player = new Player();
+    if(Game::IsOfflineMode()) {
+        entt::entity fakeNetworkId = Game::GetRegistry().create();
+        SpawnPlayer(fakeNetworkId);
+    }
 }
 
 void MainScene::InitUI()
@@ -40,16 +42,14 @@ void MainScene::InitUI()
 
 void MainScene::HandleInput()
 {
-    GetActivePlayer()->HandleInput(&Registry);
-
-    if(IsKeyPressed(KEY_SPACE)) {
-        p1Active = !p1Active;
+    Player* player = GetActivePlayer();
+    if(player != nullptr) {
+        player->HandleInput(&Registry);
     }
-
 }
 
 Player* MainScene::GetActivePlayer() {
-    return p1Active ? pPlayer : p2Player;
+    return ownedPlayer;
 }
 
 void MainScene::Update(float deltaSeconds)
@@ -59,9 +59,12 @@ void MainScene::Update(float deltaSeconds)
     if(!Game::IsServer()) {
         mainCanvas->Update();
         Camera3D &cam = Game::Instance().GetActiveCamera();
-        Vector3 playerPos = GetActivePlayer()->GetComponent<Transform>().translation;
-        cam.position = Vector3{playerPos.x - 20, cam.position.y, playerPos.z - 40};
-        cam.target = playerPos;
+        Player* player = GetActivePlayer();
+        if(player != nullptr) {
+            Vector3 playerPos = player->GetComponent<Transform>().translation;
+            cam.position = Vector3{playerPos.x - 20, cam.position.y, playerPos.z - 40};
+            cam.target = playerPos;
+        }
     }
 }
 
@@ -79,15 +82,15 @@ void MainScene::Draw()
 
 void MainScene::DrawUI()
 {
-    pPlayer->DrawUI();
-    p2Player->DrawUI();
+    if(ownedPlayer != nullptr) {
+        ownedPlayer->DrawUI();
+    }
     mainCanvas->Draw();
 }
 
 void MainScene::Clean()
 {
-    delete pPlayer;
-    delete p2Player;
+    delete ownedPlayer;
     delete mainCanvas;
     Scene::Clean();
 }
@@ -100,4 +103,10 @@ void MainScene::Save()
 void MainScene::Load()
 {
     System::Get<NavigationSystem>().LoadNavMesh();
+}
+
+void MainScene::SpawnPlayer(entt::entity networkId) {
+    if(!Game::IsServer()) {
+        ownedPlayer = new Player();
+    }
 }

@@ -14,6 +14,9 @@ public:
     virtual void Kill();
 
     SmartEntity() : Entity(Game::GetRegistry().create()) {}
+    explicit SmartEntity(entt::entity entity) {
+        Entity = entity;
+    }
     virtual ~SmartEntity() = default;
 
     [[nodiscard]] entt::entity GetEntity() const { return Entity; }

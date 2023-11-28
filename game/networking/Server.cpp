@@ -1,6 +1,9 @@
 #include <enet/enet.h>
 #include "raylib.h"
+#include <iostream>
 #include "Server.h"
+#include "Game.h"
+#include "NetMessage.h"
 
 Server::Server() {
     if (enet_initialize() != 0) {
@@ -27,16 +30,34 @@ void Server::Loop() {
      {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECTED!");
-            auto peer = event.peer;
-
+            Game::OnConnect(event.peer);
         }
         else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            TraceLog(LOG_INFO, "MESSAGE!");
+            ENetMsg type = *(ENetMsg *) event.packet->data;
+            switch (type)
+            {
+                case ENetMsg::MoveTo:
+                    NetMessageTransform msg = *(NetMessageTransform *) event.packet->data;
+                    TraceLog(LOG_INFO, "x: %f, y: %f", msg.pos.x, msg.pos.y);
+//                    Game::GetRegistry().get<>()
+                    break;
+            }
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECTED!");
         }
      }
+}
+
+void Server::ConnectResponse(ENetPeer* peer, entt::entity connection) {
+    NetConnectionResponse* res = new NetConnectionResponse{};
+    res->Type = ENetMsg::ConnectionResponse;
+    res->NetworkId = connection;
+    void* payload = (void*)res;
+    ENetPacket* packet = enet_packet_create(payload, sizeof(payload), ENET_PACKET_FLAG_RELIABLE);
+    TraceLog(LOG_INFO, "entt: %d", res->NetworkId);
+    enet_peer_send(peer, 0, packet);
+    //Game::SpawnPlayer(res->NetworkId);
 }
 
 void Server::Close() {

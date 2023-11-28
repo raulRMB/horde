@@ -8,8 +8,6 @@
 #include <thread>
 #include <chrono>
 
-static Game instance;
-
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
     Camera.position = {50.0f, 50.0f, 50.0f};
@@ -21,11 +19,43 @@ Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 
 Game& Game::Instance()
 {
+    static Game instance;
     return instance;
 }
 
 bool Game::IsServer() {
-    return instance.isServer;
+    return Instance().isServer;
+}
+
+bool Game::IsOfflineMode() {
+    return Instance().offlineMode;
+}
+
+void Game::OnConnect(ENetPeer* peer) {
+    entt::entity connection = GetRegistry().create();
+    Game::GetServer()->ConnectResponse(peer, connection);
+}
+
+void Game::SpawnPlayer(entt::entity networkId) {
+    Instance().Spawn(networkId);
+}
+
+void Game::Spawn(entt::entity networkId) {
+    ActiveScene->SpawnPlayer(networkId);
+}
+
+void Game::ProcessNetworkingQueue() {
+    while(!GetNetworkingQueue().empty()) {
+        auto data = GetNetworkingQueue().front();
+        ENetMsg type = *(ENetMsg *) data;
+        switch(type) {
+            case ENetMsg::ConnectionResponse:
+                NetConnectionResponse msg = *(NetConnectionResponse *) data;
+                SpawnPlayer(msg.NetworkId);
+                break;
+        }
+        GetNetworkingQueue().pop();
+    }
 }
 
 bool Game::Run(bool bServer)
@@ -38,6 +68,7 @@ bool Game::Run(bool bServer)
 
     while(bRunning)
     {
+        
         if(!Game::IsServer()) {
             HandleInput();
         }
@@ -45,6 +76,7 @@ bool Game::Run(bool bServer)
         Update(GetFrameTime());
 
         if(!Game::IsServer()) {
+            ProcessNetworkingQueue();
             BeginDrawing();
             ClearBackground(BackgroundColor);
             Draw();
@@ -80,11 +112,11 @@ void Game::Fullscreen() {
 }
 
 Server* Game::GetServer() {
-    return instance.server;
+    return Instance().server;
 }
 
 Client* Game::GetClient() {
-    return instance.client;
+    return Instance().client;
 }
 
 void Game::InitNetworking() {
@@ -136,13 +168,14 @@ bool Game::Init()
         InitWindow(800, 600, "Horde");
         // Fullscreen();
     }
-
+    while(!Game::IsServer() && !IsWindowReady()) {
+        sleep(1);
+    }
     bRunning = true;
-    InitNetworking();
-
     SetActiveScene(new MainScene());
     Start();
 
+    InitNetworking();
     return true;
 }
 

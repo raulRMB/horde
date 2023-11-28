@@ -51,7 +51,6 @@ void NavigationSystem::LoadNavMesh()
         std::string line;
         while(std::getline(file, line) && line != "TRIANGLES")
         {
-            TraceLog(LOG_INFO, line.c_str());
             std::stringstream ss(line);
             float x, y;
             ss >> x >> y;

@@ -24,6 +24,7 @@ public:
     virtual void Clean();
     virtual void Save() = 0;
     virtual void Load() = 0;
+    virtual void SpawnPlayer(entt::entity networkId) = 0;
 
     inline entt::registry& GetRegistry() { return Registry; }
 

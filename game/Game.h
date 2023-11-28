@@ -4,8 +4,11 @@
 #include <raylib.h>
 #include <chrono>
 #include <entt/entt.hpp>
+#include <queue>
+#include <mutex>
 #include "networking/Server.h"
 #include "networking/Client.h"
+#include "networking/NetMessage.h"
 
 class Game
 {
@@ -27,8 +30,16 @@ public:
 
     static Game& Instance();
 
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
+
+    std::map<entt::entity, ENetPeer> connections;
+
     bool isServer;
+    bool offlineMode = false;
+
     static bool IsServer();
+    static bool IsOfflineMode();
     Client* client;
     Server* server;
 
@@ -45,6 +56,9 @@ public:
     void Fullscreen();
     void InitNetworking();
 
+    std::queue<enet_uint8*> networkingQueue;
+    static std::queue<enet_uint8*>& GetNetworkingQueue() { return Instance().networkingQueue; };
+
     void Clean() const;
 
     void SetActiveScene(Scene* scene);
@@ -59,8 +73,17 @@ public:
     static Server* GetServer();
     static Client* GetClient();
 
+
+
+    static void OnConnect(ENetPeer* peer);
+    static void SpawnPlayer(entt::entity networkId);
+
     void Save();
     void Load();
+
+    void Spawn(entt::entity networkId);
+
+    static void ProcessNetworkingQueue();
 };
 
 
