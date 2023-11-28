@@ -1,10 +1,11 @@
-#include "SpawnSystem.h"
-#include "components/Components.h"
-#include "components/SpawnerComponent.h"
-#include "components/FollowComponent.h"
+#include "Spawn.h"
+#include "components/Spawner.h"
+#include "components/Follow.h"
 #include "gamecomponents/EnemyComponent.h"
+#include "components/Shapes.h"
+#include "components/Physics.h"
 
-void SpawnSystem::Update(float deltaSeconds)
+void SSpawn::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
 
@@ -20,13 +21,13 @@ void SpawnSystem::Update(float deltaSeconds)
             entt::entity e = CreateEntity();
             Transform entityTransform = transform;
             AddComponent(e, entityTransform);
-            FollowComponent followComp{};
+            CFollow followComp{};
             AddComponent(e, followComp);
-            SphereComponent sphereComponent{};
+            CSphere sphereComponent{};
             sphereComponent.color = RED;
             sphereComponent.Radius = .5f;
             AddComponent(e, sphereComponent);
-            Physics2DComponent physics{};
+            CPhysics2D physics{};
             physics.Speed = 10.f;
             physics.MaxSpeed = 10.f;
             AddComponent(e, physics);

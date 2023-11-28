@@ -3,10 +3,8 @@
 
 #include "systems/System.h"
 
-class FollowSystem final : public UpdateSystem
+class SFollow final : public UpdateSystem
 {
-
-
 public:
     void Update(float deltaSeconds);
 };

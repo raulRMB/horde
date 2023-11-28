@@ -1,15 +1,16 @@
-#include "AnimationSystem.h"
+#include "Animation.h"
 #include "entt/entt.hpp"
-#include "components/Components.h"
+#include "components/Animation.h"
+#include "components/Model.h"
 #include "Game.h"
 #include <algorithm>
 
-void AnimationSystem::Update(float deltaSeconds)
+void SAnimation::Update(float deltaSeconds)
 {
-    for(const entt::entity& entity : Game::GetRegistry().view<AnimationComponent, ModelComponent>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CAnimation, CModel>())
     {
-        AnimationComponent& animationComponent = Game::GetRegistry().get<AnimationComponent>(entity);
-        const Model& model = Game::GetRegistry().get<ModelComponent>(entity).model;
+        CAnimation& animationComponent = Game::GetRegistry().get<CAnimation>(entity);
+        const Model& model = Game::GetRegistry().get<CModel>(entity).model;
 
         ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
 

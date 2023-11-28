@@ -8,7 +8,7 @@
 #include "systems/System.h"
 #include "navigation/Navigation.h"
 
-class NavigationSystem final : public UpdateSystem
+class SNavigation final : public UpdateSystem
 {
 private:
     std::vector<Navigation::TriangleNode> NavMesh{};

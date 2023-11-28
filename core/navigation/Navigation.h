@@ -14,7 +14,7 @@ Vector3 Intersect(Vector3 planeP, Vector3 planeN, Vector3 rayP, Vector3 rayD);
 
 class TriangleNode
 {
-    Triangle2D triangle;
+    Triangle2D Triangle;
     unsigned int Index;
     std::vector<TriangleNode*> neighbors;
     float gCost = 0.f;
@@ -33,7 +33,7 @@ public:
     void AddNeighbor(TriangleNode* neighbor);
     void RemoveNeighbor(TriangleNode* neighbor);
     [[nodiscard]] inline const std::vector<TriangleNode*>& GetNeighbors() const { return neighbors; }
-    [[nodiscard]] inline const Triangle2D& GetTriangle() const { return triangle; }
+    [[nodiscard]] inline const Triangle2D& GetTriangle() const { return Triangle; }
     [[nodiscard]] inline const unsigned int GetIndex() const { return Index; }
 
     [[nodiscard]] inline const float GetFCost() const { return gCost + hCost; }

@@ -3,7 +3,7 @@
 
 #include "systems/System.h"
 
-class ParticleSystem final : public UpdateSystem
+class SParticle final : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;

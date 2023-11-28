@@ -1,18 +1,15 @@
-#include "AttributeSystem.h"
+#include "Attribute.h"
 #include "entt/entt.hpp"
-#include "components/Components.h"
 #include "Game.h"
-#include "util/Util.h"
-#include <algorithm>
 
-void AttributeSystem::Init()
+void SAttribute::Init()
 {
-    Game::GetDispatcher().sink<Effect>().connect<&AttributeSystem::OnEffect>();
+    Game::GetDispatcher().sink<FEffect>().connect<&SAttribute::OnEffect>();
 }
 
-auto removeEffect = [](Effect& effect) {
-    AttributesComponent& ac = Game::GetRegistry().get<AttributesComponent>(effect.target);
-    for(Attribute& attr : ac.attributes) {
+auto removeEffect = [](FEffect& effect) {
+    CAttributes& ac = Game::GetRegistry().get<CAttributes>(effect.target);
+    for(FAttribute& attr : ac.attributes) {
         for (auto it = attr.mods.begin(); it != attr.mods.end();) {
             const AttrMod& mod = *it;
             if (mod.effectId == effect.id) {
@@ -24,21 +21,21 @@ auto removeEffect = [](Effect& effect) {
     }
 };
 
-void AttributeSystem::Update(float deltaSeconds)
+void SAttribute::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity :registry.view<AttributesComponent>())
+    for(const entt::entity& entity :registry.view<CAttributes>())
     {
-        AttributesComponent& ac = registry.get<AttributesComponent>(entity);
+        CAttributes& ac = registry.get<CAttributes>(entity);
         for (auto it = ac.effects.begin(); it != ac.effects.end();) {
-            Effect& effect = *it;
+            FEffect& effect = *it;
             if(effect.isExpired() && effect.type == DURATION) {
                 removeEffect(effect);
                 it = ac.effects.erase(it);
             } else {
                 if(effect.isReady()) {
-                    AttributesComponent& target = Game::GetRegistry().get<AttributesComponent>(effect.target);
-                    AttributesComponent& source = Game::GetRegistry().get<AttributesComponent>(effect.source);
+                    CAttributes& target = Game::GetRegistry().get<CAttributes>(effect.target);
+                    CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
                     effect.callback(target, source);
                     effect.reset();
                 }
@@ -49,9 +46,9 @@ void AttributeSystem::Update(float deltaSeconds)
     }
 }
 
-void AttributeSystem::OnEffect(const Effect &effect) {
-    AttributesComponent& target = Game::GetRegistry().get<AttributesComponent>(effect.target);
-    AttributesComponent& source = Game::GetRegistry().get<AttributesComponent>(effect.source);
+void SAttribute::OnEffect(const FEffect &effect) {
+    CAttributes& target = Game::GetRegistry().get<CAttributes>(effect.target);
+    CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
     if(effect.type == INSTANT) {
         effect.callback(target, source);
     } else if(effect.type == DURATION || effect.type == INFINITE) {

@@ -2,23 +2,22 @@
 // Created by Raul on 11/17/2023.
 //
 
-#include "NavigationSystem.h"
+#include "Navigation.h"
 
 #include <fstream>
 #include <sstream>
 
-#include "components/FollowComponent.h"
-#include "components/Components.h"
+#include "components/Follow.h"
 #include "raylib.h"
 #include "util/Util.h"
 
-void NavigationSystem::Update(float deltaSeconds)
+void SNavigation::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    const auto followEntities = registry.view<FollowComponent, Transform>();
+    const auto followEntities = registry.view<CFollow, Transform>();
     for(const entt::entity& followEntity : followEntities)
     {
-        FollowComponent& followComponent = GetComponent<FollowComponent>(followEntity);
+        CFollow& followComponent = GetComponent<CFollow>(followEntity);
         EFollowState& bFollowing = followComponent.FollowState;
         if(bFollowing != EFollowState::Dirty)
             continue;
@@ -42,7 +41,7 @@ void NavigationSystem::Update(float deltaSeconds)
     }
 }
 
-void NavigationSystem::LoadNavMesh()
+void SNavigation::LoadNavMesh()
 {
     std::ifstream file;
     file.open("../assets/save.txt");
@@ -87,7 +86,7 @@ void NavigationSystem::LoadNavMesh()
     }
 }
 
-void NavigationSystem::SaveNavMesh()
+void SNavigation::SaveNavMesh()
 {
     std::ofstream file;
     file.open("../assets/save.txt");
@@ -107,7 +106,7 @@ void NavigationSystem::SaveNavMesh()
     file.close();
 }
 
-bool NavigationSystem::IsValidPoint(const Vector2 &point)
+bool SNavigation::IsValidPoint(const Vector2 &point)
 {
     for(const Navigation::TriangleNode& graphTriangle : NavMesh)
     {

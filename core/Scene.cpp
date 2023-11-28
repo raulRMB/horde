@@ -1,31 +1,31 @@
 #include "Scene.h"
 #include <vector>
 
-#include "systems/base/AnimationSystem.h"
-#include "systems/moba/FollowSystem.h"
-#include "systems/base/PhysicsSystem.h"
-#include "systems/base/ShapeDrawingSystem.h"
-#include "systems/base/ParticleSystem.h"
-#include "systems/moba/NavigationSystem.h"
-#include "systems/base/ModelDrawingSystem.h"
-#include "systems/moba/AttributeSystem.h"
-#include "systems/moba/SpawnSystem.h"
+#include "systems/base/Animation.h"
+#include "systems/moba/Follow.h"
+#include "systems/base/Physics.h"
+#include "systems/base/ShapeDrawing.h"
+#include "systems/base/Particle.h"
+#include "systems/moba/Navigation.h"
+#include "systems/base/ModelDrawing.h"
+#include "systems/moba/Attribute.h"
+#include "systems/moba/Spawn.h"
 
 void Scene::Start()
 {
 
-    UpdateSystems.push_back(&System::Get<NavigationSystem>());
-    UpdateSystems.push_back(&System::Get<FollowSystem>());
-    UpdateSystems.push_back(&System::Get<PhysicsSystem>());
+    UpdateSystems.push_back(&System::Get<SNavigation>());
+    UpdateSystems.push_back(&System::Get<SFollow>());
+    UpdateSystems.push_back(&System::Get<SPhysics>());
 
-    UpdateSystems.push_back(&System::Get<AttributeSystem>());
-    UpdateSystems.push_back(&System::Get<SpawnSystem>());
+    UpdateSystems.push_back(&System::Get<SAttribute>());
+    UpdateSystems.push_back(&System::Get<SSpawn>());
     if(!Game::IsServer()) {
-        UpdateSystems.push_back(&System::Get<AnimationSystem>());
-        UpdateSystems.push_back(&System::Get<ParticleSystem>());
+        UpdateSystems.push_back(&System::Get<SAnimation>());
+        UpdateSystems.push_back(&System::Get<SParticle>());
 
-        DrawingSystems.push_back(&System::Get<ShapeDrawingSystem>());
-        DrawingSystems.push_back(&System::Get<ModelDrawingSystem>());
+        DrawingSystems.push_back(&System::Get<SShapeDrawing>());
+        DrawingSystems.push_back(&System::Get<SModelDrawing>());
     }
 
 }

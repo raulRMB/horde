@@ -513,7 +513,7 @@ void TriangleNode::SetIndex(unsigned int i)
 }
 
 TriangleNode::TriangleNode(const Triangle2D &triangle, unsigned int index) :
-    triangle(triangle), Index(index),
+    Triangle(triangle), Index(index),
     circumcenter({}) , circumradius(0.f),
     incenter({}), parent(nullptr), bBlocked(false)
 {

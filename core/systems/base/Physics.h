@@ -7,7 +7,7 @@
 
 #include "systems/System.h"
 
-class PhysicsSystem : public UpdateSystem
+class SPhysics : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;

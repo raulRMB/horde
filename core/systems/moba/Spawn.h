@@ -3,7 +3,7 @@
 
 #include "systems/System.h"
 
-class SpawnSystem : public UpdateSystem
+class SSpawn : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;
