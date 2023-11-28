@@ -17,15 +17,15 @@ void PhysicsSystem::Update(float deltaSeconds)
     for(const entt::entity& entity : registry.view<Transform, Physics2DComponent, AttributesComponent>())
     {
         Transform& transform = registry.get<Transform>(entity);
-        AttributesComponent ac = registry.get<AttributesComponent>(entity);
-        Attribute& moveSpeed = Util::GetAttribute(ac, "moveSpeed");
+        AttributesComponent& ac = registry.get<AttributesComponent>(entity);
+        Attribute* moveSpeed = Util::GetAttribute(ac, "moveSpeed");
 
-        if(moveSpeed.id != "empty") {
+        if(moveSpeed->id != "empty") {
             Physics2DComponent &physics = registry.get<Physics2DComponent>(entity);
             physics.Velocity += physics.Acceleration * deltaSeconds;
             physics.Velocity = Vector2ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
             Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
-            velocity *= moveSpeed.get();
+            velocity *= moveSpeed->get();
             transform.translation += velocity * deltaSeconds;
         }
     }

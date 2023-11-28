@@ -1,5 +1,6 @@
 #include <enet/enet.h>
 #include <iostream>
+#include <cstring>
 #include "raylib.h"
 #include "Client.h"
 
