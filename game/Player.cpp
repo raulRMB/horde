@@ -42,10 +42,13 @@ Player::Player()
     AttributesComponent ac{attributes};
     AddComponent(ac);
 
-    OnApply healthRegenCallback =[](AttributesComponent& target, AttributesComponent& source) {
-        Attribute& health = Util::GetAttribute(target, "health");
-        float newHealth = health.base + 5;
-        health.base = std::clamp(newHealth, health.min, health.max);
+    OnApply healthRegenCallback = [](AttributesComponent& target, AttributesComponent& source){
+
+        if(Attribute* health = Util::GetAttribute(target, "health"); health)
+        {
+            float newHealth = health->base + 5;
+            health->base = std::clamp(newHealth, health->min, health->max);
+        }
     };
     Effect healthRegen = Effect{};
     healthRegen.type = INFINITE;
@@ -103,7 +106,7 @@ void Player::HandleInput(entt::registry* Registry)
     if(IsKeyPressed(KEY_W))
     {
         OnApply effectCallback = [](AttributesComponent& target, AttributesComponent& source) {
-            Attribute& health = Util::GetAttribute(target, "health");
+            Attribute& health = *Util::GetAttribute(target, "health");
             float newHealth = health.base - (0.2f * health.max);
             health.base = std::clamp(newHealth, health.min, health.max);
         };
@@ -118,7 +121,7 @@ void Player::HandleInput(entt::registry* Registry)
     {
         Effect effect = Effect{};
         OnApply effectCallback = [&effect](AttributesComponent& target, AttributesComponent& source) {
-            Attribute& moveSpeed = Util::GetAttribute(target, "moveSpeed");
+            Attribute& moveSpeed = *Util::GetAttribute(target, "moveSpeed");
             AttrMod moveSpeedMod = AttrMod{
                     effect.id,
                     [&moveSpeed](float x) -> float {
@@ -148,7 +151,7 @@ void Player::DrawUI() {
             (Vector3){ t.translation.x, t.translation.y + 10.0f, t.translation.z },
             Game::Instance().GetActiveCamera());
     AttributesComponent ac = GetComponent<AttributesComponent>();
-    Attribute health = Util::GetAttribute(ac, "health");
+    Attribute health = *Util::GetAttribute(ac, "health");
     if (health.id != "empty") {
         DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
         DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * health.get()/health.max, 10, GREEN);

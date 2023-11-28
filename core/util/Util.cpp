@@ -31,15 +31,18 @@ Vector3 Util::RandVec3(int min, int max) {
     };
 }
 
-Attribute& Util::GetAttribute(AttributesComponent& ac, const std::string& attr) {
-    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const Attribute& a) {
+Attribute* Util::GetAttribute(AttributesComponent& ac, const std::string& attr)
+{
+    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const Attribute &a)
+    {
         return a.id == attr;
     });
-    if(it != ac.attributes.end()) {
-        return (*it);
+    if(it != ac.attributes.end())
+    {
+        return &(*it);
     }
-    Attribute empty = Attribute{"empty"};
-    return empty;
+    TraceLog(LOG_ERROR, "Attribute %s not found", attr.c_str());
+    return nullptr;
 }
 
 RayCollision Util::GetMouseCollision() {

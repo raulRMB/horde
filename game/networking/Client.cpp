@@ -1,5 +1,6 @@
 #include <enet/enet.h>
 #include <iostream>
+#include <cstring>
 #include "raylib.h"
 #include "Client.h"
 #include "Game.h"
@@ -38,7 +39,7 @@ void Client::SendMoveTo(Vector2 pos) {
     mt->Type = ENetMsg::MoveTo;
     mt->EntityNetworkId = 6;
     void* payload = (void*)mt;
-    ENetPacket* packet = enet_packet_create(payload, sizeof(payload), ENET_PACKET_FLAG_RELIABLE);
+    ENetPacket* packet = enet_packet_create(payload, sizeof(*mt), ENET_PACKET_FLAG_RELIABLE);
     enet_peer_send(peer, 0, packet);
 }
 

@@ -39,7 +39,6 @@ void Server::Loop() {
                 case ENetMsg::MoveTo:
                     NetMessageTransform msg = *(NetMessageTransform *) event.packet->data;
                     TraceLog(LOG_INFO, "x: %f, y: %f", msg.pos.x, msg.pos.y);
-//                    Game::GetRegistry().get<>()
                     break;
             }
         }
