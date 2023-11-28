@@ -178,9 +178,15 @@ std::vector<TriangleNode*> ReconstructPath(TriangleNode* end, TriangleNode* star
     {
         if(const Edge2D* SharedEdge = Navigation::GetSharedEdge(path[i]->GetTriangle(), path[i + 1]->GetTriangle()); SharedEdge != nullptr)
         {
-            if(IsOnRight(path[i]->GetCenter(), path[i + 1]->GetCenter(), SharedEdge->vertices[0]))
+            if(IsOnRight(path[i]->GetCircumCenter(), path[i + 1]->GetCircumCenter(), SharedEdge->vertices[0]))
             {
-                portals.push_back({SharedEdge->vertices[1], SharedEdge->vertices[0]});
+                Vector2 directionZero = Vector2Normalize(path[i]->GetInCenter() - SharedEdge->vertices[0]);
+                Vector2 directionOne = Vector2Normalize(path[i]->GetInCenter() - SharedEdge->vertices[1]);
+
+                float Offset = 2.f;
+                Vector2 offsetZero = directionZero * Offset;
+                Vector2 offsetOne = directionOne * Offset;
+                portals.push_back({SharedEdge->vertices[1] + offsetOne, SharedEdge->vertices[0] + offsetZero});
             }
             else
             {
@@ -247,11 +253,12 @@ void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> 
                 continue;
             }
 
-            float newMovementCostToNeighbor = current->GetGCost() + Vector2Distance(current->GetCenter(), neighbor->GetCenter());
+            float newMovementCostToNeighbor = current->GetGCost() + Vector2Distance(current->GetCircumCenter(),
+                                                                                    neighbor->GetCircumCenter());
             if(newMovementCostToNeighbor < neighbor->GetGCost() || open.find(neighbor) == open.end())
             {
                 neighbor->SetGCost(newMovementCostToNeighbor);
-                neighbor->SetHCost(Vector2Distance(neighbor->GetCenter(), endTriangle->GetCenter()));
+                neighbor->SetHCost(Vector2Distance(neighbor->GetCircumCenter(), endTriangle->GetCircumCenter()));
                 neighbor->SetParent(current);
                 open.emplace(neighbor);
             }
@@ -314,11 +321,12 @@ void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> 
                 continue;
             }
 
-            float newMovementCostToNeighbor = current->GetGCost() + Vector2Distance(current->GetCenter(), neighbor->GetCenter());
+            float newMovementCostToNeighbor = current->GetGCost() + Vector2Distance(current->GetCircumCenter(),
+                                                                                    neighbor->GetCircumCenter());
             if(newMovementCostToNeighbor < neighbor->GetGCost() || open.find(neighbor) == open.end())
             {
                 neighbor->SetGCost(newMovementCostToNeighbor);
-                neighbor->SetHCost(Vector2Distance(neighbor->GetCenter(), endTriangle->GetCenter()));
+                neighbor->SetHCost(Vector2Distance(neighbor->GetCircumCenter(), endTriangle->GetCircumCenter()));
                 neighbor->SetParent(current);
                 open.emplace(neighbor);
             }

@@ -75,7 +75,7 @@ void NavigationSystem::LoadNavMesh()
         {
             auto e = CreateEntity();
             Transform transform;
-            transform.translation = {graphTriangle.GetCenter().x, 0.f, graphTriangle.GetCenter().y};
+            transform.translation = {graphTriangle.GetCircumCenter().x, 0.f, graphTriangle.GetCircumCenter().y};
             AddComponent(e, transform);
             if(graphTriangle.IsBlocked())
             {

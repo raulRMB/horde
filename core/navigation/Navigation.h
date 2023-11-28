@@ -40,7 +40,8 @@ public:
     [[nodiscard]] inline const float GetGCost() const { return gCost; }
     [[nodiscard]] inline const float GetHCost() const { return hCost; }
 
-    [[nodiscard]] inline const Vector2& GetCenter() const { return circumcenter; }
+    [[nodiscard]] inline const Vector2& GetCircumCenter() const { return circumcenter; }
+    [[nodiscard]] inline const Vector2& GetInCenter() const { return incenter; }
     [[nodiscard]] inline const float GetRadius() const { return circumradius; }
 
     [[nodiscard]] inline TriangleNode* GetParent() const { return parent; }
