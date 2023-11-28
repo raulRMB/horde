@@ -33,7 +33,7 @@ Vector3 Util::RandVec3(int min, int max) {
 
 Attribute* Util::GetAttribute(AttributesComponent& ac, const std::string& attr)
 {
-    std::_List_iterator<Attribute> it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const Attribute &a)
+    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const Attribute &a)
     {
         return a.id == attr;
     });
