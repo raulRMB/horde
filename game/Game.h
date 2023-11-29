@@ -4,13 +4,6 @@
 #include <raylib.h>
 #include <chrono>
 #include <entt/entt.hpp>
-#include <queue>
-#include <mutex>
-#include <map>
-#include "networking/Server.h"
-#include "networking/Client.h"
-#include "networking/NetMessage.h"
-#include "networking/base/NetworkedEntities.h"
 
 class Game
 {
@@ -25,8 +18,6 @@ class Game
     class Scene* ActiveScene;
     bool bRunning;
 
-    NetworkedEntities networkedEntities;
-
     Color BackgroundColor;
 
     Camera3D Camera{};
@@ -35,21 +26,11 @@ public:
     Game();
 
     static Game& Instance();
-    static NetworkedEntities& GetNetworkedEntities();
 
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
 
-    std::map<entt::entity, ENetPeer> connections;
-
-    bool isServer;
-    bool offlineMode = false;
-
-    static bool IsServer();
-    static bool IsOfflineMode();
     static class Player* GetPlayer();
-    Client* client;
-    Server* server;
 
     bool Run(bool bServer);
 
@@ -62,10 +43,6 @@ public:
     void DrawUI() const;
     void CalculateFPS();
     void Fullscreen();
-    void InitNetworking();
-
-    std::queue<enet_uint8*> networkingQueue;
-    static std::queue<enet_uint8*>& GetNetworkingQueue() { return Instance().networkingQueue; };
 
     void Clean() const;
 
@@ -78,19 +55,14 @@ public:
     static entt::registry& GetRegistry();
     static entt::dispatcher& GetDispatcher();
 
-    static Server* GetServer();
-    static Client* GetClient();
-
-
-    static void OnConnect(ENetPeer* peer);
     static void SpawnPlayer(u_int32_t networkId);
+    static bool IsServer();
+    static bool IsOfflineMode();
     void Spawn(u_int32_t networkId);
 
     void Save();
     void Load();
 
-
-    static void ProcessNetworkingQueue();
 };
 
 

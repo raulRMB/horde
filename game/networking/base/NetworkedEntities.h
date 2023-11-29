@@ -11,7 +11,7 @@ class NetworkedEntities {
 
 public:
     uint32_t Add(entt::entity e) {
-        uint32_t netId = GetRandomValue(1, UINT32_MAX);
+        uint32_t netId = GetRandomValue(1, 10000);
         auto it = y.find(e);
         if (it == y.end()) {
             x.insert(std::pair<uint32_t, entt::entity>(netId, e));

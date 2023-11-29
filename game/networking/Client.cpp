@@ -4,32 +4,27 @@
 #include "raylib.h"
 #include "Client.h"
 #include "Game.h"
+#include "NetworkDriver.h"
 #include "NetMessage.h"
 
 Client::Client() {
     if (enet_initialize() != 0) {
         TraceLog(LOG_INFO, "Failed to initialize ENet");
     }
-
     client = enet_host_create(nullptr, 1, 2, 0, 0);
-
     if (client == nullptr) {
         TraceLog(LOG_INFO, "Failed to create server");
         enet_deinitialize();
     }
-
     ENetAddress address;
     enet_address_set_host(&address, "localhost");
     address.port = 7777;
-
     peer = enet_host_connect(client, &address, 2, 0);
-
     if (peer == nullptr) {
         TraceLog(LOG_INFO, "No available peers for initiating an ENet connection");
         enet_host_destroy(client);
         enet_deinitialize();
     }
-
     TraceLog(LOG_INFO, "Client Running");
 }
 
@@ -38,10 +33,12 @@ void Client::SendMoveTo(Vector2 pos, u_int32_t NetworkId) {
     mt->pos = pos;
     mt->Type = ENetMsg::MoveTo;
     mt->NetworkId = NetworkId;
-    TraceLog(LOG_INFO, "NetId: %u", NetworkId);
     void* payload = (void*)mt;
     ENetPacket* packet = enet_packet_create(payload, sizeof(*mt), ENET_PACKET_FLAG_RELIABLE);
-    enet_peer_send(peer, 0, packet);
+    OutboundMessage msg = OutboundMessage{};
+    msg.Packet = packet;
+    msg.Connections.push_back(peer);
+    NetworkDriver::GetOutboundQueue().push(msg);
 }
 
 void Client::Loop() {
@@ -51,11 +48,31 @@ void Client::Loop() {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECT!");
         } else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            Game::GetNetworkingQueue().push(event.packet->data);
+            NetworkDriver::GetInboundQueue().push(event.packet->data);
         } else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECT!");
         }
     }
+}
+
+void Client::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
+    switch (msg) {
+        case ENetMsg::ConnectionResponse: {
+            NetConnectionResponse msg = *(NetConnectionResponse *) data;
+            Game::SpawnPlayer(msg.NetworkId);
+            TraceLog(LOG_INFO, "entt: %d", msg.NetworkId);
+            break;
+        }
+        case ENetMsg::SyncTransform: {
+            SyncTransform x = *(SyncTransform *) data;
+            TraceLog(LOG_INFO, "SUP", x.NetworkId);
+            break;
+        }
+    }
+}
+
+void Client::SendOutboundMessage(ENetPacket* packet) {
+    enet_peer_send(peer, 0, packet);
 }
 
 void Client::Close() {

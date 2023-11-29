@@ -10,6 +10,7 @@ enum class ENetMsg
     InitialConnection,
     ConnectionResponse,
     MoveTo,
+    SyncTransform
 };
 
 struct NetMessage
@@ -18,8 +19,18 @@ struct NetMessage
     NetMessage(ENetMsg type = ENetMsg::None) : Type(type) {}
 };
 
+struct OutboundMessage {
+    ENetPacket* Packet;
+    std::vector<ENetPeer*> Connections;
+};
+
 struct InitialConnection : public NetMessage {
     ENetPeer* peer;
+};
+
+struct SyncTransform : public NetMessage {
+    u_int32_t NetworkId;
+    Transform t;
 };
 
 struct NetConnectionResponse : public NetMessage

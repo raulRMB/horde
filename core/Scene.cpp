@@ -6,6 +6,7 @@
 #include "systems/base/Physics.h"
 #include "systems/base/ShapeDrawing.h"
 #include "systems/base/Particle.h"
+#include "systems/base/Networking.h"
 #include "systems/moba/Navigation.h"
 #include "systems/base/ModelDrawing.h"
 #include "systems/moba/Attribute.h"
@@ -26,6 +27,8 @@ void Scene::Start()
 
         DrawingSystems.push_back(&System::Get<SShapeDrawing>());
         DrawingSystems.push_back(&System::Get<SModelDrawing>());
+    } else {
+        UpdateSystems.push_back(&System::Get<SNetworking>());
     }
 
 }

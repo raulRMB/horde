@@ -7,6 +7,7 @@
 #include "systems/moba/Navigation.h"
 #include "components/Animation.h"
 #include "components/Model.h"
+#include "networking/NetworkDriver.h"
 
 Player::Player()
 {
@@ -41,7 +42,6 @@ Player::Player()
     };
     attributes.push_back(MoveSpeed);
     CAttributes ac{attributes};
-    AddComponent(ac);
 
     OnApply healthRegenCallback = [](CAttributes& target, CAttributes& source){
 
@@ -91,14 +91,14 @@ void Player::HandleInput(entt::registry* Registry)
         Vector2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {
-            if(Game::IsOfflineMode()) {
-            CFollow& followComponent = GetComponent<CFollow>();
-            followComponent.FollowState = EFollowState::Dirty;
-            followComponent.Index = 1;
-            followComponent.Goal = mousePos;
+            if(NetworkDriver::IsOfflineMode()) {
+                CFollow& followComponent = GetComponent<CFollow>();
+                followComponent.FollowState = EFollowState::Dirty;
+                followComponent.Index = 1;
+                followComponent.Goal = mousePos;
             } else {
-                auto NetId = Game::GetNetworkedEntities().Get(GetEntity());
-                Game::GetClient()->SendMoveTo(mousePos, NetId);
+                auto NetId = NetworkDriver::GetNetworkedEntities().Get(GetEntity());
+                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
             }
         }
     }

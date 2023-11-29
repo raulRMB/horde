@@ -6,6 +6,7 @@
 #include <chrono>
 #include "components/Follow.h"
 #include "systems/moba/Navigation.h"
+#include "networking/NetworkDriver.h"
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
@@ -22,32 +23,14 @@ Game& Game::Instance()
     return instance;
 }
 
-bool Game::IsServer() {
-    return Instance().isServer;
-}
-
-bool Game::IsOfflineMode() {
-    return Instance().offlineMode;
-}
-
-void Game::OnConnect(ENetPeer* peer) {
-    Player* player = new Player();
-    uint32_t netId = Instance().networkedEntities.Add(player->GetEntity());
-    Game::GetServer()->ConnectResponse(peer, netId);
-}
-
 void Game::SpawnPlayer(u_int32_t networkId) {
     Instance().Spawn(networkId);
-}
-
-NetworkedEntities& Game::GetNetworkedEntities() {
-    return Instance().networkedEntities;
 }
 
 void Game::Spawn(u_int32_t networkId) {
     if(!IsServer()) {
         ownedPlayer = new Player();
-        networkedEntities.Add(ownedPlayer->GetEntity(), networkId);
+        NetworkDriver::GetNetworkedEntities().Add(ownedPlayer->GetEntity(), networkId);
     }
 }
 
@@ -55,51 +38,9 @@ Player* Game::GetPlayer() {
     return Instance().ownedPlayer;
 }
 
-void Game::ProcessNetworkingQueue() {
-    while(!GetNetworkingQueue().empty()) {
-        enet_uint8 *data;
-        data = GetNetworkingQueue().front();
-        ENetMsg type = *(ENetMsg *) data;
-
-        NetMessageTransform msg = *(NetMessageTransform *) data;
-        InitialConnection x = *(InitialConnection *) data;
-
-        if(IsServer()) {
-            switch (type)
-            {
-                case ENetMsg::MoveTo:
-                    if(System::Get<SNavigation>().IsValidPoint(msg.pos)) {
-                        auto e = GetNetworkedEntities().Get(msg.NetworkId);
-                        CFollow &followComponent = GetRegistry().get<CFollow>(e);
-                        followComponent.FollowState = EFollowState::Dirty;
-                        followComponent.Index = 1;
-                        TraceLog(LOG_INFO, "x: %f y %f", msg.pos.x, msg.pos.y);
-                        followComponent.Goal = msg.pos;
-                    }
-                    break;
-                case ENetMsg::InitialConnection:
-                    OnConnect(x.peer);
-                    break;
-                default:
-                    TraceLog(LOG_INFO, "DEFAULT");
-                    break;
-            }
-        } else {
-            switch (type) {
-                case ENetMsg::ConnectionResponse:
-                    NetConnectionResponse msg = *(NetConnectionResponse *) data;
-                    SpawnPlayer(msg.NetworkId);
-                    TraceLog(LOG_INFO, "entt: %d", msg.NetworkId);
-                    break;
-            }
-        }
-        GetNetworkingQueue().pop();
-    }
-}
-
 bool Game::Run(bool bServer)
 {
-    isServer = bServer;
+    NetworkDriver::SetIsServer(bServer);
     if(!Init())
     {
         return EXIT_FAILURE;
@@ -113,7 +54,7 @@ bool Game::Run(bool bServer)
         }
 
         Update(GetFrameTime());
-        ProcessNetworkingQueue();
+        NetworkDriver::ProcessQueues();
 
         if(!Game::IsServer()) {
             BeginDrawing();
@@ -142,6 +83,10 @@ void Game::CalculateFPS()
     }
 }
 
+bool Game::IsOfflineMode() {
+    return NetworkDriver::IsOfflineMode();
+}
+
 void Game::Fullscreen() {
     auto monitor = GetCurrentMonitor();
     int monitorWidth = GetMonitorWidth(monitor);
@@ -150,55 +95,13 @@ void Game::Fullscreen() {
     ToggleFullscreen();
 }
 
-Server* Game::GetServer() {
-    return Instance().server;
-}
-
-Client* Game::GetClient() {
-    return Instance().client;
-}
-
-void Game::InitNetworking() {
-    if(Game::IsServer()) {
-        server = new Server();
-        std::thread networkThread([]()
-      {
-          double netFreq = 120.0;
-          auto periodMicroseconds = static_cast<long long>(1e6 / netFreq);
-          while(1)
-          {
-              auto startTime = std::chrono::high_resolution_clock::now();
-              Game::GetServer()->Loop();
-              auto endTime = std::chrono::high_resolution_clock::now();
-              auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-              auto sleepTime = periodMicroseconds - elapsedTime;
-              if (sleepTime > 0) {
-                  std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
-              }
-          }
-      });
-        networkThread.detach();
-    } else {
-        client = new Client();
-        std::thread networkThread([]()
-        {
-          double netFreq = 120.0;
-          auto periodMicroseconds = static_cast<long long>(1e6 / netFreq);
-          while(1)
-          {
-              auto startTime = std::chrono::high_resolution_clock::now();
-              Game::GetClient()->Loop();
-              auto endTime = std::chrono::high_resolution_clock::now();
-              auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-              auto sleepTime = periodMicroseconds - elapsedTime;
-              if (sleepTime > 0) {
-                  std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
-              }
-          }
-      });
-        networkThread.detach();
-    }
-}
+//Server* Game::GetServer() {
+//    return Instance().server;
+//}
+//
+//Client* Game::GetClient() {
+//    return Instance().client;
+//}
 
 bool Game::Init()
 {
@@ -207,20 +110,21 @@ bool Game::Init()
         InitWindow(800, 600, "Horde");
         // Fullscreen();
     }
-    while(!Game::IsServer() && !IsWindowReady()) {
-        sleep(1);
-    }
     bRunning = true;
     SetActiveScene(new MainScene());
     Start();
 
-    InitNetworking();
+    NetworkDriver::Start();
     return true;
+}
+
+bool Game::IsServer() {
+    return NetworkDriver::IsServer();
 }
 
 void Game::Start() const
 {
-    if(Game::IsOfflineMode()) {
+    if(NetworkDriver::IsOfflineMode()) {
         SpawnPlayer(GetRandomValue(1, UINT32_MAX));
     }
     ActiveScene->Start();
