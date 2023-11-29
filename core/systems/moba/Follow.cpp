@@ -1,19 +1,20 @@
-#include "FollowSystem.h"
+#include "Follow.h"
 
 #include "raylib.h"
 #include "raymath.h"
-#include "components/Components.h"
-#include "components/FollowComponent.h"
+#include "components/Follow.h"
 #include "util/raymathEx.h"
+#include "components/Model.h"
+#include "components/Physics.h"
 
 
-void FollowSystem::Update(float deltaSeconds)
+void SFollow::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity : registry.view<FollowComponent, Transform, Physics2DComponent, ModelComponent>())
+    for(const entt::entity& entity : registry.view<CFollow, Transform, CPhysics2D, CModel>())
     {
-        ModelComponent& modelComponent = GetComponent<ModelComponent>(entity);
-        Physics2DComponent& pc = GetComponent<Physics2DComponent>(entity);
+        CModel& modelComponent = GetComponent<CModel>(entity);
+        CPhysics2D& pc = GetComponent<CPhysics2D>(entity);
         Transform & t = GetComponent<Transform>(entity);
 
         Vector3 dir = {pc.Velocity.x, 0, pc.Velocity.y};
@@ -21,9 +22,9 @@ void FollowSystem::Update(float deltaSeconds)
         t.rotation.z = atan2(dir.x, -dir.z) + PI;
         modelComponent.model.transform = MatrixRotateXYZ(Vector3{PI/2, 0, t.rotation.z});
     }
-    for(const entt::entity& entity : registry.view<FollowComponent, Transform, Physics2DComponent>())
+    for(const entt::entity& entity : registry.view<CFollow, Transform, CPhysics2D>())
     {
-        FollowComponent& followComponent = registry.get<FollowComponent>(entity);
+        CFollow& followComponent = registry.get<CFollow>(entity);
         EFollowState& followState = followComponent.FollowState;
 
         if(followState != EFollowState::Following)
@@ -34,7 +35,7 @@ void FollowSystem::Update(float deltaSeconds)
         unsigned int& followIndex = followComponent.Index;
         Vector3& followPos = registry.get<Transform>(entity).translation;
         Vector2 followPos2d = {followPos.x, followPos.z};
-        Physics2DComponent& physics = registry.get<Physics2DComponent>(entity);
+        CPhysics2D& physics = registry.get<CPhysics2D>(entity);
 
         if(constexpr float minDist = 0.3f; Vector2DistanceSqr(followPos2d, targetPos) > minDist * minDist)
         {

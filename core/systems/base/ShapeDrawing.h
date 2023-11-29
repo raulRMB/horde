@@ -3,7 +3,7 @@
 
 #include "systems/System.h"
 
-class ShapeDrawingSystem final : public DrawingSystem
+class SShapeDrawing final : public DrawingSystem
 {
 public:
     void Draw() override;

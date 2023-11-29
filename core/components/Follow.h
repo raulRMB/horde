@@ -11,13 +11,18 @@ enum class EFollowState : unsigned int
     Dirty,
 };
 
-struct FollowComponent
+struct CFollow
 {
     std::vector<Vector2> StringPath;
     Vector2 TargetPos;
     unsigned int Index;
     Vector2 Goal;
     EFollowState FollowState;
+};
+
+struct CTarget
+{
+    Vector3 Position;
 };
 
 #endif //HORDE_FOLLOW_COMPONENT_H

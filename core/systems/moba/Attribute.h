@@ -2,13 +2,13 @@
 #define ATTRIBUTESYSTEM_H
 
 #include "systems/System.h"
-#include "components/Components.h"
+#include "components/Attribute.h"
 
-class AttributeSystem final : public UpdateSystem
+class SAttribute final : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;
-    static void OnEffect(const Effect& effect);
+    static void OnEffect(const FEffect& effect);
     void Init() override;
 };
 

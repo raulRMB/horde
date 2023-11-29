@@ -1,23 +1,24 @@
-#include "ShapeDrawingSystem.h"
+#include "ShapeDrawing.h"
 #include "entt/entt.hpp"
-#include "components/Components.h"
 #include "raymath.h"
 #include "primitives/Triangles.h"
 #include "primitives/Polygon.h"
+#include "components/Shapes.h"
+#include "components/Physics.h"
 
-void ShapeDrawingSystem::Draw()
+void SShapeDrawing::Draw()
 {
     // DrawCubes
-    for(const entt::entity& entity : Game::GetRegistry().view<CubeComponent>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CCube>())
     {
-        const CubeComponent& cubeComponent = Game::GetRegistry().get<CubeComponent>(entity);
+        const CCube& cubeComponent = Game::GetRegistry().get<CCube>(entity);
         DrawCube(cubeComponent.Position, cubeComponent.Size.x, cubeComponent.Size.y, cubeComponent.Size.z, cubeComponent.color);
     }
 
     // DrawCapsules
-    for(const entt::entity& entity : Game::GetRegistry().view<CapsuleComponent, Transform>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CCapsule, Transform>())
     {
-        const CapsuleComponent& capsuleComponent = Game::GetRegistry().get<CapsuleComponent>(entity);
+        const CCapsule& capsuleComponent = Game::GetRegistry().get<CCapsule>(entity);
         const Transform& transform = Game::GetRegistry().get<Transform>(entity);
         Vector3 offset = {0.0f, capsuleComponent.Height / 2.0f, 0.0f};
         Vector3 top = Vector3Add(transform.translation, offset);
@@ -26,9 +27,9 @@ void ShapeDrawingSystem::Draw()
     }
 
     // Rays
-    for(const entt::entity& entity : Game::GetRegistry().view<RayComponent>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CRay>())
     {
-        const RayComponent& rayComponent = Game::GetRegistry().get<RayComponent>(entity);
+        const CRay& rayComponent = Game::GetRegistry().get<CRay>(entity);
         DrawRay(rayComponent.ray, rayComponent.color);
     }
 
@@ -44,26 +45,26 @@ void ShapeDrawingSystem::Draw()
     }
 
     // Draw Linestrip
-    for(const entt::entity& entity : Game::GetRegistry().view<LineStripComponent>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CLineStrip>())
     {
-        const LineStripComponent& lineStripComponent = Game::GetRegistry().get<LineStripComponent>(entity);
+        const CLineStrip& lineStripComponent = Game::GetRegistry().get<CLineStrip>(entity);
         for(int i = 0; i < lineStripComponent.Points.size() - 1; i++)
         {
             DrawLine3D(lineStripComponent.Points[i], lineStripComponent.Points[i + 1], lineStripComponent.color);
         }
     }
 
-    for(const entt::entity& entity : Game::GetRegistry().view<SphereComponent, Transform>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CSphere, Transform>())
     {
-        const SphereComponent sphere = GetComponent<SphereComponent>(entity);
+        const CSphere sphere = GetComponent<CSphere>(entity);
         DrawSphere(GetComponent<Transform>(entity).translation, sphere.Radius, sphere.color);   
     }
 
-    for(const entt::entity& entity : Game::GetRegistry().view<Physics2DComponent, Transform>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CPhysics2D, Transform>())
     {
-        auto physics = GetComponent<Physics2DComponent>(entity);
+        auto physics = GetComponent<CPhysics2D>(entity);
         auto transform = GetComponent<Transform>(entity);
-        if(physics.CollisionType == Circle) {
+        if(physics.CollisionType == ECollision2DType::Circle) {
             DrawCircle3D(transform.translation, physics.CollisionRadius, Vector3{1.0f, 0.0f, 0.0f}, 90.0f, BLUE);
         }
     }

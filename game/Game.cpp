@@ -4,9 +4,8 @@
 #include "Player.h"
 #include <thread>
 #include <chrono>
-#include "../core/components/Components.h"
-#include "components/FollowComponent.h"
-#include "systems/moba/NavigationSystem.h"
+#include "components/Follow.h"
+#include "systems/moba/Navigation.h"
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
@@ -69,9 +68,9 @@ void Game::ProcessNetworkingQueue() {
             switch (type)
             {
                 case ENetMsg::MoveTo:
-                    if(System::Get<NavigationSystem>().IsValidPoint(msg.pos)) {
+                    if(System::Get<SNavigation>().IsValidPoint(msg.pos)) {
                         auto e = GetNetworkedEntities().Get(msg.NetworkId);
-                        FollowComponent &followComponent = GetRegistry().get<FollowComponent>(e);
+                        CFollow &followComponent = GetRegistry().get<CFollow>(e);
                         followComponent.FollowState = EFollowState::Dirty;
                         followComponent.Index = 1;
                         TraceLog(LOG_INFO, "x: %f y %f", msg.pos.x, msg.pos.y);

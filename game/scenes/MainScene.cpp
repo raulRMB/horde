@@ -1,12 +1,10 @@
 #include "raylib.h"
 #include "MainScene.h"
 
-#include "components/Components.h"
 #include "Player.h"
-#include "util/Util.h"
 #include "ui/elements/slot/Slot.h"
 #include "ui/elements/hotbar/Hotbar.h"
-#include "systems/moba/NavigationSystem.h"
+#include "systems/moba/Navigation.h"
 
 MainScene::MainScene()
 {
@@ -93,10 +91,10 @@ void MainScene::Clean()
 
 void MainScene::Save()
 {
-    System::Get<NavigationSystem>().SaveNavMesh();
+    System::Get<SNavigation>().SaveNavMesh();
 }
 
 void MainScene::Load()
 {
-    System::Get<NavigationSystem>().LoadNavMesh();
+    System::Get<SNavigation>().LoadNavMesh();
 }

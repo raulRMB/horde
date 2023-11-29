@@ -5,7 +5,7 @@
 #include "TestScene.h"
 #include "primitives/Triangles.h"
 #include "util/Util.h"
-#include "components/Components.h"
+#include "components/Shapes.h"
 
 std::vector<Triangle2D> triangles{};
 Triangle2D triangle{};
@@ -67,7 +67,7 @@ void TestScene::HandleInput()
         Vector2 pos = Util::GetMouseWorldPosition2D();
 
         entt::entity e = CreateEntity();
-        SphereComponent circle{};
+        CSphere circle{};
         circle.Radius = 1.f;
         circle.color = Util::RandColor();
         AddComponent(e, circle);

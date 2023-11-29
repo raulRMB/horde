@@ -1,4 +1,5 @@
 #include "Util.h"
+#include "components/Physics.h"
 
 glm::mat4 Util::GLMMat4FromMatrix(const Matrix& matrix)
 {
@@ -31,9 +32,9 @@ Vector3 Util::RandVec3(int min, int max) {
     };
 }
 
-Attribute* Util::GetAttribute(AttributesComponent& ac, const std::string& attr)
+FAttribute* Util::GetAttribute(CAttributes& ac, const std::string& attr)
 {
-    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const Attribute &a)
+    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const FAttribute &a)
     {
         return a.id == attr;
     });
@@ -54,10 +55,11 @@ RayCollision Util::GetMouseCollision() {
     return GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
 }
 
-bool Util::Check2DCollision(Physics2DComponent& x, Transform& xT, Physics2DComponent& y, Transform& yT) {
+bool Util::Check2DCollision(CPhysics2D& x, Transform& xT, CPhysics2D& y, Transform& yT) {
     Vector2 xVec = Vector2{xT.translation.x, xT.translation.z};
     Vector2 yVec = Vector2{yT.translation.x, yT.translation.z};
-    if(x.CollisionType == Circle && y.CollisionType == Circle) {
+    if(x.CollisionType == ECollision2DType::Circle && y.CollisionType == ECollision2DType::Circle)
+    {
         return CheckCollisionCircles(xVec, x.CollisionRadius, yVec, y.CollisionRadius);
     }
     return false;

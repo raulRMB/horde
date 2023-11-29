@@ -2,9 +2,8 @@
 #define ANIMATIONSYSTEM_H
 
 #include "systems/System.h"
-#include "components/Components.h"
 
-class AnimationSystem final : public UpdateSystem
+class SAnimation final : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;
