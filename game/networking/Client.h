@@ -3,6 +3,7 @@
 
 #include <enet/enet.h>
 #include "entt/entt.hpp"
+#include "raylib.h"
 
 class Client {
 public:

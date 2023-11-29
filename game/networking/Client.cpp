@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "Client.h"
 #include "Game.h"
+#include "NetworkDriver.h"
 #include "NetMessage.h"
 
 Client::Client() {
@@ -51,7 +52,7 @@ void Client::Loop() {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECT!");
         } else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            Game::GetNetworkingQueue().push(event.packet->data);
+            NetworkDriver::GetNetworkingQueue().push(event.packet->data);
         } else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECT!");
         }

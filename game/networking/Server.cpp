@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Server.h"
 #include "Game.h"
+#include "NetworkDriver.h"
 #include "NetMessage.h"
 
 Server::Server() {
@@ -33,10 +34,10 @@ void Server::Loop() {
             InitialConnection* c = new InitialConnection;
             c->peer = event.peer;
             c->Type = ENetMsg::InitialConnection;
-            Game::GetNetworkingQueue().push((enet_uint8*)c);
+            NetworkDriver::GetNetworkingQueue().push((enet_uint8*)c);
         }
         else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            Game::GetNetworkingQueue().push(event.packet->data);
+            NetworkDriver::GetNetworkingQueue().push(event.packet->data);
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECTED!");
