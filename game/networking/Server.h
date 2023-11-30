@@ -6,10 +6,12 @@
 #include <vector>
 #include <raylib.h>
 #include "NetMessage.h"
+#include "Player.h"
 
 class Server {
 public:
     ENetHost* server;
+    std::vector<Player*> players;
     Server();
     void Loop();
     void Close();
@@ -18,6 +20,7 @@ public:
     void ConnectResponse(ENetPeer* peer, uint32_t netId);
     void OnConnect(ENetPeer* peer);
     void SendOutboundMessage(OutboundMessage msg);
+    entt::entity CreateNetworkedEntity();
 
     void Sync(entt::entity e, Transform t, std::vector<ENetPeer*> c);
 };

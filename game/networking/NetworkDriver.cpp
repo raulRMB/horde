@@ -40,6 +40,9 @@ void NetworkDriver::Init() {
 void NetworkDriver::ProcessQueues() {
     while(!GetInboundQueue().empty()) {
         enet_uint8 *data = GetInboundQueue().front();
+        if(data == nullptr) {
+            continue;
+        }
         ENetMsg type = *(ENetMsg *) data;
         if(IsServer()) {
             Instance().server->OnInboundMessage(type, data);

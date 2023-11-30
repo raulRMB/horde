@@ -8,6 +8,7 @@
 #include "components/Animation.h"
 #include "components/Model.h"
 #include "networking/NetworkDriver.h"
+#include "components/Network.h"
 
 Player::Player()
 {
@@ -21,6 +22,10 @@ Player::Player()
         animation.bPlaying = true;
         AddComponent(animation);
         AddComponent(mc);
+    } else {
+        CNetwork n = CNetwork{};
+        Game::GetRegistry().emplace<CNetwork>(GetEntity(), n);
+        NetworkDriver::GetNetworkedEntities().Add(GetEntity());
     }
 
     Transform transform{};

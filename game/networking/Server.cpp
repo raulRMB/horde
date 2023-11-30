@@ -52,12 +52,12 @@ void Server::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
         case ENetMsg::MoveTo: {
             NetMessageTransform d = *(NetMessageTransform *) data;
             if (System::Get<SNavigation>().IsValidPoint(d.pos)) {
-//                auto e = NetworkDriver::GetNetworkedEntities().Get(d.NetworkId);
-//                CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
-//                followComponent.FollowState = EFollowState::Dirty;
-//                followComponent.Index = 1;
+                auto e = NetworkDriver::GetNetworkedEntities().Get(d.NetworkId);
+                CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
+                followComponent.FollowState = EFollowState::Dirty;
+                followComponent.Index = 1;
                 TraceLog(LOG_INFO, "x: %f y %f", d.pos.x, d.pos.y);
-//                followComponent.Goal = d.pos;
+                followComponent.Goal = d.pos;
             }
             break;
         }
@@ -72,16 +72,19 @@ void Server::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
     }
 }
 
-void Server::OnConnect(ENetPeer* peer) {
+entt::entity Server::CreateNetworkedEntity() {
     entt::entity e = Game::GetRegistry().create();
-    NetworkDriver::GetConnections().push_back(peer);
-    Transform t = Transform{};
-    t.translation = Vector3{1.1, 2.2, 3.3};
-    Game::GetRegistry().emplace<Transform>(e, t);
     CNetwork n = CNetwork{};
     Game::GetRegistry().emplace<CNetwork>(e, n);
-    uint32_t netId = NetworkDriver::GetNetworkedEntities().Add(e);
-    ConnectResponse(peer, netId);
+    NetworkDriver::GetNetworkedEntities().Add(e);
+    return e;
+}
+
+void Server::OnConnect(ENetPeer* peer) {
+    NetworkDriver::GetConnections().push_back(peer);
+    Player* p = new Player;
+    players.push_back(p);
+    ConnectResponse(peer, NetworkDriver::GetNetworkedEntities().Get(p->GetEntity()));
 }
 
 void Server::SendOutboundMessage(OutboundMessage msg) {
@@ -93,6 +96,7 @@ void Server::SendOutboundMessage(OutboundMessage msg) {
 void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
     NetConnectionResponse* res = new NetConnectionResponse{};
     res->Type = ENetMsg::ConnectionResponse;
+    TraceLog(LOG_INFO, "owning entity networkID: %u", netId);
     res->NetworkId = netId;
     void* payload = (void*)res;
     ENetPacket* packet = enet_packet_create(payload, sizeof(*res), ENET_PACKET_FLAG_RELIABLE);

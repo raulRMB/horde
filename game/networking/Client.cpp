@@ -60,12 +60,15 @@ void Client::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
         case ENetMsg::ConnectionResponse: {
             NetConnectionResponse msg = *(NetConnectionResponse *) data;
             Game::SpawnPlayer(msg.NetworkId);
-            TraceLog(LOG_INFO, "entt: %d", msg.NetworkId);
+            TraceLog(LOG_INFO, "connected owning entity networkID: %u", msg.NetworkId);
             break;
         }
         case ENetMsg::SyncTransform: {
             SyncTransform x = *(SyncTransform *) data;
-            TraceLog(LOG_INFO, "SUP", x.NetworkId);
+            Transform t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(x.NetworkId));
+            t.translation = x.t.translation;
+            t.rotation = x.t.rotation;
+            t.scale = x.t.scale;
             break;
         }
     }

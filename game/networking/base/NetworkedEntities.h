@@ -2,16 +2,23 @@
 #define HORDE_CONNECTIONS_H
 
 #include "entt/entt.hpp"
-#include "raylib.h"
 #include <unordered_map>
+#include <cstdlib>
+#include <random>
+#include <iostream>
 
 class NetworkedEntities {
     std::unordered_map<uint32_t, entt::entity> x;
     std::unordered_map<entt::entity, uint32_t> y;
 
 public:
+
     uint32_t Add(entt::entity e) {
-        uint32_t netId = GetRandomValue(1, 10000);
+        std::random_device dev;
+        std::mt19937 rng(dev());
+        std::uniform_int_distribution<std::mt19937::result_type> randint(0, UINT32_MAX);
+        uint32_t netId = randint(rng);
+
         auto it = y.find(e);
         if (it == y.end()) {
             x.insert(std::pair<uint32_t, entt::entity>(netId, e));

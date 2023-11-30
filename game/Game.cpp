@@ -64,6 +64,11 @@ bool Game::Run(bool bServer)
             CalculateFPS();
             EndDrawing();
             bRunning = bRunning && !WindowShouldClose();
+        } else if(serverDraw) {
+            BeginDrawing();
+            ClearBackground(BackgroundColor);
+            Draw();
+            EndDrawing();
         }
     }
 
@@ -105,7 +110,7 @@ void Game::Fullscreen() {
 
 bool Game::Init()
 {
-    if(!Game::IsServer()) {
+    if(!Game::IsServer() || serverDraw) {
         SetConfigFlags(FLAG_WINDOW_RESIZABLE);
         InitWindow(800, 600, "Horde");
         // Fullscreen();

@@ -58,6 +58,7 @@ public:
     static void SpawnPlayer(u_int32_t networkId);
     static bool IsServer();
     static bool IsOfflineMode();
+    bool serverDraw = false;
     void Spawn(u_int32_t networkId);
 
     void Save();
