@@ -29,7 +29,7 @@ Client::Client() {
 }
 
 void Client::SendMoveTo(Vector2 pos, u_int32_t NetworkId) {
-    NetMessageTransform* mt = new NetMessageTransform{};
+    NetMessageVector2* mt = new NetMessageVector2{};
     mt->pos = pos;
     mt->Type = ENetMsg::MoveTo;
     mt->NetworkId = NetworkId;

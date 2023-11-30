@@ -38,7 +38,7 @@ Player* Game::GetPlayer() {
     return Instance().ownedPlayer;
 }
 
-double tickRate = 30.0;
+double tickRate = 64.0;
 auto periodMicroseconds = static_cast<long long>(1e6 / tickRate);
 
 void Game::Loop() {

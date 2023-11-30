@@ -38,12 +38,10 @@ struct NetConnectionResponse : public NetMessage
     u_int32_t NetworkId;
 };
 
-struct NetMessageTransform : public NetMessage
+struct NetMessageVector2 : public NetMessage
 {
     u_int32_t NetworkId;
     Vector2 pos;
-    // NetUpdateMessage(u32 entity = 0, Transform transform = Transform{}) : NetMessage(ENetMsg::UpdateEntity),
-    //     EntityNetworkId(entity), Transform(transform) {}
 };
 
 #endif

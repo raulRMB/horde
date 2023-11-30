@@ -50,7 +50,7 @@ void Server::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
     switch (msg)
     {
         case ENetMsg::MoveTo: {
-            NetMessageTransform d = *(NetMessageTransform *) data;
+            NetMessageVector2 d = *(NetMessageVector2 *) data;
             if (System::Get<SNavigation>().IsValidPoint(d.pos)) {
                 auto e = NetworkDriver::GetNetworkedEntities().Get(d.NetworkId);
                 CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
