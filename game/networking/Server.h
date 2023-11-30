@@ -20,9 +20,10 @@ public:
     void ConnectResponse(ENetPeer* peer, uint32_t netId);
     void OnConnect(ENetPeer* peer);
     void SendOutboundMessage(OutboundMessage msg);
+    void SendPlayerJoined(uint32_t netId);
     entt::entity CreateNetworkedEntity();
 
-    void Sync(entt::entity e, Transform t, std::vector<ENetPeer*> c);
+    void Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c);
 };
 
 #endif

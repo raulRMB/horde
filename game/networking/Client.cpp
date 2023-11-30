@@ -59,16 +59,22 @@ void Client::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
     switch (msg) {
         case ENetMsg::ConnectionResponse: {
             NetConnectionResponse msg = *(NetConnectionResponse *) data;
-            Game::SpawnPlayer(msg.NetworkId);
+            Game::SpawnPlayer(msg.NetworkId, true);
             TraceLog(LOG_INFO, "connected owning entity networkID: %u", msg.NetworkId);
             break;
         }
         case ENetMsg::SyncTransform: {
             SyncTransform x = *(SyncTransform *) data;
             Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(x.NetworkId));
+            TraceLog(LOG_INFO, "syncing transform for: %u (%f, %f, %f)", x.NetworkId, x.t.translation.x, x.t.translation.y, x.t.translation.z);
             t.translation = x.t.translation;
             t.rotation = x.t.rotation;
             t.scale = x.t.scale;
+            break;
+        }
+        case ENetMsg::PlayerJoined: {
+            NetPlayerJoined msg = *(NetPlayerJoined *) data;
+            Game::SpawnPlayer(msg.NetworkId, false);
             break;
         }
     }

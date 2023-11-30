@@ -10,7 +10,8 @@ enum class ENetMsg
     InitialConnection,
     ConnectionResponse,
     MoveTo,
-    SyncTransform
+    SyncTransform,
+    PlayerJoined
 };
 
 struct NetMessage
@@ -31,6 +32,11 @@ struct InitialConnection : public NetMessage {
 struct SyncTransform : public NetMessage {
     u_int32_t NetworkId;
     Transform t;
+};
+
+struct NetPlayerJoined : public NetMessage
+{
+    u_int32_t NetworkId;
 };
 
 struct NetConnectionResponse : public NetMessage

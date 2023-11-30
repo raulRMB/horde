@@ -80,11 +80,25 @@ entt::entity Server::CreateNetworkedEntity() {
     return e;
 }
 
+void Server::SendPlayerJoined(uint32_t netId) {
+    NetPlayerJoined* res = new NetPlayerJoined{};
+    res->Type = ENetMsg::PlayerJoined;
+    res->NetworkId = netId;
+    void* payload = (void*)res;
+    ENetPacket* packet = enet_packet_create(payload, sizeof(*res), ENET_PACKET_FLAG_RELIABLE);
+    OutboundMessage msg = OutboundMessage{};
+    msg.Packet = packet;
+    msg.Connections = NetworkDriver::GetConnections();
+    NetworkDriver::GetOutboundQueue().push(msg);
+}
+
 void Server::OnConnect(ENetPeer* peer) {
-    NetworkDriver::GetConnections().push_back(peer);
     Player* p = new Player;
     players.push_back(p);
-    ConnectResponse(peer, NetworkDriver::GetNetworkedEntities().Get(p->GetEntity()));
+    auto netId = NetworkDriver::GetNetworkedEntities().Get(p->GetEntity());
+    SendPlayerJoined(netId);
+    NetworkDriver::GetConnections().push_back(peer);
+    ConnectResponse(peer, netId);
 }
 
 void Server::SendOutboundMessage(OutboundMessage msg) {
@@ -106,7 +120,7 @@ void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
     NetworkDriver::GetOutboundQueue().push(msg);
 }
 
-void Server::Sync(entt::entity e, Transform t, std::vector<ENetPeer*> c) {
+void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
     SyncTransform* st = new SyncTransform{};
     st->Type = ENetMsg::SyncTransform;
     st->NetworkId = NetworkDriver::GetNetworkedEntities().Get(e);

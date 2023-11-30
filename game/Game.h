@@ -55,11 +55,13 @@ public:
     static entt::registry& GetRegistry();
     static entt::dispatcher& GetDispatcher();
 
-    static void SpawnPlayer(u_int32_t networkId);
+    static void SpawnPlayer(u_int32_t networkId,  bool owned);
+    void Spawn(u_int32_t networkId,  bool owned);
+
     static bool IsServer();
     static bool IsOfflineMode();
     bool serverDraw = false;
-    void Spawn(u_int32_t networkId);
+
     void Loop();
 
     void Save();
