@@ -65,7 +65,7 @@ void Client::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
         }
         case ENetMsg::SyncTransform: {
             SyncTransform x = *(SyncTransform *) data;
-            Transform t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(x.NetworkId));
+            Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(x.NetworkId));
             t.translation = x.t.translation;
             t.rotation = x.t.rotation;
             t.scale = x.t.scale;

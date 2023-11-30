@@ -96,12 +96,11 @@ void Player::HandleInput(entt::registry* Registry)
         Vector2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {
-            if(NetworkDriver::IsOfflineMode()) {
-                CFollow& followComponent = GetComponent<CFollow>();
-                followComponent.FollowState = EFollowState::Dirty;
-                followComponent.Index = 1;
-                followComponent.Goal = mousePos;
-            } else {
+            CFollow& followComponent = GetComponent<CFollow>();
+            followComponent.FollowState = EFollowState::Dirty;
+            followComponent.Index = 1;
+            followComponent.Goal = mousePos;
+            if(!NetworkDriver::IsOfflineMode()) {
                 auto NetId = NetworkDriver::GetNetworkedEntities().Get(GetEntity());
                 NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
             }

@@ -38,6 +38,36 @@ Player* Game::GetPlayer() {
     return Instance().ownedPlayer;
 }
 
+double tickRate = 30.0;
+auto periodMicroseconds = static_cast<long long>(1e6 / tickRate);
+
+void Game::Loop() {
+    if(!Game::IsServer()) {
+        HandleInput();
+    }
+    if(!Game::IsServer()) {
+        Update(GetFrameTime());
+    }
+    else {
+        Update(1.0f / tickRate);
+    }
+    NetworkDriver::ProcessQueues();
+    if(!Game::IsServer()) {
+        BeginDrawing();
+        ClearBackground(BackgroundColor);
+        Draw();
+        DrawUI();
+        CalculateFPS();
+        EndDrawing();
+        bRunning = bRunning && !WindowShouldClose();
+    } else if(serverDraw) {
+        BeginDrawing();
+        ClearBackground(BackgroundColor);
+        Draw();
+        EndDrawing();
+    }
+}
+
 bool Game::Run(bool bServer)
 {
     NetworkDriver::SetIsServer(bServer);
@@ -45,41 +75,22 @@ bool Game::Run(bool bServer)
     {
         return EXIT_FAILURE;
     }
-
-    while(bRunning)
-    {
-        
-        if(!Game::IsServer()) {
-            HandleInput();
+    if(IsServer()) {
+        while (bRunning) {
+            auto startTime = std::chrono::high_resolution_clock::now();
+            Loop();
+            auto endTime = std::chrono::high_resolution_clock::now();
+            auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+            auto sleepTime = periodMicroseconds - elapsedTime;
+            if (sleepTime > 0) {
+                std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+            }
         }
-
-        if(!Game::IsServer())
-        {
-            Update(GetFrameTime());
-        }
-        else
-        {
-            Update(1.0f / 30.0f);
-        }
-
-        NetworkDriver::ProcessQueues();
-
-        if(!Game::IsServer()) {
-            BeginDrawing();
-            ClearBackground(BackgroundColor);
-            Draw();
-            DrawUI();
-            CalculateFPS();
-            EndDrawing();
-            bRunning = bRunning && !WindowShouldClose();
-        } else if(serverDraw) {
-            BeginDrawing();
-            ClearBackground(BackgroundColor);
-            Draw();
-            EndDrawing();
+    } else {
+        while (bRunning) {
+            Loop();
         }
     }
-
     return EXIT_SUCCESS;
 }
 

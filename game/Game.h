@@ -60,6 +60,7 @@ public:
     static bool IsOfflineMode();
     bool serverDraw = false;
     void Spawn(u_int32_t networkId);
+    void Loop();
 
     void Save();
     void Load();
