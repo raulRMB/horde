@@ -53,7 +53,15 @@ bool Game::Run(bool bServer)
             HandleInput();
         }
 
-        Update(GetFrameTime());
+        if(!Game::IsServer())
+        {
+            Update(GetFrameTime());
+        }
+        else
+        {
+            Update(1.0f / 30.0f);
+        }
+
         NetworkDriver::ProcessQueues();
 
         if(!Game::IsServer()) {

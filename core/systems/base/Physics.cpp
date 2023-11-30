@@ -66,7 +66,7 @@ void SPhysics::Update(float deltaSeconds)
         physics.Velocity = Vector2ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
         Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
         transform.translation += velocity * deltaSeconds;
-        //TraceLog(LOG_INFO, "x: %d, y: %d, z: %d", transform.translation.x, transform.translation.y, transform.translation.z);
+        TraceLog(LOG_INFO, "x: %f, y: %f, z: %f", transform.translation.x, transform.translation.y, transform.translation.z);
     }
     for(const entt::entity& entity : registry.view<Transform, CPhysics3D>())
     {
