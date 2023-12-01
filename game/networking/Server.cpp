@@ -27,7 +27,7 @@ Server::Server() {
 
 void Server::Loop() {
      ENetEvent event;
-     if(enet_host_service(server, &event, 0) > 0)
+     if(enet_host_service(server, &event, 2000) > 0)
      {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECTED!");

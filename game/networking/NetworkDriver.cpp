@@ -21,14 +21,14 @@ void NetworkDriver::Init(long long periodMicroseconds) {
             
             while(1)
             {
-                auto startTime = std::chrono::high_resolution_clock::now();
+//                auto startTime = std::chrono::high_resolution_clock::now();
                 NetworkDriver::GetServer()->Loop();
-                auto endTime = std::chrono::high_resolution_clock::now();
-                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-                auto sleepTime = periodMicroseconds - elapsedTime;
-                if (sleepTime > 0) {
-                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
-                }
+//                auto endTime = std::chrono::high_resolution_clock::now();
+//                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+//                auto sleepTime = periodMicroseconds - elapsedTime;
+//                if (sleepTime > 0) {
+//                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+//                }
             }
         });
         networkThread.detach();
@@ -38,14 +38,14 @@ void NetworkDriver::Init(long long periodMicroseconds) {
         {
             while(1)
             {
-                auto startTime = std::chrono::high_resolution_clock::now();
+//                auto startTime = std::chrono::high_resolution_clock::now();
                 NetworkDriver::GetClient()->Loop();
-                auto endTime = std::chrono::high_resolution_clock::now();
-                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-                auto sleepTime = periodMicroseconds - elapsedTime;
-                if (sleepTime > 0) {
-                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
-                }
+//                auto endTime = std::chrono::high_resolution_clock::now();
+//                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+//                auto sleepTime = periodMicroseconds - elapsedTime;
+//                if (sleepTime > 0) {
+//                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+//                }
             }
         });
         networkThread.detach();

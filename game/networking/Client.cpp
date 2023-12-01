@@ -44,7 +44,7 @@ void Client::SendMoveTo(Vector2 pos, u_int32_t NetworkId) {
 
 void Client::Loop() {
     ENetEvent event;
-    if(enet_host_service(client, &event, 0) > 0)
+    if(enet_host_service(client, &event, 2000) > 0)
     {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECT!");

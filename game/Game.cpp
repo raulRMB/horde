@@ -8,7 +8,7 @@
 #include "systems/moba/Navigation.h"
 #include "networking/NetworkDriver.h"
 
-double tickRate = 30.0;
+double tickRate = 60.0;
 long long periodMicroseconds = static_cast<long long>(1e6 / tickRate);
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
