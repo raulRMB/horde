@@ -39,6 +39,7 @@ void Client::SendMoveTo(Vector2 pos, u_int32_t NetworkId) {
     msg.Packet = packet;
     msg.Connections.push_back(peer);
     NetworkDriver::GetOutboundQueue().push(msg);
+    //delete mt;
 }
 
 void Client::Loop() {
@@ -48,14 +49,21 @@ void Client::Loop() {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECT!");
         } else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            NetworkDriver::GetInboundQueue().push(event.packet->data);
+            enet_uint8* dataCopy = new enet_uint8[event.packet->dataLength];
+            std::memcpy(dataCopy, event.packet->data, event.packet->dataLength);
+            NetworkDriver::GetInboundQueue().push(dataCopy);
+            enet_packet_destroy(event.packet);
         } else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECT!");
         }
     }
 }
 
+
+int gotPackets = 0;
 void Client::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
+    gotPackets++;
+    TraceLog(LOG_INFO, "Got packets %d", gotPackets);
     switch (msg) {
         case ENetMsg::ConnectionResponse: {
             NetConnectionResponse msg = *(NetConnectionResponse *) data;
@@ -66,7 +74,7 @@ void Client::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
         case ENetMsg::SyncTransform: {
             SyncTransform x = *(SyncTransform *) data;
             Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(x.NetworkId));
-            TraceLog(LOG_INFO, "syncing transform for: %u (%f, %f, %f)", x.NetworkId, x.t.translation.x, x.t.translation.y, x.t.translation.z);
+            //TraceLog(LOG_INFO, "syncing transform for: %u (%f, %f, %f)", x.NetworkId, x.t.translation.x, x.t.translation.y, x.t.translation.z);
             t.translation = x.t.translation;
             t.rotation = x.t.rotation;
             t.scale = x.t.scale;

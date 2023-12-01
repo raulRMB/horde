@@ -8,6 +8,9 @@
 #include "systems/moba/Navigation.h"
 #include "networking/NetworkDriver.h"
 
+double tickRate = 30.0;
+long long periodMicroseconds = static_cast<long long>(1e6 / tickRate);
+
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
 {
     Camera.position = {50.0f, 50.0f, 50.0f};
@@ -35,6 +38,7 @@ void Game::Spawn(u_int32_t networkId, bool owned) {
         } else {
             Player* player = new Player();
             NetworkDriver::GetNetworkedEntities().Add(player->GetEntity(), networkId);
+            //delete player;
         }
     }
 }
@@ -42,9 +46,6 @@ void Game::Spawn(u_int32_t networkId, bool owned) {
 Player* Game::GetPlayer() {
     return Instance().ownedPlayer;
 }
-
-double tickRate = 64.0;
-auto periodMicroseconds = static_cast<long long>(1e6 / tickRate);
 
 void Game::Loop() {
     if(!Game::IsServer()) {
@@ -65,11 +66,6 @@ void Game::Loop() {
         CalculateFPS();
         EndDrawing();
         bRunning = bRunning && !WindowShouldClose();
-    } else if(serverDraw) {
-        BeginDrawing();
-        ClearBackground(BackgroundColor);
-        Draw();
-        EndDrawing();
     }
 }
 
@@ -143,7 +139,7 @@ bool Game::Init()
     SetActiveScene(new MainScene());
     Start();
 
-    NetworkDriver::Start();
+    NetworkDriver::Start(periodMicroseconds);
     return true;
 }
 

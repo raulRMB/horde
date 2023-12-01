@@ -35,9 +35,13 @@ void Server::Loop() {
             c->peer = event.peer;
             c->Type = ENetMsg::InitialConnection;
             NetworkDriver::GetInboundQueue().push((enet_uint8*)c);
+            //delete c;
         }
         else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            NetworkDriver::GetInboundQueue().push(event.packet->data);
+            enet_uint8* dataCopy = new enet_uint8[event.packet->dataLength];
+            std::memcpy(dataCopy, event.packet->data, event.packet->dataLength);
+            NetworkDriver::GetInboundQueue().push(dataCopy);
+            enet_packet_destroy(event.packet);
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECTED!");
@@ -90,6 +94,7 @@ void Server::SendPlayerJoined(uint32_t netId) {
     msg.Packet = packet;
     msg.Connections = NetworkDriver::GetConnections();
     NetworkDriver::GetOutboundQueue().push(msg);
+    //delete res;
 }
 
 void Server::OnConnect(ENetPeer* peer) {
@@ -101,9 +106,12 @@ void Server::OnConnect(ENetPeer* peer) {
     ConnectResponse(peer, netId);
 }
 
+int packetsSent = 0;
 void Server::SendOutboundMessage(OutboundMessage msg) {
     for(ENetPeer* peer : msg.Connections) {
+        packetsSent++;
         enet_peer_send(peer, 0, msg.Packet);
+        TraceLog(LOG_INFO, "sent %d packets", packetsSent);
     }
 }
 
@@ -118,6 +126,7 @@ void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
     msg.Packet = packet;
     msg.Connections.push_back(peer);
     NetworkDriver::GetOutboundQueue().push(msg);
+    //delete res;
 }
 
 void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
@@ -126,11 +135,12 @@ void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
     st->NetworkId = NetworkDriver::GetNetworkedEntities().Get(e);
     st->t = t;
     void* payload = (void*)st;
-    ENetPacket* packet = enet_packet_create(payload, sizeof(*st), ENET_PACKET_FLAG_RELIABLE);
+    ENetPacket* packet = enet_packet_create(payload, sizeof(*st), ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
     OutboundMessage msg = OutboundMessage{};
     msg.Packet = packet;
     msg.Connections = c;
     NetworkDriver::GetOutboundQueue().push(msg);
+    //delete st;
 }
 
 void Server::Close() {

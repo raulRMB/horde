@@ -13,21 +13,21 @@ std::set<entt::entity> toDestroy;
 void SPhysics::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity : registry.view<Transform, CPhysics2D, CAttributes>())
-    {
-        Transform& transform = registry.get<Transform>(entity);
-        CAttributes& ac = registry.get<CAttributes>(entity);
-        FAttribute* moveSpeed = Util::GetAttribute(ac, "moveSpeed");
+    // for(const entt::entity& entity : registry.view<Transform, CPhysics2D, CAttributes>())
+    // {
+    //     Transform& transform = registry.get<Transform>(entity);
+    //     CAttributes& ac = registry.get<CAttributes>(entity);
+    //     FAttribute* moveSpeed = Util::GetAttribute(ac, "moveSpeed");
 
-        if(moveSpeed->id != "empty") {
-            CPhysics2D &physics = registry.get<CPhysics2D>(entity);
-            physics.Velocity += physics.Acceleration * deltaSeconds;
-            physics.Velocity = Vector2ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
-            Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
-            velocity *= moveSpeed->get();
-            transform.translation += velocity * deltaSeconds;
-        }
-    }
+    //     if(moveSpeed->id != "empty") {
+    //         CPhysics2D &physics = registry.get<CPhysics2D>(entity);
+    //         physics.Velocity += physics.Acceleration * deltaSeconds;
+    //         physics.Velocity = Vector2ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
+    //         Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
+    //         velocity *= moveSpeed->get();
+    //         transform.translation += velocity * deltaSeconds;
+    //     }
+    // }
 
     auto entities = registry.view<CPhysics2D, Transform>();
     for (auto it = entities.begin(); it != entities.end(); ++it) {
@@ -66,6 +66,7 @@ void SPhysics::Update(float deltaSeconds)
         physics.Velocity = Vector2ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
         Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
         transform.translation += velocity * deltaSeconds;
+        //TraceLog(LOG_INFO, "x: %f, y: %f, z: %f", transform.translation.x, transform.translation.y, transform.translation.z);
     }
     for(const entt::entity& entity : registry.view<Transform, CPhysics3D>())
     {

@@ -6,6 +6,7 @@
 
 struct CNetwork {
     std::set<std::string> tags;
+    Transform prevTransform = Transform{};
 };
 
 #endif

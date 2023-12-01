@@ -23,6 +23,8 @@ public:
     void SendPlayerJoined(uint32_t netId);
     entt::entity CreateNetworkedEntity();
 
+
+    void flush() { enet_host_flush(server); }
     void Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c);
 };
 

@@ -13,24 +13,39 @@ void NetworkDriver::SetIsServer(bool isServer) {
     Instance().isServer = isServer;
 }
 
-void NetworkDriver::Init() {
+void NetworkDriver::Init(long long periodMicroseconds) {
     if(NetworkDriver::IsServer()) {
         server = new Server();
-        std::thread networkThread([]()
+        std::thread networkThread([periodMicroseconds]()
         {
+            
             while(1)
             {
+                auto startTime = std::chrono::high_resolution_clock::now();
                 NetworkDriver::GetServer()->Loop();
+                auto endTime = std::chrono::high_resolution_clock::now();
+                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+                auto sleepTime = periodMicroseconds - elapsedTime;
+                if (sleepTime > 0) {
+                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+                }
             }
         });
         networkThread.detach();
     } else {
         client = new Client();
-        std::thread networkThread([]()
+        std::thread networkThread([periodMicroseconds]()
         {
             while(1)
             {
+                auto startTime = std::chrono::high_resolution_clock::now();
                 NetworkDriver::GetClient()->Loop();
+                auto endTime = std::chrono::high_resolution_clock::now();
+                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+                auto sleepTime = periodMicroseconds - elapsedTime;
+                if (sleepTime > 0) {
+                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+                }
             }
         });
         networkThread.detach();
@@ -40,15 +55,13 @@ void NetworkDriver::Init() {
 void NetworkDriver::ProcessQueues() {
     while(!GetInboundQueue().empty()) {
         enet_uint8 *data = GetInboundQueue().front();
-        if(data == nullptr) {
-            continue;
-        }
         ENetMsg type = *(ENetMsg *) data;
         if(IsServer()) {
             Instance().server->OnInboundMessage(type, data);
         } else {
             Instance().client->OnInboundMessage(type, data);
         }
+        delete data;
         GetInboundQueue().pop();
     }
     while(!GetOutboundQueue().empty()) {
@@ -59,6 +72,11 @@ void NetworkDriver::ProcessQueues() {
             Instance().client->SendOutboundMessage(som.Packet);
         }
         GetOutboundQueue().pop();
+    }
+    if(IsServer()) {
+        Instance().server->flush();
+    } else {
+        Instance().client->flush();
     }
 }
 

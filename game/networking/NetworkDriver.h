@@ -30,8 +30,8 @@ class NetworkDriver {
     std::queue<OutboundMessage> outboundQueue;
 
 public:
-    void Init();
-    static void Start() { Instance().Init(); };
+    void Init(long long periodMicroseconds);
+    static void Start(long long periodMicroseconds) { Instance().Init(periodMicroseconds); };
     static bool IsServer();
     static bool IsOfflineMode();
     static Server* GetServer();
