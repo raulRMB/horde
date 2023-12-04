@@ -26,7 +26,7 @@ class NetworkDriver {
     Server* server;
     NetworkedEntities networkedEntities;
     std::vector<ENetPeer*> connections;
-    std::queue<enet_uint8*> inboundQueue;
+    std::queue<IncomingMessage> inboundQueue;
     std::queue<OutboundMessage> outboundQueue;
 
 public:
@@ -36,7 +36,7 @@ public:
     static bool IsOfflineMode();
     static Server* GetServer();
     static Client* GetClient();
-    static std::queue<enet_uint8*>& GetInboundQueue() { return Instance().inboundQueue; };
+    static std::queue<IncomingMessage>& GetInboundQueue() { return Instance().inboundQueue; };
     static std::queue<OutboundMessage>& GetOutboundQueue() { return Instance().outboundQueue; };
     static std::vector<ENetPeer*>& GetConnections() { return Instance().connections; };
     static void ProcessQueues();

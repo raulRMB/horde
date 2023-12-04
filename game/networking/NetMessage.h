@@ -3,51 +3,16 @@
 
 #include <raylib.h>
 #include <entt/entt.hpp>
+#include <vector>
 
-enum class ENetMsg
-{
-    None = 0,
-    InitialConnection,
-    ConnectionResponse,
-    MoveTo,
-    SyncTransform,
-    PlayerJoined
-};
-
-struct NetMessage
-{
-    ENetMsg Type = ENetMsg::None;
-    NetMessage(ENetMsg type = ENetMsg::None) : Type(type) {}
+struct IncomingMessage {
+    ENetPeer* peer;
+    enet_uint8* data;
 };
 
 struct OutboundMessage {
     ENetPacket* Packet;
     std::vector<ENetPeer*> Connections;
-};
-
-struct InitialConnection : public NetMessage {
-    ENetPeer* peer;
-};
-
-struct SyncTransform : public NetMessage {
-    u_int32_t NetworkId;
-    Transform t;
-};
-
-struct NetPlayerJoined : public NetMessage
-{
-    u_int32_t NetworkId;
-};
-
-struct NetConnectionResponse : public NetMessage
-{
-    u_int32_t NetworkId;
-};
-
-struct NetMessageVector2 : public NetMessage
-{
-    u_int32_t NetworkId;
-    Vector2 pos;
 };
 
 #endif

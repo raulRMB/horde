@@ -10,6 +10,10 @@
 #include "components/Follow.h"
 #include "components/Network.h"
 
+#include "flatbuffers/flatbuffers.h"
+#include "flatbuffers/flexbuffers.h"
+#include "networking/buffers/Events_generated.h"
+
 Server::Server() {
     if (enet_initialize() != 0) {
         TraceLog(LOG_INFO, "Failed to initialize ENet");
@@ -29,78 +33,56 @@ void Server::Loop() {
      ENetEvent event;
      if(enet_host_service(server, &event, 2000) > 0)
      {
-        if(event.type == ENET_EVENT_TYPE_CONNECT) {
-            TraceLog(LOG_INFO, "CONNECTED!");
-            InitialConnection* c = new InitialConnection;
-            c->peer = event.peer;
-            c->Type = ENetMsg::InitialConnection;
-            NetworkDriver::GetInboundQueue().push((enet_uint8*)c);
-            //delete c;
-        }
+        if(event.type == ENET_EVENT_TYPE_CONNECT) {}
         else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
+            IncomingMessage msg;
             enet_uint8* dataCopy = new enet_uint8[event.packet->dataLength];
             std::memcpy(dataCopy, event.packet->data, event.packet->dataLength);
-            NetworkDriver::GetInboundQueue().push(dataCopy);
+            msg.data = dataCopy;
+            msg.peer = event.peer;
+            NetworkDriver::GetInboundQueue().push(msg);
             enet_packet_destroy(event.packet);
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECTED!");
         }
      }
-
 }
 
-void Server::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
-    switch (msg)
-    {
-        case ENetMsg::MoveTo: {
-            NetMessageVector2 d = *(NetMessageVector2 *) data;
-            if (System::Get<SNavigation>().IsValidPoint(d.pos)) {
-                auto e = NetworkDriver::GetNetworkedEntities().Get(d.NetworkId);
+void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
+    switch (header->Event_type()) {
+        case Net::Events_OnConnection: {
+            OnConnect(peer);
+            break;
+        }
+        case Net::Events_OnMoveTo: {
+            auto res = header->Event_as_OnMoveTo();
+            Vector2 vec = Vector2{res->pos()->x(), res->pos()->y()};
+            if (System::Get<SNavigation>().IsValidPoint(vec)) {
+                auto e = NetworkDriver::GetNetworkedEntities().Get(res->netId());
                 CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
                 followComponent.FollowState = EFollowState::Dirty;
                 followComponent.Index = 1;
-                TraceLog(LOG_INFO, "x: %f y %f", d.pos.x, d.pos.y);
-                followComponent.Goal = d.pos;
+                followComponent.Goal = vec;
+                break;
             }
-            break;
         }
-        case ENetMsg::InitialConnection: {
-            InitialConnection x = *(InitialConnection *) data;
-            OnConnect(x.peer);
-            break;
-        }
-        default:
-            TraceLog(LOG_INFO, "DEFAULT");
-            break;
     }
 }
 
-entt::entity Server::CreateNetworkedEntity() {
-    entt::entity e = Game::GetRegistry().create();
-    CNetwork n = CNetwork{};
-    Game::GetRegistry().emplace<CNetwork>(e, n);
-    NetworkDriver::GetNetworkedEntities().Add(e);
-    return e;
-}
-
 void Server::SendPlayerJoined(uint32_t netId) {
-    NetPlayerJoined* res = new NetPlayerJoined{};
-    res->Type = ENetMsg::PlayerJoined;
-    res->NetworkId = netId;
-    void* payload = (void*)res;
-    ENetPacket* packet = enet_packet_create(payload, sizeof(*res), ENET_PACKET_FLAG_RELIABLE);
-    OutboundMessage msg = OutboundMessage{};
-    msg.Packet = packet;
-    msg.Connections = NetworkDriver::GetConnections();
-    NetworkDriver::GetOutboundQueue().push(msg);
-    //delete res;
+    flatbuffers::FlatBufferBuilder builder;
+    Net::OnPlayerJoinedBuilder pjb(builder);
+    pjb.add_netId(netId);
+    auto pj = pjb.Finish();
+    Send(builder, Net::Events::Events_OnPlayerJoined, pj.Union(), NetworkDriver::GetConnections());
 }
 
 void Server::OnConnect(ENetPeer* peer) {
     Player* p = new Player;
     players.push_back(p);
     auto netId = NetworkDriver::GetNetworkedEntities().Get(p->GetEntity());
+    NetworkDriver::GetNetworkedEntities().SetOwner(netId, peer);
     SendPlayerJoined(netId);
     NetworkDriver::GetConnections().push_back(peer);
     ConnectResponse(peer, netId);
@@ -111,36 +93,70 @@ void Server::SendOutboundMessage(OutboundMessage msg) {
     for(ENetPeer* peer : msg.Connections) {
         packetsSent++;
         enet_peer_send(peer, 0, msg.Packet);
-        TraceLog(LOG_INFO, "sent %d packets", packetsSent);
     }
 }
 
-void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
-    NetConnectionResponse* res = new NetConnectionResponse{};
-    res->Type = ENetMsg::ConnectionResponse;
-    TraceLog(LOG_INFO, "owning entity networkID: %u", netId);
-    res->NetworkId = netId;
-    void* payload = (void*)res;
-    ENetPacket* packet = enet_packet_create(payload, sizeof(*res), ENET_PACKET_FLAG_RELIABLE);
-    OutboundMessage msg = OutboundMessage{};
-    msg.Packet = packet;
-    msg.Connections.push_back(peer);
-    NetworkDriver::GetOutboundQueue().push(msg);
-    //delete res;
+std::vector<int32_t> Server::GetOtherPlayers(ENetPeer* peer) {
+    std::vector<int32_t> otherPlayers;
+    for(ENetPeer* connection : NetworkDriver::GetConnections()) {
+        if(connection == peer) {
+            continue;
+        }
+        otherPlayers.push_back(NetworkDriver::GetNetworkedEntities().GetOwner(connection));
+    }
+    return otherPlayers;
 }
 
-void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
-    SyncTransform* st = new SyncTransform{};
-    st->Type = ENetMsg::SyncTransform;
-    st->NetworkId = NetworkDriver::GetNetworkedEntities().Get(e);
-    st->t = t;
-    void* payload = (void*)st;
-    ENetPacket* packet = enet_packet_create(payload, sizeof(*st), ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
+std::vector<ENetPeer*>& Server::CreatePeerVector(ENetPeer* peer) {
+    std::vector<ENetPeer*>* x = new std::vector<ENetPeer*>();
+    x->push_back(peer);
+    return *x;
+}
+
+void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
+    auto otherPlayers = GetOtherPlayers(peer);
+    flatbuffers::FlatBufferBuilder builder;
+    auto vec = builder.CreateVector(otherPlayers);
+    Net::OnConnectionResponseBuilder crbuilder(builder);
+    crbuilder.add_netId(netId);
+    crbuilder.add_otherPlayers(vec);
+    auto connectionResponse = crbuilder.Finish();
+    Send(builder, Net::Events::Events_OnConnectionResponse, connectionResponse.Union(), CreatePeerVector(peer));
+}
+
+void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c) {
+    auto header = CreateHeader(builder, type, data);
+    builder.Finish(header);
+    ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), ENET_PACKET_FLAG_RELIABLE);
     OutboundMessage msg = OutboundMessage{};
     msg.Packet = packet;
     msg.Connections = c;
     NetworkDriver::GetOutboundQueue().push(msg);
-    //delete st;
+}
+
+flatbuffers::Offset<Net::Vector3> Server::CreateVector3(flatbuffers::FlatBufferBuilder &builder, Vector3 v) {
+    return Net::CreateVector3(builder, v.x, v.y, v.z);
+}
+
+flatbuffers::Offset<Net::Vector4> Server::CreateVector4(flatbuffers::FlatBufferBuilder &builder, Vector4 v) {
+    return Net::CreateVector4(builder, v.x, v.y, v.z, v.w);
+}
+
+flatbuffers::Offset<Net::Transform> Server::CreateTransform(flatbuffers::FlatBufferBuilder &builder, Transform& t) {
+    auto translation = CreateVector3(builder, t.translation);
+    auto scale = CreateVector3(builder, t.scale);
+    auto quat = CreateVector4(builder, t.rotation);
+    return Net::CreateTransform(builder, translation, scale, quat);
+}
+
+void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
+    flatbuffers::FlatBufferBuilder builder;
+    auto x = CreateTransform(builder, t);
+    Net::SyncTransformBuilder stb = Net::SyncTransformBuilder(builder);
+    stb.add_netId(NetworkDriver::GetNetworkedEntities().Get(e));
+    stb.add_transform(x);
+    auto payload = stb.Finish();
+    Send(builder, Net::Events::Events_SyncTransform, payload.Union(), c);
 }
 
 void Server::Close() {

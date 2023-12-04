@@ -108,10 +108,12 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(IsKeyPressed(KEY_Q))
     {
-        RayCollision Collision = Util::GetMouseCollision();
-        Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
-        Transform t = GetComponent<Transform>();
-        Projectile(GetEntity(), clickPoint.translation, t.translation);
+        if(!Game::IsServer()) {
+            RayCollision Collision = Util::GetMouseCollision();
+            Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
+            Transform t = GetComponent<Transform>();
+            Projectile(GetEntity(), clickPoint.translation, t.translation);
+        }
     }
     if(IsKeyPressed(KEY_W))
     {

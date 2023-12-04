@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "NetworkDriver.h"
 #include "NetMessage.h"
+#include "networking/buffers/Events_generated.h"
 
 Client::Client() {
     if (enet_initialize() != 0) {
@@ -29,17 +30,32 @@ Client::Client() {
 }
 
 void Client::SendMoveTo(Vector2 pos, u_int32_t NetworkId) {
-    NetMessageVector2* mt = new NetMessageVector2{};
-    mt->pos = pos;
-    mt->Type = ENetMsg::MoveTo;
-    mt->NetworkId = NetworkId;
-    void* payload = (void*)mt;
-    ENetPacket* packet = enet_packet_create(payload, sizeof(*mt), ENET_PACKET_FLAG_RELIABLE);
+    flatbuffers::FlatBufferBuilder builder;
+    auto vec = Net::CreateVector2(builder, pos.x, pos.y);
+    Net::OnMoveToBuilder mtbuilder(builder);
+    mtbuilder.add_netId(NetworkId);
+    mtbuilder.add_pos(vec);
+    auto moveto = mtbuilder.Finish();
+    Send(builder, Net::Events_OnMoveTo, moveto.Union());
+}
+
+void Client::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data) {
+    auto header = CreateHeader(builder, type, data);
+    builder.Finish(header);
+    ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), ENET_PACKET_FLAG_RELIABLE);
     OutboundMessage msg = OutboundMessage{};
     msg.Packet = packet;
     msg.Connections.push_back(peer);
     NetworkDriver::GetOutboundQueue().push(msg);
-    //delete mt;
+}
+
+void Client::SendInitialConnection() {
+    flatbuffers::FlatBufferBuilder builder;
+    auto sec = builder.CreateString("YOOO");
+    Net::OnConnectionBuilder cbuilder(builder);
+    cbuilder.add_secret(sec);
+    auto d = cbuilder.Finish();
+    Send(builder, Net::Events::Events_OnConnection, d.Union());
 }
 
 void Client::Loop() {
@@ -48,10 +64,14 @@ void Client::Loop() {
     {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
             TraceLog(LOG_INFO, "CONNECT!");
+            SendInitialConnection();
         } else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
+            IncomingMessage msg;
             enet_uint8* dataCopy = new enet_uint8[event.packet->dataLength];
             std::memcpy(dataCopy, event.packet->data, event.packet->dataLength);
-            NetworkDriver::GetInboundQueue().push(dataCopy);
+            msg.data = dataCopy;
+            msg.peer = event.peer;
+            NetworkDriver::GetInboundQueue().push(msg);
             enet_packet_destroy(event.packet);
         } else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
             TraceLog(LOG_INFO, "DISCONNECT!");
@@ -59,30 +79,31 @@ void Client::Loop() {
     }
 }
 
-
 int gotPackets = 0;
-void Client::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
+void Client::OnInboundMessage(const Net::Header* header) {
     gotPackets++;
-    TraceLog(LOG_INFO, "Got packets %d", gotPackets);
-    switch (msg) {
-        case ENetMsg::ConnectionResponse: {
-            NetConnectionResponse msg = *(NetConnectionResponse *) data;
-            Game::SpawnPlayer(msg.NetworkId, true);
-            TraceLog(LOG_INFO, "connected owning entity networkID: %u", msg.NetworkId);
+    switch (header->Event_type()) {
+        case Net::Events_OnConnectionResponse: {
+            auto res = header->Event_as_OnConnectionResponse();
+            Game::SpawnPlayer(res->netId(), true);
+            std::vector<uint32_t> stdVector(res->otherPlayers()->begin(), res->otherPlayers()->end());
+            for(uint32_t otherPlayer : stdVector) {
+                Game::SpawnPlayer(otherPlayer, false);
+            }
+            TraceLog(LOG_INFO, "connected owning entity networkID: %u", res->netId());
             break;
         }
-        case ENetMsg::SyncTransform: {
-            SyncTransform x = *(SyncTransform *) data;
-            Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(x.NetworkId));
-            //TraceLog(LOG_INFO, "syncing transform for: %u (%f, %f, %f)", x.NetworkId, x.t.translation.x, x.t.translation.y, x.t.translation.z);
-            t.translation = x.t.translation;
-            t.rotation = x.t.rotation;
-            t.scale = x.t.scale;
+        case Net::Events_SyncTransform: {
+            auto res = header->Event_as_SyncTransform();
+            Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+            t.translation.x = res->transform()->translation()->x();
+            t.translation.y = res->transform()->translation()->y();
+            t.translation.z = res->transform()->translation()->z();
             break;
         }
-        case ENetMsg::PlayerJoined: {
-            NetPlayerJoined msg = *(NetPlayerJoined *) data;
-            Game::SpawnPlayer(msg.NetworkId, false);
+        case Net::Events_OnPlayerJoined: {
+            auto res = header->Event_as_OnPlayerJoined();
+            Game::SpawnPlayer(res->netId(), false);
             break;
         }
     }

@@ -1,0 +1,56 @@
+namespace Net;
+
+table Vector2 {
+    x: float;
+    y: float;
+}
+
+table Vector3 {
+    x: float;
+    y: float;
+    z: float;
+}
+
+table Vector4 {
+    x: float;
+    y: float;
+    z: float;
+    w: float;
+}
+
+table Transform {
+    translation: Vector3;
+    scale: Vector3;
+    quaternion: Vector4;
+}
+
+table SyncTransform {
+    transform: Transform;
+    netId: uint;
+}
+
+table OnPlayerJoined {
+    netId: uint;
+}
+
+table OnConnectionResponse {
+    netId: int;
+    otherPlayers: [int];
+}
+
+table OnConnection {
+    secret: string;
+}
+
+table OnMoveTo {
+    netId: uint;
+    pos: Vector2;
+}
+
+union Events { OnConnectionResponse, OnConnection, OnMoveTo, SyncTransform, OnPlayerJoined }
+
+table Header {
+    Event: Events;
+}
+
+root_type Header;

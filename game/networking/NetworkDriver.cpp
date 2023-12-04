@@ -1,5 +1,6 @@
 #include "NetworkDriver.h"
 #include "components/Follow.h"
+#include "networking/buffers/Events_generated.h"
 
 NetworkDriver::NetworkDriver(){}
 
@@ -16,19 +17,11 @@ void NetworkDriver::SetIsServer(bool isServer) {
 void NetworkDriver::Init(long long periodMicroseconds) {
     if(NetworkDriver::IsServer()) {
         server = new Server();
-        std::thread networkThread([periodMicroseconds]()
+        std::thread networkThread([]()
         {
-            
             while(1)
             {
-//                auto startTime = std::chrono::high_resolution_clock::now();
                 NetworkDriver::GetServer()->Loop();
-//                auto endTime = std::chrono::high_resolution_clock::now();
-//                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-//                auto sleepTime = periodMicroseconds - elapsedTime;
-//                if (sleepTime > 0) {
-//                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
-//                }
             }
         });
         networkThread.detach();
@@ -38,14 +31,7 @@ void NetworkDriver::Init(long long periodMicroseconds) {
         {
             while(1)
             {
-//                auto startTime = std::chrono::high_resolution_clock::now();
                 NetworkDriver::GetClient()->Loop();
-//                auto endTime = std::chrono::high_resolution_clock::now();
-//                auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-//                auto sleepTime = periodMicroseconds - elapsedTime;
-//                if (sleepTime > 0) {
-//                    std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
-//                }
             }
         });
         networkThread.detach();
@@ -54,14 +40,13 @@ void NetworkDriver::Init(long long periodMicroseconds) {
 
 void NetworkDriver::ProcessQueues() {
     while(!GetInboundQueue().empty()) {
-        enet_uint8 *data = GetInboundQueue().front();
-        ENetMsg type = *(ENetMsg *) data;
+        auto msg = GetInboundQueue().front();
+        auto header = Net::GetHeader(msg.data);
         if(IsServer()) {
-            Instance().server->OnInboundMessage(type, data);
+            Instance().server->OnInboundMessage(header, msg.peer);
         } else {
-            Instance().client->OnInboundMessage(type, data);
+            Instance().client->OnInboundMessage(header);
         }
-        delete data;
         GetInboundQueue().pop();
     }
     while(!GetOutboundQueue().empty()) {
