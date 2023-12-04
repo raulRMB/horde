@@ -2,6 +2,9 @@
 #include "../../Canvas.h"
 #include "Hotbar.h"
 
+namespace tZ
+{
+
 bool Hotbar::isHovered()  {
     return false;
 }
@@ -17,7 +20,7 @@ void Hotbar::OnDragCancelled() {
 void Hotbar::OnHover() {
 }
 
-void Hotbar::OnWindowResize(Vector2 screenSize) {
+void Hotbar::OnWindowResize(v2 screenSize) {
     float width = screenSize.x * 0.3;
 
     float slotWidth = width / slots.size();
@@ -70,4 +73,6 @@ void Hotbar::AddSlot(std::string texturePath) {
     auto slotImg = LoadTexture(texturePath.c_str());
     slot->SetImage(slotImg);
     slots.push_back(slot);
+}
+
 }

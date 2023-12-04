@@ -1,8 +1,11 @@
 #ifndef NET_MESSAGES
 #define NET_MESSAGES
 
-#include <raylib.h>
 #include <entt/entt.hpp>
+#include "components/Transform.h"
+
+namespace tZ
+{
 
 enum class ENetMsg
 {
@@ -20,34 +23,36 @@ struct NetMessage
     NetMessage(ENetMsg type = ENetMsg::None) : Type(type) {}
 };
 
-struct OutboundMessage {
+struct NetOutboundMessage {
     ENetPacket* Packet;
     std::vector<ENetPeer*> Connections;
 };
 
-struct InitialConnection : public NetMessage {
+struct NetInitialConnection : public NetMessage {
     ENetPeer* peer;
 };
 
-struct SyncTransform : public NetMessage {
-    u_int32_t NetworkId;
-    Transform t;
+struct NetSyncTransform : public NetMessage {
+    uint32_t NetworkId;
+    CTransform t;
 };
 
 struct NetPlayerJoined : public NetMessage
 {
-    u_int32_t NetworkId;
+    uint32_t NetworkId;
 };
 
 struct NetConnectionResponse : public NetMessage
 {
-    u_int32_t NetworkId;
+    uint32_t NetworkId;
 };
 
 struct NetMessageVector2 : public NetMessage
 {
-    u_int32_t NetworkId;
-    Vector2 pos;
+    uint32_t NetworkId;
+    v2 Vector;
 };
+
+}
 
 #endif

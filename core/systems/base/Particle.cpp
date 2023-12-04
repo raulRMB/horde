@@ -1,13 +1,15 @@
 #include "Particle.h"
-#include "raylib.h"
 #include "components/Particle.h"
+
+namespace tZ
+{
 
 void SParticle::Update(float deltaSeconds) {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity : registry.view<CEmitter, Transform>())
+    for(const entt::entity& entity : registry.view<CEmitter, CTransform>())
     {
         CEmitter& emitter = registry.get<CEmitter>(entity);
-        Transform& transform = registry.get<Transform>(entity);
+        CTransform& transform = registry.get<CTransform>(entity);
         emitter.Time += deltaSeconds;
         if(emitter.Time > emitter.Frequency && emitter.ParticleCount < emitter.MaxParticles) {
             emitter.ParticleCount++;
@@ -31,4 +33,6 @@ void SParticle::Update(float deltaSeconds) {
             registry.destroy(entity);
         }
     }
+}
+
 }

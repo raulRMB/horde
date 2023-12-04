@@ -3,14 +3,13 @@
 
 #include <glm/gtx/norm.hpp>
 #include <vector>
-#include <raylib.h>
 #include "../primitives/Triangles.h"
 
-namespace Navigation
+namespace tZ::Navigation
 {
 
 bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge);
-Vector3 Intersect(Vector3 planeP, Vector3 planeN, Vector3 rayP, Vector3 rayD);
+v3 Intersect(v3 planeP, v3 planeN, v3 rayP, v3 rayD);
 
 class TriangleNode
 {
@@ -19,9 +18,9 @@ class TriangleNode
     std::vector<TriangleNode*> neighbors;
     float gCost = 0.f;
     float hCost = 0.f;
-    Vector2 circumcenter;
+    v2 circumcenter;
     float circumradius;
-    Vector2 incenter;
+    v2 incenter;
     TriangleNode* parent = nullptr;
     bool bBlocked = false;
 
@@ -40,8 +39,8 @@ public:
     [[nodiscard]] inline const float GetGCost() const { return gCost; }
     [[nodiscard]] inline const float GetHCost() const { return hCost; }
 
-    [[nodiscard]] inline const Vector2& GetCircumCenter() const { return circumcenter; }
-    [[nodiscard]] inline const Vector2& GetInCenter() const { return incenter; }
+    [[nodiscard]] inline const v2& GetCircumCenter() const { return circumcenter; }
+    [[nodiscard]] inline const v2& GetInCenter() const { return incenter; }
     [[nodiscard]] inline const float GetRadius() const { return circumradius; }
 
     [[nodiscard]] inline TriangleNode* GetParent() const { return parent; }
@@ -60,17 +59,17 @@ public:
     void SetIndex(unsigned int i);
 };
 
-void FindIncenter(const Triangle2D& triangle, Vector2& incenter);
+void FindIncenter(const Triangle2D& triangle, v2& incenter);
 void FindCircumcircle(const Triangle2D& triangle, glm::vec2& circumcenter, float& circumradius);
-std::vector<TriangleNode> BowyerWatson(std::vector<Vector2>& points);
-bool PointInTriangle(const Vector2& p, const Triangle2D& t);
-void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<Vector2>& points);
-void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<TriangleNode>& triangles);
-float TriangleArea2(const Vector2& A, const Vector2& B, const Vector2& C);
-std::vector<Vector2> StringPull(std::vector<Edge2D>& portals, const Vector2& start, const Vector2& end);
+std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points);
+bool PointInTriangle(const v2& p, const Triangle2D& t);
+void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<v2>& points);
+void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<TriangleNode>& triangles);
+float TriangleArea2(const v2& A, const v2& B, const v2& C);
+std::vector<v2> StringPull(std::vector<Edge2D>& portals, const v2& start, const v2& end);
 const Edge2D* GetSharedEdge(const Triangle2D& t1, const Triangle2D& t2);
 
-bool IsOnRight(const Vector2& O, const Vector2& A, const Vector2& B);
+bool IsOnRight(const v2& O, const v2& A, const v2& B);
 
 inline void vcpy(float* v1, const float* v2)
 {

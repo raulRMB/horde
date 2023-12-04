@@ -1,19 +1,25 @@
 #include "ModelDrawing.h"
 #include "entt/entt.hpp"
-#include "raymath.h"
-#include "raylib.h"
-#include "primitives/Triangles.h"
 #include "components/Model.h"
+#include "components/Transform.h"
+
+#include <raylib.h>
+#include "raylibEx.h"
+
+namespace tZ
+{
 
 void SModelDrawing::Draw()
 {
     for(const entt::entity& entity : Game::GetRegistry().view<CModel>())
     {
         const CModel& modelComponent = Game::GetRegistry().get<CModel>(entity);
-        const Transform& t = Game::GetRegistry().get<Transform>(entity);
+        const CTransform& t = Game::GetRegistry().get<CTransform>(entity);
         if(!modelComponent.hidden)
         {
-            DrawModel(modelComponent.model, t.translation, modelComponent.scale, WHITE);
+            DrawModel(modelComponent.model, ToRaylibVector3(t.Position), modelComponent.scale, WHITE);
         }
     }
+}
+
 }

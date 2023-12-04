@@ -7,6 +7,9 @@
 
 #include "Scene.h"
 
+namespace tZ
+{
+
 class TestScene : public Scene
 {
 public:
@@ -20,5 +23,6 @@ public:
     void Load() override {}
 };
 
+}
 
 #endif //HORDE_TESTSCENE_H

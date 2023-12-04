@@ -1,5 +1,4 @@
 #include <enet/enet.h>
-#include "raylib.h"
 #include <iostream>
 #include "Server.h"
 #include "Game.h"
@@ -10,28 +9,31 @@
 #include "components/Follow.h"
 #include "components/Network.h"
 
+namespace tZ
+{
+
 Server::Server() {
     if (enet_initialize() != 0) {
-        TraceLog(LOG_INFO, "Failed to initialize ENet");
+        printf("Failed to initialize ENet");
     }
     ENetAddress address;
     address.host = ENET_HOST_ANY;
     address.port = 7777;
     server = enet_host_create(&address, 32, 2, 0, 0);
     if (server == nullptr) {
-        TraceLog(LOG_INFO, "Failed to create server");
+        printf("Failed to create server");
         enet_deinitialize();
     }
-    TraceLog(LOG_INFO, "Server Running");
+    printf("Server Running");
 }
 
 void Server::Loop() {
-     ENetEvent event;
-     if(enet_host_service(server, &event, 2000) > 0)
-     {
+    ENetEvent event;
+    if(enet_host_service(server, &event, 2000) > 0)
+    {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
-            TraceLog(LOG_INFO, "CONNECTED!");
-            InitialConnection* c = new InitialConnection;
+            printf("CONNECTED!");
+            NetInitialConnection* c = new NetInitialConnection;
             c->peer = event.peer;
             c->Type = ENetMsg::InitialConnection;
             NetworkDriver::GetInboundQueue().push((enet_uint8*)c);
@@ -39,40 +41,40 @@ void Server::Loop() {
         }
         else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
             enet_uint8* dataCopy = new enet_uint8[event.packet->dataLength];
-            std::memcpy(dataCopy, event.packet->data, event.packet->dataLength);
+            // std::memcpy(dataCopy, event.packet->data, event.packet->dataLength);
             NetworkDriver::GetInboundQueue().push(dataCopy);
             enet_packet_destroy(event.packet);
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
-            TraceLog(LOG_INFO, "DISCONNECTED!");
+            printf("DISCONNECTED!");
         }
-     }
+    }
 
 }
 
 void Server::OnInboundMessage(ENetMsg msg, enet_uint8 *data) {
     switch (msg)
     {
-        case ENetMsg::MoveTo: {
+    case ENetMsg::MoveTo: {
             NetMessageVector2 d = *(NetMessageVector2 *) data;
-            if (System::Get<SNavigation>().IsValidPoint(d.pos)) {
+            if (System::Get<SNavigation>().IsValidPoint(d.Vector)) {
                 auto e = NetworkDriver::GetNetworkedEntities().Get(d.NetworkId);
                 CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
                 followComponent.FollowState = EFollowState::Dirty;
                 followComponent.Index = 1;
-                TraceLog(LOG_INFO, "x: %f y %f", d.pos.x, d.pos.y);
-                followComponent.Goal = d.pos;
+                printf("x: %f y %f", d.Vector.x, d.Vector.y);
+                followComponent.Goal = d.Vector;
             }
             break;
-        }
-        case ENetMsg::InitialConnection: {
-            InitialConnection x = *(InitialConnection *) data;
+    }
+    case ENetMsg::InitialConnection: {
+            NetInitialConnection x = *(NetInitialConnection *) data;
             OnConnect(x.peer);
             break;
-        }
-        default:
-            TraceLog(LOG_INFO, "DEFAULT");
-            break;
+    }
+    default:
+        printf("DEFAULT");
+        break;
     }
 }
 
@@ -90,7 +92,7 @@ void Server::SendPlayerJoined(uint32_t netId) {
     res->NetworkId = netId;
     void* payload = (void*)res;
     ENetPacket* packet = enet_packet_create(payload, sizeof(*res), ENET_PACKET_FLAG_RELIABLE);
-    OutboundMessage msg = OutboundMessage{};
+    NetOutboundMessage msg = NetOutboundMessage{};
     msg.Packet = packet;
     msg.Connections = NetworkDriver::GetConnections();
     NetworkDriver::GetOutboundQueue().push(msg);
@@ -107,36 +109,36 @@ void Server::OnConnect(ENetPeer* peer) {
 }
 
 int packetsSent = 0;
-void Server::SendOutboundMessage(OutboundMessage msg) {
+void Server::SendOutboundMessage(NetOutboundMessage msg) {
     for(ENetPeer* peer : msg.Connections) {
         packetsSent++;
         enet_peer_send(peer, 0, msg.Packet);
-        TraceLog(LOG_INFO, "sent %d packets", packetsSent);
+        printf("sent %d packets", packetsSent);
     }
 }
 
 void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
     NetConnectionResponse* res = new NetConnectionResponse{};
     res->Type = ENetMsg::ConnectionResponse;
-    TraceLog(LOG_INFO, "owning entity networkID: %u", netId);
+    printf("owning entity networkID: %u", netId);
     res->NetworkId = netId;
     void* payload = (void*)res;
     ENetPacket* packet = enet_packet_create(payload, sizeof(*res), ENET_PACKET_FLAG_RELIABLE);
-    OutboundMessage msg = OutboundMessage{};
+    NetOutboundMessage msg = NetOutboundMessage{};
     msg.Packet = packet;
     msg.Connections.push_back(peer);
     NetworkDriver::GetOutboundQueue().push(msg);
     //delete res;
 }
 
-void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
-    SyncTransform* st = new SyncTransform{};
+void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
+    NetSyncTransform* st = new NetSyncTransform{};
     st->Type = ENetMsg::SyncTransform;
     st->NetworkId = NetworkDriver::GetNetworkedEntities().Get(e);
     st->t = t;
     void* payload = (void*)st;
     ENetPacket* packet = enet_packet_create(payload, sizeof(*st), ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
-    OutboundMessage msg = OutboundMessage{};
+    NetOutboundMessage msg = NetOutboundMessage{};
     msg.Packet = packet;
     msg.Connections = c;
     NetworkDriver::GetOutboundQueue().push(msg);
@@ -146,4 +148,6 @@ void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
 void Server::Close() {
     enet_host_destroy(server);
     enet_deinitialize();
+}
+
 }

@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <cstdlib>
 #include <random>
-#include <iostream>
 
 class NetworkedEntities {
     std::unordered_map<uint32_t, entt::entity> x;

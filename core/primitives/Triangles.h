@@ -1,20 +1,23 @@
 #ifndef TRIANGLES_H
 #define TRIANGLES_H
 
-#include <raylib.h>
-#include "../util/raymathEx.h"
+#include "defines.h"
+#include "Color.h"
+
+namespace tZ
+{
 
 struct Edge2D
 {
-    Vector2 vertices[2]{};
+    v2 vertices[2]{};
     struct Triangle2D* triangle{};
 };
 
 struct ABC
 {
-    Vector2 A = {};
-    Vector2 B = {};
-    Vector2 C = {};
+    v2 A = {};
+    v2 B = {};
+    v2 C = {};
     ABC() = delete;
 };
 
@@ -23,10 +26,10 @@ struct Triangle2D
     union
     {
         ABC Vertices;
-        Vector2 Indecies[3]{};
+        v2 Indecies[3]{};
     };
 
-    Color color;
+    CColor color;
     Edge2D Edges[3]{};
 
     Triangle2D();
@@ -41,7 +44,7 @@ struct Triangle2D
         Edges[2].vertices[0] = Vertices.C;
         Edges[2].vertices[1] = Vertices.A;
     }
-    explicit Triangle2D(const Vector2& A, const Vector2& B, const Vector2& C)
+    explicit Triangle2D(const v2& A, const v2& B, const v2& C)
     {
         Vertices.A = A;
         Vertices.B = B;
@@ -82,9 +85,11 @@ inline Triangle2D::Triangle2D()
 
 struct Triangle3D
 {
-    Vector3 A;
-    Vector3 B;
-    Vector3 C;
+    v3 A;
+    v3 B;
+    v3 C;
 };
+
+}
 
 #endif //TRIANGLES_H

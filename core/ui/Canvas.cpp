@@ -1,9 +1,11 @@
 #include "Element.h"
 #include <vector>
-#include <raylib.h>
-#include <raymath.h>
 #include "Canvas.h"
 #include <any>
+#include "raylibEx.h"
+
+namespace tZ
+{
 
 Canvas::Canvas() {
     screenSize = {(float)GetScreenWidth(), (float)GetScreenHeight()};
@@ -28,7 +30,7 @@ void Canvas::Draw() {
         }
     }
     if(activeDrag) {
-        Vector2 currMouse = GetMousePosition();
+        v2 currMouse = GetMousePositionGLM();
         NPatchInfo npatchInfo = { 0 };
         try {
             Texture2D* payloadImage = std::any_cast<Texture2D*>(draggedPayload);
@@ -78,7 +80,7 @@ void Canvas::HandleEvents() {
     float dragThreshold = 0.5;
     if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         activeClick = true;
-        activeDragStartPos = GetMousePosition();
+        activeDragStartPos = GetMousePositionGLM();
     }
     if(activeClick) {
         if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
@@ -92,7 +94,7 @@ void Canvas::HandleEvents() {
                     dragged->OnDragCancelled();
                 }
             }
-        } else if(!activeDrag && Vector2Distance(GetMousePosition(), activeDragStartPos) > dragThreshold) {
+        } else if(!activeDrag && glm::distance(GetMousePositionGLM(), activeDragStartPos) > dragThreshold) {
             Element* checkDrag = FindFirstHoveredElement();
             if(checkDrag != nullptr) {
                 activeDrag = true;
@@ -101,4 +103,6 @@ void Canvas::HandleEvents() {
             }
         }
     }
+}
+
 }

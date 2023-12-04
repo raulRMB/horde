@@ -1,8 +1,10 @@
 #ifndef HORDE_FOLLOW_COMPONENT_H
 #define HORDE_FOLLOW_COMPONENT_H
 
-#include <raylib.h>
 #include <vector>
+
+namespace tZ
+{
 
 enum class EFollowState : unsigned int
 {
@@ -13,16 +15,18 @@ enum class EFollowState : unsigned int
 
 struct CFollow
 {
-    std::vector<Vector2> StringPath;
-    Vector2 TargetPos;
+    std::vector<v2> StringPath;
+    v2 TargetPos;
     unsigned int Index;
-    Vector2 Goal;
+    v2 Goal;
     EFollowState FollowState;
 };
 
 struct CTarget
 {
-    Vector3 Position;
+    v3 Position;
 };
+
+}
 
 #endif //HORDE_FOLLOW_COMPONENT_H

@@ -5,16 +5,18 @@
 #include <algorithm>
 #include <string>
 #include <limits>
-#include <raylib.h>
 #include <entt/entt.hpp>
 
+namespace tZ
+{
+    
 class FEffect;
 struct CAttributes;
 
-enum EEffectType {
-    INSTANT  = 0,
-    DURATION,
-    INFINITE
+enum class EEffectType {
+    Instant  = 0,
+    Duration,
+    Infinite
 };
 
 
@@ -50,7 +52,7 @@ using OnApply = std::function<void(CAttributes&, CAttributes&)>;
 class FEffect
 {
 public:
-    int id = GetRandomValue(0, std::numeric_limits<int>::max());
+    int id = rand() % RAND_MAX;
     entt::entity target;
     entt::entity source;
     EEffectType type;
@@ -59,7 +61,7 @@ public:
     float rate;
     float duration;
     bool isExpired() {
-        if(type != DURATION) {
+        if(type != EEffectType::Duration) {
             return false;
         }
         return elapsedLifetime > duration;
@@ -92,5 +94,7 @@ struct CAttributes
     std::list<FAttribute> attributes;
     std::list<FEffect> effects;
 };
+
+}
 
 #endif //HORDE_ATTRIBUTE_H

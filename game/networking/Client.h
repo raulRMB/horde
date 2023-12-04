@@ -3,20 +3,26 @@
 
 #include <enet/enet.h>
 #include "entt/entt.hpp"
-#include "raylib.h"
 #include "NetMessage.h"
+#include "defines.h"
 
-class Client {
+namespace tZ
+{
+
+class Client
+{
 public:
     ENetHost* client;
     ENetPeer* peer;
     Client();
     void Loop();
-    void SendMoveTo(Vector2 pos, u_int32_t NetworkId);
+    void SendMoveTo(v2 pos, uint32_t NetworkId);
     void OnInboundMessage(ENetMsg msg, enet_uint8 *data);
     void SendOutboundMessage(ENetPacket* packet);
     void flush() { enet_host_flush(client); }
     void Close();
 };
+
+}
 
 #endif

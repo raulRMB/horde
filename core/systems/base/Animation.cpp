@@ -3,7 +3,11 @@
 #include "components/Animation.h"
 #include "components/Model.h"
 #include "Game.h"
+#include <raylib.h>
 #include <algorithm>
+
+namespace tZ
+{
 
 void SAnimation::Update(float deltaSeconds)
 {
@@ -12,7 +16,7 @@ void SAnimation::Update(float deltaSeconds)
         CAnimation& animationComponent = Game::GetRegistry().get<CAnimation>(entity);
         const Model& model = Game::GetRegistry().get<CModel>(entity).model;
 
-        ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
+        ::ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
 
         animationComponent.CurrentFrameTime += 0.1f;
 
@@ -29,4 +33,6 @@ void SAnimation::Update(float deltaSeconds)
 
         UpdateModelAnimation(model, animation, animationComponent.CurrentFrame);
     }
+}
+
 }

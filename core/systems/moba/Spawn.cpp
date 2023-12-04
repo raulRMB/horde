@@ -4,27 +4,31 @@
 #include "gamecomponents/EnemyComponent.h"
 #include "components/Shapes.h"
 #include "components/Physics.h"
+#include "components/Transform.h"
+
+namespace tZ
+{
 
 void SSpawn::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
 
-    for(const entt::entity& entity : registry.view<Transform, CSpawner>())
+    for(const entt::entity& entity : registry.view<CTransform, CSpawner>())
     {
         CSpawner& spawner = GetComponent<CSpawner>(entity);
-        const Transform& transform = GetComponent<Transform>(entity);
+        const CTransform& transform = GetComponent<CTransform>(entity);
 
         spawner.SpawnTimer += deltaSeconds;
         if(spawner.SpawnTimer >= spawner.SpawnRate)
         {
             spawner.SpawnTimer = 0.f;
             entt::entity e = CreateEntity();
-            Transform entityTransform = transform;
+            CTransform entityTransform = transform;
             AddComponent(e, entityTransform);
             CFollow followComp{};
             AddComponent(e, followComp);
             CSphere sphereComponent{};
-            sphereComponent.color = RED;
+            sphereComponent.Color = Red;
             sphereComponent.Radius = .5f;
             AddComponent(e, sphereComponent);
             CPhysics2D physics{};
@@ -35,4 +39,6 @@ void SSpawn::Update(float deltaSeconds)
             AddComponent(e, enemy);
         }
     }
+}
+
 }

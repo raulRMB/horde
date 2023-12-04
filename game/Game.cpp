@@ -4,8 +4,6 @@
 #include "Player.h"
 #include <thread>
 #include <chrono>
-#include "components/Follow.h"
-#include "systems/moba/Navigation.h"
 #include "networking/NetworkDriver.h"
 
 double tickRate = 60.0;
@@ -26,11 +24,11 @@ Game& Game::Instance()
     return instance;
 }
 
-void Game::SpawnPlayer(u_int32_t networkId, bool owned) {
+void Game::SpawnPlayer(uint32_t networkId, bool owned) {
     Instance().Spawn(networkId, owned);
 }
 
-void Game::Spawn(u_int32_t networkId, bool owned) {
+void Game::Spawn(uint32_t networkId, bool owned) {
     if(!IsServer()) {
         if(owned) {
             ownedPlayer = new Player();

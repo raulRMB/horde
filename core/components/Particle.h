@@ -2,6 +2,10 @@
 #define HORDE_PARTICLE_COMPONENT_H
 
 #include <entt/entt.hpp>
+#include "components/Transform.h"
+
+namespace tZ
+{
 
 struct CParticle
 {
@@ -10,7 +14,7 @@ struct CParticle
     entt::entity emitterId;
 };
 
-typedef void (*Spawner)(entt::entity, struct Transform&, entt::registry&, CParticle);
+typedef void (*Spawner)(entt::entity, CTransform&, entt::registry&, CParticle);
 
 struct CEmitter
 {
@@ -20,5 +24,7 @@ struct CEmitter
     int ParticleCount;
     Spawner spawner;
 };
+
+}
 
 #endif //HORDE_PARTICLE_COMPONENT_H

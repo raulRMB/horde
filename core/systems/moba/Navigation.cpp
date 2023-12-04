@@ -11,6 +11,9 @@
 #include "raylib.h"
 #include "util/Util.h"
 
+namespace tZ
+{
+
 void SNavigation::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
@@ -22,13 +25,13 @@ void SNavigation::Update(float deltaSeconds)
         if(bFollowing != EFollowState::Dirty)
             continue;
 
-        std::vector<Vector2>& stringPath = followComponent.StringPath;
+        std::vector<v2>& stringPath = followComponent.StringPath;
         stringPath.clear();
-        Vector2& goal = followComponent.Goal;
+        v2& goal = followComponent.Goal;
 
-        Vector2& targetPos = followComponent.TargetPos;
+        v2& targetPos = followComponent.TargetPos;
         unsigned int& followIndex = followComponent.Index;
-        Vector2 startPoint = {GetComponent<Transform>(followEntity).translation.x, GetComponent<Transform>(followEntity).translation.z};
+        v2 startPoint = {GetComponent<Transform>(followEntity).translation.x, GetComponent<Transform>(followEntity).translation.z};
 
         std::vector<Edge2D> portals;
         std::vector<Navigation::TriangleNode*> path;
@@ -78,7 +81,7 @@ void SNavigation::LoadNavMesh()
             if(graphTriangle.IsBlocked())
             {
                 Triangle2D triangle = graphTriangle.GetTriangle();
-                triangle.color = RED;
+                triangle.color = Red;
                 AddComponent(e, triangle);
             }
         }
@@ -89,7 +92,7 @@ void SNavigation::SaveNavMesh()
 {
     std::ofstream file;
     file.open("../assets/save.txt");
-    for(const Vector2& point : Points)
+    for(const v2& point : Points)
     {
         file << point.x << " " << point.y << "\n";
     }
@@ -105,7 +108,7 @@ void SNavigation::SaveNavMesh()
     file.close();
 }
 
-bool SNavigation::IsValidPoint(const Vector2 &point)
+bool SNavigation::IsValidPoint(const v2 &point)
 {
     for(const Navigation::TriangleNode& graphTriangle : NavMesh)
     {
@@ -115,4 +118,6 @@ bool SNavigation::IsValidPoint(const Vector2 &point)
         }
     }
     return false;
+}
+
 }

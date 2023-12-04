@@ -4,6 +4,9 @@
 #include "systems/System.h"
 #include "components/Attribute.h"
 
+namespace tZ
+{
+
 class SAttribute final : public UpdateSystem
 {
 public:
@@ -12,5 +15,6 @@ public:
     void Init() override;
 };
 
+}
 
 #endif

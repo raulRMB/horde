@@ -3,11 +3,16 @@
 
 #include <raylib.h>
 
+namespace tZ
+{
+    
 struct CModel
 {
     Model model;
     float scale;
     bool hidden;
 };
+
+}
 
 #endif //HORDE_MODEL_H

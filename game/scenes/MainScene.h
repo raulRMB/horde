@@ -3,9 +3,10 @@
 
 #include "Scene.h"
 #include "ui/Canvas.h"
-#include "raylib.h"
 #include "primitives/Triangles.h"
-#include "navigation/Navigation.h"
+
+namespace tZ
+{
 
 class MainScene final : public Scene
 {
@@ -32,6 +33,6 @@ private:
     void Load() override;
 };
 
-
+}
 
 #endif //MAINSCENE_H

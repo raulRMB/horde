@@ -1,5 +1,8 @@
 #include "Slot.h"
 
+namespace tZ
+{
+
 Slot::Slot(Rectangle box) {
     this->box = box;
 }
@@ -55,7 +58,7 @@ void Slot::OnAdded() {
 
 }
 
-void Slot::OnWindowResize(Vector2 screenSize) {
+void Slot::OnWindowResize(v2 screenSize) {
 
 }
 
@@ -73,4 +76,6 @@ void Slot::OnDrop(Element* source, std::any payload) {
             slot->image = tmp;
         }
     } catch (const std::bad_any_cast& e) {}
+}
+
 }

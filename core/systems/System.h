@@ -3,6 +3,9 @@
 
 #include "../../game/Game.h"
 
+namespace tZ
+{
+
 class System
 {
 public:
@@ -41,6 +44,6 @@ public:
     virtual void Draw() = 0;
 };
 
-
+}
 
 #endif //SYSTEM_H

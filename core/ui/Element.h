@@ -1,14 +1,17 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
-#include <raylib.h>
 #include <any>
+#include "defines.h"
+
+namespace tZ
+{
 
 class Canvas;
 
 struct DrawData {
     bool activeDrag;
-    Vector2 screenSize;
+    v2 screenSize;
 };
 
 class Element
@@ -26,8 +29,10 @@ public:
     virtual void OnAdded() = 0;
     virtual void Draw(DrawData data) = 0;
     virtual void Update() = 0;
-    virtual void OnWindowResize(Vector2 screenSize) = 0;
+    virtual void OnWindowResize(v2 screenSize) = 0;
     bool hoverActive = false;
 };
+
+}
 
 #endif

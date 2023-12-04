@@ -1,14 +1,22 @@
 #include "Player.h"
-#include "raymath.h"
 #include "components/Follow.h"
 #include "util/Util.h"
 #include "Particles.h"
 #include "abilities/Projectile.h"
 #include "systems/moba/Navigation.h"
-#include "components/Animation.h"
 #include "components/Model.h"
 #include "networking/NetworkDriver.h"
 #include "components/Network.h"
+#include "components/Physics.h"
+#include "components/RayCollision.h"
+#include "components/Animation.h"
+#include "raymath.h"
+
+
+static Font font;
+
+namespace tZ
+{
 
 Player::Player()
 {
@@ -57,7 +65,7 @@ Player::Player()
         }
     };
     FEffect healthRegen = FEffect{};
-    healthRegen.type = INFINITE;
+    healthRegen.type = EEffectType::Infinite;
     healthRegen.target = GetEntity();
     healthRegen.source = GetEntity();
     healthRegen.callback = healthRegenCallback;
@@ -93,7 +101,7 @@ void Player::HandleInput(entt::registry* Registry)
 {
     if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        Vector2 mousePos = Util::GetMouseWorldPosition2D();
+        v2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {
 //             CFollow& followComponent = GetComponent<CFollow>();
@@ -108,7 +116,7 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(IsKeyPressed(KEY_Q))
     {
-        RayCollision Collision = Util::GetMouseCollision();
+        FRayCollision Collision = Util::GetMouseCollision();
         Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
         Transform t = GetComponent<Transform>();
         Projectile(GetEntity(), clickPoint.translation, t.translation);
@@ -121,7 +129,7 @@ void Player::HandleInput(entt::registry* Registry)
             health.base = std::clamp(newHealth, health.min, health.max);
         };
         FEffect effect = FEffect{};
-        effect.type = INSTANT;
+        effect.type = EEffectType::Instant;
         effect.target = GetEntity();
         effect.source = GetEntity();
         effect.callback = effectCallback;
@@ -141,7 +149,7 @@ void Player::HandleInput(entt::registry* Registry)
             };
             moveSpeed.mods.push_back(moveSpeedMod);
         };
-        effect.type = DURATION;
+        effect.type = EEffectType::Duration;
         effect.duration = 4;
         effect.rate = -1;
         effect.callOnInit = true;
@@ -157,19 +165,20 @@ void Player::HandleInput(entt::registry* Registry)
 
 void Player::DrawUI() {
     Transform & t = GetComponent<Transform>();
-    Vector2 healthBarPos = GetWorldToScreen(
-            (Vector3){ t.translation.x, t.translation.y + 10.0f, t.translation.z },
-            Game::Instance().GetActiveCamera());
+    v2 healthBarPos = GetWorldToScreen(
+            { t.translation.x, t.translation.y + 10.0f, t.translation.z },
+            ToRaylibCamera(Game::Instance().GetActiveCamera()));
     CAttributes ac = GetComponent<CAttributes>();
     FAttribute health = *Util::GetAttribute(ac, "health");
     if (health.id != "empty") {
         DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
         DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * health.get()/health.max, 10, GREEN);
-        DrawTextEx(font, "Username", Vector2{healthBarPos.x, healthBarPos.y - 13}, 13, 1, WHITE);
     }
 }
 
 void Player::Kill()
 {
     SmartEntity::Kill();
+}
+
 }

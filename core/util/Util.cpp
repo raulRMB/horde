@@ -1,43 +1,33 @@
 #include "Util.h"
 #include "components/Physics.h"
 
-glm::mat4 Util::GLMMat4FromMatrix(const Matrix& matrix)
+#include <raylib.h>
+
+#include "components/Attribute.h"
+#include "components/RayCollision.h"
+#include "components/Physics.h"
+#include "components/Transform.h"
+#include "primitives/Polygon.h"
+#include "primitives/Triangles.h"
+
+namespace tZ
 {
-    glm::mat4 result{};
-    result[0][0] = matrix.m0;
-    result[0][1] = matrix.m1;
-    result[0][2] = matrix.m2;
-    result[0][3] = matrix.m3;
-    result[1][0] = matrix.m4;
-    result[1][1] = matrix.m5;
-    result[1][2] = matrix.m6;
-    result[1][3] = matrix.m7;
-    result[2][0] = matrix.m8;
-    result[2][1] = matrix.m9;
-    result[2][2] = matrix.m10;
-    result[2][3] = matrix.m11;
-    result[3][0] = matrix.m12;
-    result[3][1] = matrix.m13;
-    result[3][2] = matrix.m14;
-    result[3][3] = matrix.m15;
 
-    return result;
-}
-
-Vector3 Util::RandVec3(int min, int max) {
-    return Vector3 {
-            (float)GetRandomValue(min, max),
-            (float)GetRandomValue(min, max),
-            (float)GetRandomValue(min, max)
+v3 Util::RandVec3(int min, int max) {
+    return v3 {
+            static_cast<float>(GetRandomValue(min, max)),
+            static_cast<float>(GetRandomValue(min, max)),
+            static_cast<float>(GetRandomValue(min, max))
     };
 }
 
-FAttribute* Util::GetAttribute(CAttributes& ac, const std::string& attr)
+tZ::FAttribute* Util::GetAttribute(tZ::CAttributes& ac, const std::string& attr)
 {
-    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(), [&attr](const FAttribute &a)
-    {
-        return a.id == attr;
-    });
+    std::_List_iterator<tZ::FAttribute> it = std::find_if(ac.attributes.begin(), ac.attributes.end(),
+                                                          [&attr](const FAttribute& a)
+                                                          {
+                                                              return a.id == attr;
+                                                          });
     if(it != ac.attributes.end())
     {
         return &(*it);
@@ -46,18 +36,26 @@ FAttribute* Util::GetAttribute(CAttributes& ac, const std::string& attr)
     return nullptr;
 }
 
-RayCollision Util::GetMouseCollision() {
-    Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+FRayCollision Util::GetMouseCollision()
+{
+    Ray ray = GetMouseRay(GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
     Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
     Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
     Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
     Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
-    return GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
+
+    RayCollision raylibCol = GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
+    FRayCollision collision{};
+    collision.point = v3(raylibCol.point.x, raylibCol.point.y, raylibCol.point.z);
+    collision.normal = v3(raylibCol.normal.x, raylibCol.normal.y, raylibCol.normal.z);
+    collision.distance = raylibCol.distance;
+    collision.hit = raylibCol.hit;
+    return collision;
 }
 
-bool Util::Check2DCollision(CPhysics2D& x, Transform& xT, CPhysics2D& y, Transform& yT) {
-    Vector2 xVec = Vector2{xT.translation.x, xT.translation.z};
-    Vector2 yVec = Vector2{yT.translation.x, yT.translation.z};
+bool Util::Check2DCollision(CPhysics2D& x, CTransform& xT, CPhysics2D& y, CTransform& yT) {
+    Vector2 xVec = Vector2{xT.Position.x, xT.Position.z};
+    Vector2 yVec = Vector2{yT.Position.x, yT.Position.z};
     if(x.CollisionType == ECollision2DType::Circle && y.CollisionType == ECollision2DType::Circle)
     {
         return CheckCollisionCircles(xVec, x.CollisionRadius, yVec, y.CollisionRadius);
@@ -65,72 +63,73 @@ bool Util::Check2DCollision(CPhysics2D& x, Transform& xT, CPhysics2D& y, Transfo
     return false;
 }
 
-Color Util::RandColor() {
-    return Color {
-            (unsigned char) GetRandomValue(1, 255),
-            (unsigned char) GetRandomValue(1, 255),
-            (unsigned char) GetRandomValue(1, 255),
+CColor Util::RandColor() {
+    return CColor{
+            static_cast<u8>(rand() % 255),
+            static_cast<u8>(rand() % 255),
+            static_cast<u8>(rand() % 255),
             255
     };
 }
 
-Vector3 Util::GetMouseWorldPosition()
+v3 Util::GetMouseWorldPosition()
 {
-    const Ray ray = GetMouseRay(GetMousePosition(), Game::Instance().GetActiveCamera());
+    const Ray ray = GetMouseRay(GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
     constexpr Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
     constexpr Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
     constexpr Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
     constexpr Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
     const RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
-    return Collision.point;
+    return v3(Collision.point.z, Collision.point.y, Collision.point.z);
 }
 
-Vector2 Util::GetMouseWorldPosition2D()
+v2 Util::GetMouseWorldPosition2D()
 {
-    const Vector3 mousePos3d = GetMouseWorldPosition();
+    const v3 mousePos3d = GetMouseWorldPosition();
     return {mousePos3d.x, mousePos3d.z};
 }
 
-Vector2 Util::GetClosetPointOusideTriangle(Vector2 p, const Triangle2D &t) {
-    Vector2 a = t.Vertices.A;
-    Vector2 b = t.Vertices.B;
-    Vector2 c = t.Vertices.C;
+v2 Util::GetClosetPointOusideTriangle(v2 p, const Triangle2D &t)
+{
+    v2 a = t.Vertices.A;
+    v2 b = t.Vertices.B;
+    v2 c = t.Vertices.C;
 
-    Vector2 ab = Vector2Subtract(b, a);
-    Vector2 ac = Vector2Subtract(c, a);
-    Vector2 bc = Vector2Subtract(c, b);
+    v2 ab = b - a;
+    v2 ac = c - a;
+    v2 bc = c - b;
 
-    Vector2 ap = Vector2Subtract(p, a);
-    Vector2 bp = Vector2Subtract(p, b);
-    Vector2 cp = Vector2Subtract(p, c);
+    v2 ap = p - a;
+    v2 bp = p - b;
+    v2 cp = p - c;
 
-    Vector2 abapPerp = Vector2Scale(ab, Vector2DotProduct(ab, ap) / Vector2DotProduct(ab, ab));
-    Vector2 acapPerp = Vector2Scale(ac, Vector2DotProduct(ac, ap) / Vector2DotProduct(ac, ac));
-    Vector2 abpPerp = Vector2Scale(ab, Vector2DotProduct(ab, bp) / Vector2DotProduct(ab, ab));
-    Vector2 bcpPerp = Vector2Scale(bc, Vector2DotProduct(bc, cp) / Vector2DotProduct(bc, bc));
+    v2 abapPerp = ab * (glm::dot(ab, ap) / glm::dot(ab, ab));
+    v2 acapPerp = ac * (glm::dot(ac, ap) / glm::dot(ac, ac));
+    v2 abpPerp = ab * (glm::dot(ab, bp) / glm::dot(ab, ab));
+    v2 bcpPerp = bc * (glm::dot(bc, cp) / glm::dot(bc, bc));
 
-    bool abpSameDirection = Vector2DotProduct(ab, bp) > 0;
-    bool acpSameDirection = Vector2DotProduct(ac, cp) > 0;
-    bool bcpSameDirection = Vector2DotProduct(bc, cp) > 0;
+    bool abpSameDirection = glm::dot(ab, bp) > 0;
+    bool acpSameDirection = glm::dot(ac, cp) > 0;
+    bool bcpSameDirection = glm::dot(bc, cp) > 0;
 
-    Vector2 closestPoint = {};
+    v2 closestPoint = {};
     if(abpSameDirection && !acpSameDirection)
     {
-        closestPoint = Vector2Add(a, abapPerp);
+        closestPoint = a + abapPerp;
     }
     else if(!abpSameDirection && acpSameDirection)
     {
-        closestPoint = Vector2Add(a, acapPerp);
+        closestPoint = a + acapPerp;
     }
     else if(abpSameDirection && acpSameDirection)
     {
-        if(Vector2Length(abapPerp) < Vector2Length(acapPerp))
+        if(abapPerp.length() < acapPerp.length())
         {
-            closestPoint = Vector2Add(a, abapPerp);
+            closestPoint = a + abapPerp;
         }
         else
         {
-            closestPoint = Vector2Add(a, acapPerp);
+            closestPoint = a + acapPerp;
         }
     }
     else
@@ -140,26 +139,26 @@ Vector2 Util::GetClosetPointOusideTriangle(Vector2 p, const Triangle2D &t) {
 
     if(bcpSameDirection)
     {
-        closestPoint = Vector2Add(closestPoint, bcpPerp);
+        closestPoint = closestPoint + bcpPerp;
     }
 
     return closestPoint;
 }
 
-Vector2 Util::ClosestPointOnLine(const Vector2& start, const Vector2& end, Vector2 point)
+v2 Util::ClosestPointOnLine(const v2& start, const v2& end, v2 point)
 {
-    Vector2 lineVector = end - start;
-    Vector2 pointVector = point - start;
-    double t = Vector2DotProduct(pointVector, lineVector) / Vector2DotProduct(lineVector, lineVector);
-    t = std::max(0.0, std::min(1.0, t));
+    v2 lineVector = end - start;
+    v2 pointVector = point - start;
+    float t = glm::dot(pointVector, lineVector) / glm::dot(lineVector, lineVector);
+    t = std::max(0.0f, std::min(1.0f, t));
     return start + t * lineVector;
 }
 
-bool Util::IsPointInsideTriangle(const Triangle2D &triangle, const Vector2 &point)
+bool Util::IsPointInsideTriangle(const Triangle2D &triangle, const v2 &point)
 {
-    const Vector2& v0 = triangle.Vertices.A;
-    const Vector2& v1 = triangle.Vertices.B;
-    const Vector2& v2 = triangle.Vertices.C;
+    const v2& v0 = triangle.Vertices.A;
+    const v2& v1 = triangle.Vertices.B;
+    const v2& v2 = triangle.Vertices.C;
 
     double area_triangle = 0.5 * (-v1.y * v2.x + v0.y * (-v1.x + v2.x) + v0.x * (v1.y - v2.y) + v1.x * v2.y);
     double s = 1.0 / (2.0 * area_triangle) * (v0.y * v2.x - v0.x * v2.y + (v2.y - v0.y) * point.x + (v0.x - v2.x) * point.y);
@@ -168,7 +167,7 @@ bool Util::IsPointInsideTriangle(const Triangle2D &triangle, const Vector2 &poin
     return s > 0 && t > 0 && 1 - s - t > 0;
 }
 
-Vector2 Util::MinimumTranslationVector(const Polygon2D &polygon, const Vector2 &point)
+v2 Util::MinimumTranslationVector(const Polygon2D &polygon, const v2 &point)
 {
     if (polygon.Vertices.size() < 3)
     {
@@ -176,23 +175,23 @@ Vector2 Util::MinimumTranslationVector(const Polygon2D &polygon, const Vector2 &
         return {0.0, 0.0};
     }
 
-    Vector2 mtv = {0.0, 0.0};
+    v2 mtv = {0.0, 0.0};
     double minDistance = std::numeric_limits<double>::max();
 
     for (size_t i = 0; i < polygon.Vertices.size(); ++i)
     {
-        const Vector2& start = polygon.Vertices[i];
-        const Vector2& end = polygon.Vertices[(i + 1) % polygon.Vertices.size()];
+        const v2& start = polygon.Vertices[i];
+        const v2& end = polygon.Vertices[(i + 1) % polygon.Vertices.size()];
 
-        Vector2 edgeVector = end - start;
-        Vector2 pointToStart = start - point;
+        v2 edgeVector = end - start;
+        v2 pointToStart = start - point;
 
-        double t = Vector2DotProduct(pointToStart, edgeVector) / Vector2DotProduct(edgeVector, edgeVector);
-        t = std::max(0.0, std::min(1.0, abs(t)));
+        float t = glm::dot(pointToStart, edgeVector) / glm::dot(edgeVector, edgeVector);
+        t = std::max(0.0f, std::min(1.0f, abs(t)));
 
-        Vector2 closestPointOnEdge = start + t * edgeVector;
+        v2 closestPointOnEdge = start + t * edgeVector;
 
-        double dist = Vector2Length(point - closestPointOnEdge);
+        double dist = (point - closestPointOnEdge).length();
 
         if (dist < minDistance)
         {
@@ -202,4 +201,6 @@ Vector2 Util::MinimumTranslationVector(const Polygon2D &polygon, const Vector2 &
     }
 
     return mtv;
+}
+
 }

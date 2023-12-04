@@ -4,16 +4,20 @@
 #include "Element.h"
 #include <vector>
 #include <any>
+#include "defines.h"
 
-class Canvas {
-    Vector2 screenSize;
+namespace tZ
+{
+
+class Canvas
+{
+    v2 screenSize;
     std::vector<Element*> elements;
     bool activeClick = false;
     bool activeDrag = false;
-    Vector2 activeDragStartPos;
+    v2 activeDragStartPos;
     Element* dragged;
     std::any draggedPayload;
-    Texture2D dragImage;
 public:
     Canvas();
     void Add(Element* element);
@@ -23,5 +27,7 @@ private:
     Element* FindFirstHoveredElement();
     void HandleEvents();
 };
+
+}
 
 #endif

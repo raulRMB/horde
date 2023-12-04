@@ -5,14 +5,17 @@
 #include "components/Attribute.h"
 #include <entt/entt.hpp>
 
-Spawner spawnParticle = [](entt::entity e, Transform& transform, entt::registry& registry, CParticle pc) {
+namespace tZ
+{
+
+Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {
 
     pc.MaxLife = 0.2;
 
     CCapsule cc = {};
-    cc.color = Util::RandColor();
+    cc.Color = Util::RandColor();
     cc.Height = 0.5;
-    cc.Position = Vector3{0,0,0};
+    cc.Position = v3{0,0,0};
     cc.Radius = 0.5;
     cc.Slices = 1;
 
@@ -21,18 +24,18 @@ Spawner spawnParticle = [](entt::entity e, Transform& transform, entt::registry&
     phc.MaxSpeed = 100;
     phc.Acceleration = Util::RandVec3(-1, 1);
 
-    Transform t = {};
-    t.translation = Util::RandVec3(-1, 1);
-    t.translation = transform.translation + t.translation;
+    CTransform t = {};
+    t.Position = Util::RandVec3(-1, 1);
+    t.Position += transform.Position;
 
     registry.emplace<CParticle>(e, pc);
     registry.emplace<CCapsule>(e, cc);
     registry.emplace<CPhysics3D>(e, phc);
-    registry.emplace<Transform>(e, t);
+    registry.emplace<CTransform>(e, t);
 };
 
-void Projectile(entt::entity source, Vector3 cursorLocation, Vector3 playerLocation) {
-
+void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation)
+{
     entt::registry& registry = Game::GetRegistry();
 
     OnApply effectCallback = [](CAttributes &target, CAttributes &source) {
@@ -41,7 +44,7 @@ void Projectile(entt::entity source, Vector3 cursorLocation, Vector3 playerLocat
         health.base = std::clamp(newHealth, health.min, health.max);
     };
     FEffect effect = FEffect{};
-    effect.type = INSTANT;
+    effect.type = EEffectType::Instant;
     effect.source = source;
     effect.callback = effectCallback;
 
@@ -49,9 +52,9 @@ void Projectile(entt::entity source, Vector3 cursorLocation, Vector3 playerLocat
     registry.emplace<CEmitter>(e,
                                         CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
     CPhysics3D phc = {};
-    phc.Velocity = Vector3Normalize(cursorLocation - playerLocation) * 50;
+    phc.Velocity = glm::normalize(cursorLocation - playerLocation) * 50.f;
     phc.MaxSpeed = 100;
-    phc.Acceleration = Vector3{1, 1, 1};
+    phc.Acceleration = v3{1, 1, 1};
 
     CPhysics2D p2d = {};
     p2d.CollisionType = ECollision2DType::Circle;
@@ -59,6 +62,9 @@ void Projectile(entt::entity source, Vector3 cursorLocation, Vector3 playerLocat
     registry.emplace<CPhysics2D>(e, p2d);
     registry.emplace<FEffect>(e, effect);
     registry.emplace<CPhysics3D>(e, phc);
-    registry.emplace<Transform>(e, playerLocation + Vector3Normalize(cursorLocation - playerLocation) * 3);
+    registry.emplace<CTransform>(e, playerLocation + glm::normalize(cursorLocation - playerLocation) * 3.f);
+}
+
+
 }
 #endif //PROJECTILE_H

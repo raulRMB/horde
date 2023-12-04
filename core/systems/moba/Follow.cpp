@@ -3,10 +3,16 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "components/Follow.h"
+
+#include <glm/gtx/norm.inl>
+
 #include "util/raymathEx.h"
 #include "components/Model.h"
 #include "components/Physics.h"
+#include "components/Transform.h"
 
+namespace tZ
+{
 
 void SFollow::Update(float deltaSeconds)
 {
@@ -30,20 +36,20 @@ void SFollow::Update(float deltaSeconds)
         if(followState != EFollowState::Following)
             continue;
 
-        std::vector<Vector2>& stringPath = followComponent.StringPath;
-        Vector2& targetPos = followComponent.TargetPos;
+        std::vector<v2>& stringPath = followComponent.StringPath;
+        v2& targetPos = followComponent.TargetPos;
         unsigned int& followIndex = followComponent.Index;
-        Vector3& followPos = registry.get<Transform>(entity).translation;
-        Vector2 followPos2d = {followPos.x, followPos.z};
+        v3& followPos = registry.get<CTransform>(entity).Position;
+        v2 followPos2d = {followPos.x, followPos.z};
         CPhysics2D& physics = registry.get<CPhysics2D>(entity);
 
-        if(constexpr float minDist = 0.3f; Vector2DistanceSqr(followPos2d, targetPos) > minDist * minDist)
+        if(constexpr float minDist = 0.3f; glm::distance2(followPos2d, targetPos) > minDist * minDist)
         {
-            Vector2 direction = targetPos - followPos2d;
-            Vector2 nDirection = Vector2Normalize(direction);
-            nDirection = Vector2Scale(nDirection, physics.Speed);
-            physics.Velocity = Vector2Add(physics.Acceleration, nDirection);
-            if(abs(Vector2Length(physics.Velocity)) > abs(Vector2Length(direction)))
+            v2 direction = targetPos - followPos2d;
+            v2 nDirection = glm::normalize(direction);
+            nDirection = nDirection *  physics.Speed;
+            physics.Velocity = physics.Acceleration + nDirection;
+            if(abs(physics.Velocity.length()) > abs(direction.length()))
             {
                 physics.Velocity = direction / deltaSeconds;
             }
@@ -62,4 +68,6 @@ void SFollow::Update(float deltaSeconds)
             }
         }
     }
+}
+
 }
