@@ -22,12 +22,6 @@ public:
     void OnConnect(ENetPeer* peer);
     void SendOutboundMessage(OutboundMessage msg);
     void SendPlayerJoined(uint32_t netId);
-    std::vector<int32_t> GetOtherPlayers(ENetPeer* peer);
-
-    flatbuffers::Offset<Net::Vector3> CreateVector3(flatbuffers::FlatBufferBuilder &builder, Vector3 v);
-    flatbuffers::Offset<Net::Vector4> CreateVector4(flatbuffers::FlatBufferBuilder &builder, Vector4 v);
-    flatbuffers::Offset<Net::Transform> CreateTransform(flatbuffers::FlatBufferBuilder &builder, Transform& t);
-    std::vector<ENetPeer*>& CreatePeerVector(ENetPeer* peer);
     void flush() { enet_host_flush(server); }
     void Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c);
 private:

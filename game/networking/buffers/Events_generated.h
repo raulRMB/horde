@@ -33,6 +33,9 @@ struct SyncTransformBuilder;
 struct OnPlayerJoined;
 struct OnPlayerJoinedBuilder;
 
+struct PlayerSpawn;
+struct PlayerSpawnBuilder;
+
 struct OnConnectionResponse;
 struct OnConnectionResponseBuilder;
 
@@ -454,23 +457,77 @@ inline ::flatbuffers::Offset<OnPlayerJoined> CreateOnPlayerJoined(
   return builder_.Finish();
 }
 
-struct OnConnectionResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef OnConnectionResponseBuilder Builder;
+struct PlayerSpawn FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef PlayerSpawnBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NETID = 4,
-    VT_OTHERPLAYERS = 6
+    VT_LOCATION = 6
   };
   int32_t netId() const {
     return GetField<int32_t>(VT_NETID, 0);
   }
-  const ::flatbuffers::Vector<int32_t> *otherPlayers() const {
-    return GetPointer<const ::flatbuffers::Vector<int32_t> *>(VT_OTHERPLAYERS);
+  const Net::Transform *location() const {
+    return GetPointer<const Net::Transform *>(VT_LOCATION);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_NETID, 4) &&
-           VerifyOffset(verifier, VT_OTHERPLAYERS) &&
-           verifier.VerifyVector(otherPlayers()) &&
+           VerifyOffset(verifier, VT_LOCATION) &&
+           verifier.VerifyTable(location()) &&
+           verifier.EndTable();
+  }
+};
+
+struct PlayerSpawnBuilder {
+  typedef PlayerSpawn Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_netId(int32_t netId) {
+    fbb_.AddElement<int32_t>(PlayerSpawn::VT_NETID, netId, 0);
+  }
+  void add_location(::flatbuffers::Offset<Net::Transform> location) {
+    fbb_.AddOffset(PlayerSpawn::VT_LOCATION, location);
+  }
+  explicit PlayerSpawnBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<PlayerSpawn> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<PlayerSpawn>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<PlayerSpawn> CreatePlayerSpawn(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t netId = 0,
+    ::flatbuffers::Offset<Net::Transform> location = 0) {
+  PlayerSpawnBuilder builder_(_fbb);
+  builder_.add_location(location);
+  builder_.add_netId(netId);
+  return builder_.Finish();
+}
+
+struct OnConnectionResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef OnConnectionResponseBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_SELF = 4,
+    VT_OTHERS = 6
+  };
+  const Net::PlayerSpawn *self() const {
+    return GetPointer<const Net::PlayerSpawn *>(VT_SELF);
+  }
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Net::PlayerSpawn>> *others() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Net::PlayerSpawn>> *>(VT_OTHERS);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_SELF) &&
+           verifier.VerifyTable(self()) &&
+           VerifyOffset(verifier, VT_OTHERS) &&
+           verifier.VerifyVector(others()) &&
+           verifier.VerifyVectorOfTables(others()) &&
            verifier.EndTable();
   }
 };
@@ -479,11 +536,11 @@ struct OnConnectionResponseBuilder {
   typedef OnConnectionResponse Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_netId(int32_t netId) {
-    fbb_.AddElement<int32_t>(OnConnectionResponse::VT_NETID, netId, 0);
+  void add_self(::flatbuffers::Offset<Net::PlayerSpawn> self) {
+    fbb_.AddOffset(OnConnectionResponse::VT_SELF, self);
   }
-  void add_otherPlayers(::flatbuffers::Offset<::flatbuffers::Vector<int32_t>> otherPlayers) {
-    fbb_.AddOffset(OnConnectionResponse::VT_OTHERPLAYERS, otherPlayers);
+  void add_others(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::PlayerSpawn>>> others) {
+    fbb_.AddOffset(OnConnectionResponse::VT_OTHERS, others);
   }
   explicit OnConnectionResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -498,23 +555,23 @@ struct OnConnectionResponseBuilder {
 
 inline ::flatbuffers::Offset<OnConnectionResponse> CreateOnConnectionResponse(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    int32_t netId = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<int32_t>> otherPlayers = 0) {
+    ::flatbuffers::Offset<Net::PlayerSpawn> self = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::PlayerSpawn>>> others = 0) {
   OnConnectionResponseBuilder builder_(_fbb);
-  builder_.add_otherPlayers(otherPlayers);
-  builder_.add_netId(netId);
+  builder_.add_others(others);
+  builder_.add_self(self);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<OnConnectionResponse> CreateOnConnectionResponseDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    int32_t netId = 0,
-    const std::vector<int32_t> *otherPlayers = nullptr) {
-  auto otherPlayers__ = otherPlayers ? _fbb.CreateVector<int32_t>(*otherPlayers) : 0;
+    ::flatbuffers::Offset<Net::PlayerSpawn> self = 0,
+    const std::vector<::flatbuffers::Offset<Net::PlayerSpawn>> *others = nullptr) {
+  auto others__ = others ? _fbb.CreateVector<::flatbuffers::Offset<Net::PlayerSpawn>>(*others) : 0;
   return Net::CreateOnConnectionResponse(
       _fbb,
-      netId,
-      otherPlayers__);
+      self,
+      others__);
 }
 
 struct OnConnection FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {

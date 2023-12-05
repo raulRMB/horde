@@ -1,5 +1,4 @@
 #include <enet/enet.h>
-#include <iostream>
 #include <cstring>
 #include "raylib.h"
 #include "Client.h"
@@ -7,6 +6,7 @@
 #include "NetworkDriver.h"
 #include "NetMessage.h"
 #include "networking/buffers/Events_generated.h"
+#include "networking/buffers/FlatBufferUtil.h"
 
 Client::Client() {
     if (enet_initialize() != 0) {
@@ -59,6 +59,9 @@ void Client::SendInitialConnection() {
 }
 
 void Client::Loop() {
+    if(client == nullptr) {
+        return;
+    }
     ENetEvent event;
     if(enet_host_service(client, &event, 2000) > 0)
     {
@@ -85,25 +88,25 @@ void Client::OnInboundMessage(const Net::Header* header) {
     switch (header->Event_type()) {
         case Net::Events_OnConnectionResponse: {
             auto res = header->Event_as_OnConnectionResponse();
-            Game::SpawnPlayer(res->netId(), true);
-            std::vector<uint32_t> stdVector(res->otherPlayers()->begin(), res->otherPlayers()->end());
-            for(uint32_t otherPlayer : stdVector) {
-                Game::SpawnPlayer(otherPlayer, false);
+            auto t = FlatBufferUtil::NetTransformToTransform(res->self()->location());
+            Game::SpawnPlayer(res->self()->netId(), t, true);
+            std::vector stdVector(res->others()->begin(), res->others()->end());
+            for(auto otherPlayer : stdVector) {
+                auto loc = FlatBufferUtil::NetTransformToTransform(otherPlayer->location());
+                Game::SpawnPlayer(otherPlayer->netId(), loc, false);
             }
-            TraceLog(LOG_INFO, "connected owning entity networkID: %u", res->netId());
             break;
         }
         case Net::Events_SyncTransform: {
             auto res = header->Event_as_SyncTransform();
             Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-            t.translation.x = res->transform()->translation()->x();
-            t.translation.y = res->transform()->translation()->y();
-            t.translation.z = res->transform()->translation()->z();
+            t = FlatBufferUtil::NetTransformToTransform(res->transform());
             break;
         }
         case Net::Events_OnPlayerJoined: {
             auto res = header->Event_as_OnPlayerJoined();
-            Game::SpawnPlayer(res->netId(), false);
+            auto t = Transform{};
+            Game::SpawnPlayer(res->netId(), t, false);
             break;
         }
     }

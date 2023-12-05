@@ -1,6 +1,5 @@
 #include <enet/enet.h>
 #include "raylib.h"
-#include <iostream>
 #include "Server.h"
 #include "Game.h"
 #include "NetworkDriver.h"
@@ -8,10 +7,9 @@
 #include "systems/System.h"
 #include "systems/moba/Navigation.h"
 #include "components/Follow.h"
-#include "components/Network.h"
 
 #include "flatbuffers/flatbuffers.h"
-#include "flatbuffers/flexbuffers.h"
+#include "buffers/FlatBufferUtil.h"
 #include "networking/buffers/Events_generated.h"
 
 Server::Server() {
@@ -30,6 +28,9 @@ Server::Server() {
 }
 
 void Server::Loop() {
+    if(server == nullptr) {
+        return;
+    }
      ENetEvent event;
      if(enet_host_service(server, &event, 2000) > 0)
      {
@@ -96,32 +97,22 @@ void Server::SendOutboundMessage(OutboundMessage msg) {
     }
 }
 
-std::vector<int32_t> Server::GetOtherPlayers(ENetPeer* peer) {
-    std::vector<int32_t> otherPlayers;
-    for(ENetPeer* connection : NetworkDriver::GetConnections()) {
-        if(connection == peer) {
-            continue;
-        }
-        otherPlayers.push_back(NetworkDriver::GetNetworkedEntities().GetOwner(connection));
-    }
-    return otherPlayers;
-}
-
-std::vector<ENetPeer*>& Server::CreatePeerVector(ENetPeer* peer) {
-    std::vector<ENetPeer*>* x = new std::vector<ENetPeer*>();
-    x->push_back(peer);
-    return *x;
-}
-
 void Server::SendConnectResponse(ENetPeer* peer, uint32_t netId) {
-    auto otherPlayers = GetOtherPlayers(peer);
     flatbuffers::FlatBufferBuilder builder;
+    auto otherPlayers = FlatBufferUtil::GetOtherPlayers(builder, peer);
+
+    Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(netId));
+
+//    Transform f = Transform {};
+//    f.translation.x = -5;
+    flatbuffers::Offset<Net::PlayerSpawn> ps = FlatBufferUtil::CreatePlayerSpawn(builder, t, netId);
+
     auto vec = builder.CreateVector(otherPlayers);
     Net::OnConnectionResponseBuilder crbuilder(builder);
-    crbuilder.add_netId(netId);
-    crbuilder.add_otherPlayers(vec);
+    crbuilder.add_self(ps);
+    crbuilder.add_others(vec);
     auto connectionResponse = crbuilder.Finish();
-    Send(builder, Net::Events::Events_OnConnectionResponse, connectionResponse.Union(), CreatePeerVector(peer));
+    Send(builder, Net::Events::Events_OnConnectionResponse, connectionResponse.Union(), FlatBufferUtil::CreatePeerVector(peer));
 }
 
 void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c) {
@@ -134,24 +125,9 @@ void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, fla
     NetworkDriver::GetOutboundQueue().push(msg);
 }
 
-flatbuffers::Offset<Net::Vector3> Server::CreateVector3(flatbuffers::FlatBufferBuilder &builder, Vector3 v) {
-    return Net::CreateVector3(builder, v.x, v.y, v.z);
-}
-
-flatbuffers::Offset<Net::Vector4> Server::CreateVector4(flatbuffers::FlatBufferBuilder &builder, Vector4 v) {
-    return Net::CreateVector4(builder, v.x, v.y, v.z, v.w);
-}
-
-flatbuffers::Offset<Net::Transform> Server::CreateTransform(flatbuffers::FlatBufferBuilder &builder, Transform& t) {
-    auto translation = CreateVector3(builder, t.translation);
-    auto scale = CreateVector3(builder, t.scale);
-    auto quat = CreateVector4(builder, t.rotation);
-    return Net::CreateTransform(builder, translation, scale, quat);
-}
-
 void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
     flatbuffers::FlatBufferBuilder builder;
-    auto x = CreateTransform(builder, t);
+    auto x = FlatBufferUtil::CreateTransform(builder, t);
     Net::SyncTransformBuilder stb = Net::SyncTransformBuilder(builder);
     stb.add_netId(NetworkDriver::GetNetworkedEntities().Get(e));
     stb.add_transform(x);

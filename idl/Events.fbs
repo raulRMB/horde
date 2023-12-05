@@ -33,9 +33,14 @@ table OnPlayerJoined {
     netId: uint;
 }
 
-table OnConnectionResponse {
+table PlayerSpawn {
     netId: int;
-    otherPlayers: [int];
+    location: Transform;
+}
+
+table OnConnectionResponse {
+    self: PlayerSpawn;
+    others: [PlayerSpawn];
 }
 
 table OnConnection {

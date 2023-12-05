@@ -26,18 +26,20 @@ Game& Game::Instance()
     return instance;
 }
 
-void Game::SpawnPlayer(u_int32_t networkId, bool owned) {
-    Instance().Spawn(networkId, owned);
+void Game::SpawnPlayer(u_int32_t networkId, Transform& t, bool owned) {
+    Instance().Spawn(networkId, t, owned);
 }
 
-void Game::Spawn(u_int32_t networkId, bool owned) {
+void Game::Spawn(u_int32_t networkId, Transform& t, bool owned) {
     if(!IsServer()) {
         if(owned) {
             ownedPlayer = new Player();
             NetworkDriver::GetNetworkedEntities().Add(ownedPlayer->GetEntity(), networkId);
+            ownedPlayer->SetTransform(t);
         } else {
             Player* player = new Player();
             NetworkDriver::GetNetworkedEntities().Add(player->GetEntity(), networkId);
+            player->SetTransform(t);
             //delete player;
         }
     }
@@ -150,7 +152,8 @@ bool Game::IsServer() {
 void Game::Start() const
 {
     if(NetworkDriver::IsOfflineMode()) {
-        SpawnPlayer(1, true);
+        auto t = Transform{};
+        SpawnPlayer(1, t, true);
     }
     ActiveScene->Start();
 }

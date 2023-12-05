@@ -29,7 +29,6 @@ Player::Player()
 
     Transform transform{};
 
-
     std::list<FAttribute> attributes;
     FAttribute Health = {
             .id="health",
@@ -62,12 +61,10 @@ Player::Player()
     healthRegen.callback = healthRegenCallback;
     healthRegen.rate = 3;
 
-
     CFollow follow{};
     follow.Index = 0;
     follow.FollowState = EFollowState::Idle;
     follow.Goal = {transform.translation.x, transform.translation.z};
-
 
     CPhysics2D physics{};
     physics.Speed = 9.f;
@@ -156,11 +153,16 @@ void Player::HandleInput(entt::registry* Registry)
     }
 }
 
-void Player::DrawUI() {
-
-}
+void Player::DrawUI() {}
 
 void Player::Kill()
 {
     SmartEntity::Kill();
+}
+
+void Player::SetTransform(Transform &t) {
+    Transform& x = Game::GetRegistry().get<Transform>(GetEntity());
+    x.translation = t.translation;
+    x.scale = t.scale;
+    x.rotation = t.rotation;
 }
