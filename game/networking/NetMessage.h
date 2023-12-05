@@ -4,6 +4,9 @@
 #include <entt/entt.hpp>
 #include "components/Transform.h"
 
+typedef struct _ENetPacket ENetPacket;
+typedef struct _ENetPeer ENetPeer;
+
 namespace tZ
 {
 

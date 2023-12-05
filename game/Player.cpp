@@ -36,7 +36,7 @@ Player::Player()
         NetworkDriver::GetNetworkedEntities().Add(GetEntity());
     }
 
-    Transform transform{};
+    CTransform transform{};
 
 
     std::list<FAttribute> attributes;
@@ -71,11 +71,10 @@ Player::Player()
     healthRegen.callback = healthRegenCallback;
     healthRegen.rate = 1;
 
-
     CFollow follow{};
     follow.Index = 0;
     follow.FollowState = EFollowState::Idle;
-    follow.Goal = {transform.translation.x, transform.translation.z};
+    follow.Goal = {transform.Position.x, transform.Position.z};
 
 
     CPhysics2D physics{};
@@ -117,9 +116,9 @@ void Player::HandleInput(entt::registry* Registry)
     if(IsKeyPressed(KEY_Q))
     {
         FRayCollision Collision = Util::GetMouseCollision();
-        Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
-        Transform t = GetComponent<Transform>();
-        Projectile(GetEntity(), clickPoint.translation, t.translation);
+        CTransform clickPoint = CTransform{v3(Collision.point.x, 0.0f, Collision.point.z)};
+        CTransform t = GetComponent<CTransform>();
+        Projectile(GetEntity(), clickPoint.Position, t.Position);
     }
     if(IsKeyPressed(KEY_W))
     {
@@ -164,10 +163,10 @@ void Player::HandleInput(entt::registry* Registry)
 }
 
 void Player::DrawUI() {
-    Transform & t = GetComponent<Transform>();
-    v2 healthBarPos = GetWorldToScreen(
-            { t.translation.x, t.translation.y + 10.0f, t.translation.z },
+    CTransform & t = GetComponent<CTransform>();
+    Vector2 v = GetWorldToScreen({ t.Position.x, t.Position.y + 10.0f, t.Position.z },
             ToRaylibCamera(Game::Instance().GetActiveCamera()));
+    v2 healthBarPos = v2(v.x, v.y);
     CAttributes ac = GetComponent<CAttributes>();
     FAttribute health = *Util::GetAttribute(ac, "health");
     if (health.id != "empty") {

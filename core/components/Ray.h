@@ -14,7 +14,7 @@ namespace tZ
 struct CRay
 {
     FRay Ray;
-    CColor Color;
+    FColor Color;
 };
 
 }

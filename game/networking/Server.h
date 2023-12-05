@@ -1,12 +1,14 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <enet/enet.h>
 #include <entt/entt.hpp>
 #include <vector>
 #include "NetMessage.h"
-#include "Player.h"
 #include "components/Transform.h"
+
+typedef struct _ENetHost ENetHost;
+typedef struct _ENetPeer ENetPeer;
+typedef uint8_t enet_uint8;
 
 namespace tZ
 {
@@ -15,7 +17,7 @@ class Server
 {
 public:
     ENetHost* server;
-    std::vector<Player*> players;
+    std::vector<class Player*> players;
     Server();
     void Loop();
     void Close();
@@ -28,7 +30,7 @@ public:
     entt::entity CreateNetworkedEntity();
 
 
-    void flush() { enet_host_flush(server); }
+    void flush();
     void Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c);
 };
 

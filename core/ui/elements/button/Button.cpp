@@ -81,14 +81,14 @@ void Button::Update() {
     }
 }
 
-CColor Button::GetBgColor() {
+FColor Button::GetBgColor() {
     if(isHovered())
         return BaseBgColor;
     else
         return HoveredBgColor;
 }
 
-CColor Button::GetTextColor() {
+FColor Button::GetTextColor() {
     if(isHovered())
         return BaseTextColor;
     else

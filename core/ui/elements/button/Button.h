@@ -11,10 +11,10 @@ namespace tZ
 
 class Button : public Element
 {
-    CColor BaseBgColor = {35, 45, 130, 255};
-    CColor HoveredBgColor = {255, 50, 130, 255};
-    CColor BaseTextColor = {184, 227, 195, 255};
-    CColor HoveredTextColor = {255, 255, 255, 255};
+    FColor BaseBgColor = {35, 45, 130, 255};
+    FColor HoveredBgColor = {255, 50, 130, 255};
+    FColor BaseTextColor = {184, 227, 195, 255};
+    FColor HoveredTextColor = {255, 255, 255, 255};
     char* Text = nullptr;
     CRectangle Box{};
 
@@ -32,8 +32,8 @@ public:
     virtual void Update() override;
 private:
     bool bActiveClick = false;
-    CColor GetBgColor();
-    CColor GetTextColor();
+    FColor GetBgColor();
+    FColor GetTextColor();
 };
 
 }

@@ -81,7 +81,7 @@ void SNavigation::LoadNavMesh()
             if(graphTriangle.IsBlocked())
             {
                 Triangle2D triangle = graphTriangle.GetTriangle();
-                triangle.color = Red;
+                triangle.color = FColor(0xFF0000FF);
                 AddComponent(e, triangle);
             }
         }

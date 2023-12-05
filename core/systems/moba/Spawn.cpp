@@ -28,7 +28,7 @@ void SSpawn::Update(float deltaSeconds)
             CFollow followComp{};
             AddComponent(e, followComp);
             CSphere sphereComponent{};
-            sphereComponent.Color = Red;
+            sphereComponent.Color = FColor(0xFF0000FF);
             sphereComponent.Radius = .5f;
             AddComponent(e, sphereComponent);
             CPhysics2D physics{};

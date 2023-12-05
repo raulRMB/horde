@@ -97,4 +97,9 @@ void Client::Close() {
     enet_deinitialize();
 }
 
+void Client::flush()
+{
+    enet_host_flush(client);
+}
+
 }

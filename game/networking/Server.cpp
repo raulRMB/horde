@@ -8,6 +8,7 @@
 #include "systems/moba/Navigation.h"
 #include "components/Follow.h"
 #include "components/Network.h"
+#include "Player.h"
 
 namespace tZ
 {
@@ -148,6 +149,11 @@ void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
 void Server::Close() {
     enet_host_destroy(server);
     enet_deinitialize();
+}
+
+void Server::flush()
+{
+    enet_host_flush(server);
 }
 
 }

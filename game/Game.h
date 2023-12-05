@@ -23,7 +23,7 @@ class Game
     class Scene* ActiveScene;
     bool bRunning;
 
-    CColor BackgroundColor;
+    FColor BackgroundColor;
 
     CCamera3D Camera{};
 

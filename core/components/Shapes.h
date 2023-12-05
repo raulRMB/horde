@@ -14,7 +14,7 @@ struct CCube
 {
     v3 Position;
     v3 Size;
-    CColor Color;
+    FColor Color;
 };
 
 struct CCapsule
@@ -23,14 +23,14 @@ struct CCapsule
     float Radius;
     float Height;
     int Slices;
-    CColor Color;
+    FColor Color;
 };
 
 struct CSphere
 {
     v3 Position;
     float Radius;
-    CColor Color;
+    FColor Color;
 };
 
 struct CTriangle
@@ -38,13 +38,13 @@ struct CTriangle
     v3 V1;
     v3 V2;
     v3 V3;
-    CColor Color;
+    FColor Color;
 };
 
 struct CLineStrip
 {
     std::vector<v3> Points;
-    CColor Color;
+    FColor Color;
 };
 
 }

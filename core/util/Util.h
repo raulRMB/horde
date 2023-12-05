@@ -24,7 +24,7 @@ namespace Util
     v3 GetMouseWorldPosition();
     v2 GetMouseWorldPosition2D();
     v3 RandVec3(int min, int max);
-    CColor RandColor();
+    FColor RandColor();
     FRayCollision GetMouseCollision();
     FAttribute* GetAttribute(CAttributes& ac, const std::string& attr);
     v2 GetClosetPointOusideTriangle(v2 p, const Triangle2D& t);

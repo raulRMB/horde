@@ -5,6 +5,8 @@
 #include "ui/Canvas.h"
 #include "primitives/Triangles.h"
 
+struct Vector2;
+
 namespace tZ
 {
 

@@ -63,8 +63,8 @@ bool Util::Check2DCollision(CPhysics2D& x, CTransform& xT, CPhysics2D& y, CTrans
     return false;
 }
 
-CColor Util::RandColor() {
-    return CColor{
+FColor Util::RandColor() {
+    return FColor{
             static_cast<u8>(rand() % 255),
             static_cast<u8>(rand() % 255),
             static_cast<u8>(rand() % 255),

@@ -29,7 +29,7 @@ struct Triangle2D
         v2 Indecies[3]{};
     };
 
-    CColor color;
+    FColor color;
     Edge2D Edges[3]{};
 
     Triangle2D();

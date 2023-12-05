@@ -25,7 +25,7 @@ void TestScene::Start()
     triangle.Vertices.A = {0.f, 10.f};
     triangle.Vertices.B = {-10.f, 0.f};
     triangle.Vertices.C = {10.f, 0.f};
-    triangle.color = Red;
+    triangle.color = FColor(0xFF0000FF);
     AddComponent(e, triangle);
     triangles.push_back(triangle);
 
@@ -33,7 +33,7 @@ void TestScene::Start()
     triangle.Vertices.C = {0.f, -10.f};
     triangle.Vertices.B = {-10.f, 0.f};
     triangle.Vertices.A = {10.f, 0.f};
-    triangle.color = Red;
+    triangle.color = FColor(0xFF0000FF);
     AddComponent(e, triangle);
     triangles.push_back(triangle);
 

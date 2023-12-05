@@ -44,7 +44,7 @@ namespace tZ
         return (Rectangle){rect.X, rect.Y, rect.Width, rect.Height};
     }
 
-    inline Color ToRaylibColor(const CColor& color)
+    inline Color ToRaylibColor(const FColor& color)
     {
         return (Color){color.R, color.G, color.B, color.A};
     }
