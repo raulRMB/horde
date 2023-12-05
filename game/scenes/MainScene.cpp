@@ -76,6 +76,7 @@ void MainScene::Draw()
 
 void MainScene::DrawUI()
 {
+    Scene::DrawUI();
     Player* player = Game::GetPlayer();
     if(player != nullptr) {
         player->DrawUI();

@@ -39,6 +39,7 @@ class DrawingSystem : public System
 {
 public:
     virtual void Draw() = 0;
+    virtual void Draw2D() {};
 };
 
 

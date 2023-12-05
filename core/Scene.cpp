@@ -11,6 +11,7 @@
 #include "systems/base/ModelDrawing.h"
 #include "systems/moba/Attribute.h"
 #include "systems/moba/Spawn.h"
+#include "systems/moba/AttributeUI.h"
 
 void Scene::Start()
 {
@@ -24,9 +25,9 @@ void Scene::Start()
     if(!Game::IsServer()) {
         UpdateSystems.push_back(&System::Get<SAnimation>());
         UpdateSystems.push_back(&System::Get<SParticle>());
-
         DrawingSystems.push_back(&System::Get<SShapeDrawing>());
         DrawingSystems.push_back(&System::Get<SModelDrawing>());
+        DrawingSystems.push_back(&System::Get<SAttributeUI>());
     } else {
         UpdateSystems.push_back(&System::Get<SNetworking>());
     }
@@ -64,4 +65,10 @@ void Scene::Clean()
         system = nullptr;
     }
     DrawingSystems.clear();
+}
+
+void Scene::DrawUI() {
+    for(DrawingSystem* system : DrawingSystems) {
+        system->Draw2D();
+    }
 }

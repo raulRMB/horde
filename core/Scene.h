@@ -20,7 +20,7 @@ public:
     virtual void HandleInput() = 0;
     virtual void Update(float deltaSeconds);
     virtual void Draw();
-    virtual void DrawUI() = 0;
+    virtual void DrawUI();
     virtual void Clean();
     virtual void Save() = 0;
     virtual void Load() = 0;

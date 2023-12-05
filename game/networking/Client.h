@@ -16,10 +16,12 @@ public:
     void SendMoveTo(Vector2 pos, u_int32_t NetworkId);
     void OnInboundMessage(const Net::Header* header);
     void SendInitialConnection();
-    void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data);
     void SendOutboundMessage(ENetPacket* packet);
     void flush() { enet_host_flush(client); }
     void Close();
+private:
+    void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data);
+
 };
 
 #endif

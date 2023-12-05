@@ -13,7 +13,6 @@
 Player::Player()
 {
     if(!Game::IsServer()) {
-        font = LoadFont("../assets/ui/fonts/Roboto-Bold.ttf");
         CAnimation animation{};
         CModel mc = {LoadModel("../assets/anim.glb"), 0.05, false};
         mc.model.transform = MatrixRotateX(PI/2);
@@ -61,7 +60,7 @@ Player::Player()
     healthRegen.target = GetEntity();
     healthRegen.source = GetEntity();
     healthRegen.callback = healthRegenCallback;
-    healthRegen.rate = 1;
+    healthRegen.rate = 3;
 
 
     CFollow follow{};
@@ -158,17 +157,7 @@ void Player::HandleInput(entt::registry* Registry)
 }
 
 void Player::DrawUI() {
-    Transform & t = GetComponent<Transform>();
-    Vector2 healthBarPos = GetWorldToScreen(
-            (Vector3){ t.translation.x, t.translation.y + 10.0f, t.translation.z },
-            Game::Instance().GetActiveCamera());
-    CAttributes ac = GetComponent<CAttributes>();
-    FAttribute health = *Util::GetAttribute(ac, "health");
-    if (health.id != "empty") {
-        DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
-        DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * health.get()/health.max, 10, GREEN);
-        DrawTextEx(font, "Username", Vector2{healthBarPos.x, healthBarPos.y - 13}, 13, 1, WHITE);
-    }
+
 }
 
 void Player::Kill()

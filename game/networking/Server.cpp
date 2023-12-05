@@ -85,7 +85,7 @@ void Server::OnConnect(ENetPeer* peer) {
     NetworkDriver::GetNetworkedEntities().SetOwner(netId, peer);
     SendPlayerJoined(netId);
     NetworkDriver::GetConnections().push_back(peer);
-    ConnectResponse(peer, netId);
+    SendConnectResponse(peer, netId);
 }
 
 int packetsSent = 0;
@@ -113,7 +113,7 @@ std::vector<ENetPeer*>& Server::CreatePeerVector(ENetPeer* peer) {
     return *x;
 }
 
-void Server::ConnectResponse(ENetPeer* peer, uint32_t netId) {
+void Server::SendConnectResponse(ENetPeer* peer, uint32_t netId) {
     auto otherPlayers = GetOtherPlayers(peer);
     flatbuffers::FlatBufferBuilder builder;
     auto vec = builder.CreateVector(otherPlayers);

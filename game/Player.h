@@ -8,7 +8,6 @@ class Player final : public SmartEntity
 public:
     Player();
     ~Player();
-    Font font;
     void Start() override;
 
     void HandleInput(entt::registry* Registry);
