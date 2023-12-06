@@ -54,6 +54,11 @@ void SShapeDrawing::Draw()
         }
     }
 
+    for(const entt::entity& entity : Game::GetRegistry().view<MoveCircle>()) {
+        MoveCircle& mc = Game::GetRegistry().get<MoveCircle>(entity);
+        DrawCircle3D(mc.location, mc.radius, Vector3{1.0f, 0.0f, 0.0f}, 90.0f, GREEN);
+    }
+
     for(const entt::entity& entity : Game::GetRegistry().view<CSphere, Transform>())
     {
         const CSphere sphere = GetComponent<CSphere>(entity);

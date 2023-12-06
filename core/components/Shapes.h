@@ -15,6 +15,11 @@ struct CCube
     Color color;
 };
 
+struct MoveCircle {
+    Vector3 location;
+    float radius;
+};
+
 struct CCapsule
 {
     Vector3 Position;

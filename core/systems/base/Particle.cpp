@@ -1,6 +1,7 @@
 #include "Particle.h"
 #include "raylib.h"
 #include "components/Particle.h"
+#include "components/Shapes.h"
 
 void SParticle::Update(float deltaSeconds) {
     entt::registry& registry = Game::GetRegistry();
@@ -29,6 +30,14 @@ void SParticle::Update(float deltaSeconds) {
                 ec->ParticleCount--;
             }
             registry.destroy(entity);
+        }
+    }
+
+    for(const entt::entity& entity : Game::GetRegistry().view<MoveCircle>()) {
+        MoveCircle& mc = Game::GetRegistry().get<MoveCircle>(entity);
+        mc.radius = mc.radius - (10.0f * deltaSeconds);
+        if(mc.radius <= 0.3) {
+            Game::GetRegistry().destroy(entity);
         }
     }
 }
