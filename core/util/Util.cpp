@@ -26,7 +26,7 @@ v3 Util::RandVec3(int min, int max) {
 
 tZ::FAttribute* Util::GetAttribute(tZ::CAttributes& ac, const std::string& attr)
 {
-    std::_List_iterator<tZ::FAttribute> it = std::find_if(ac.attributes.begin(), ac.attributes.end(),
+    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(),
                                                           [&attr](const FAttribute& a)
                                                           {
                                                               return a.id == attr;

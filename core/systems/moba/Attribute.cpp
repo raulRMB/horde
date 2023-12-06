@@ -53,7 +53,7 @@ void SAttribute::Update(float deltaSeconds)
 void SAttribute::OnEffect(const FEffect &effect) {
     CAttributes& target = Game::GetRegistry().get<CAttributes>(effect.target);
     CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
-    if(effect.type == EEffectType::Infinite) {
+    if(effect.type == EEffectType::Instant) {
         effect.callback(target, source);
         target.needsSync = true;
     } else if(effect.type == EEffectType::Duration || effect.type == EEffectType::Infinite) {
