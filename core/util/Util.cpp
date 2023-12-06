@@ -83,7 +83,7 @@ v3 Util::GetMouseWorldPosition()
     constexpr raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
     constexpr raylib::Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
     const raylib::RayCollision Collision = raylib::GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
-    return v3(Collision.point.z, Collision.point.y, Collision.point.z);
+    return v3(Collision.point.x, Collision.point.y, Collision.point.z);
 }
 
 v2 Util::GetMouseWorldPosition2D()

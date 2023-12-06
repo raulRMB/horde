@@ -55,8 +55,8 @@ std::vector<flatbuffers::Offset<Net::PlayerSpawn>> FlatBufferUtil::GetOtherPlaye
     return otherPlayers;
 }
 
-flatbuffers::Offset<Net::Transform> FlatBufferUtil::CreateTransform(flatbuffers::FlatBufferBuilder &builder, CTransform& t) {
-    t.Position.x = 0;
+flatbuffers::Offset<Net::Transform> FlatBufferUtil::CreateTransform(flatbuffers::FlatBufferBuilder &builder, CTransform& t)
+{
     auto positiom = CreateVector3(builder, t.Position);
     auto scale = CreateVector3(builder, t.Scale);
     auto rotation = CreateVector4(builder, t.VRotation);

@@ -21,7 +21,7 @@ struct CPhysics2D
     float CollisionRadius;
     CRectangle CollisionBox;
 
-    v2 Velocity{ };
+    v2 Velocity{};
     v2 Acceleration{};
 };
 

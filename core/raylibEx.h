@@ -19,7 +19,7 @@ namespace tZ
 
     inline raylib::Vector2 ToRaylibVector2(const v2& vec)
     {
-        return (raylib::Vector2){vec.x, vec.x};
+        return (raylib::Vector2){vec.x, vec.y};
     }
 
     inline raylib::Rectangle ToRaylibRect(const CRectangle& rect)
