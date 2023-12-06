@@ -58,7 +58,7 @@ Player::Player()
 
         if(FAttribute* health = Util::GetAttribute(target, "health"); health)
         {
-            float newHealth = health->base + 5;
+            float newHealth = health->base + 15;
             health->base = std::clamp(newHealth, health->min, health->max);
         }
     };
@@ -67,7 +67,7 @@ Player::Player()
     healthRegen.target = GetEntity();
     healthRegen.source = GetEntity();
     healthRegen.callback = healthRegenCallback;
-    healthRegen.rate = 3;
+    healthRegen.rate = 1;
 
     CFollow follow{};
     follow.Index = 0;
@@ -98,6 +98,12 @@ void Player::HandleInput(entt::registry* Registry)
 {
     if(raylib::IsMouseButtonPressed(raylib::MOUSE_BUTTON_RIGHT))
     {
+        auto e = Registry->create();
+        CMoveCircle mc = CMoveCircle {};
+        mc.Position = Util::GetMouseWorldPosition();
+        mc.Radius = 2.2;
+
+        Registry->emplace<CMoveCircle>(e, mc);
         v2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {

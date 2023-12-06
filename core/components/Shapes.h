@@ -17,6 +17,11 @@ struct CCube
     FColor Color;
 };
 
+struct CMoveCircle {
+    v3 Position;
+    float Radius;
+};
+
 struct CCapsule
 {
     v3 Position;

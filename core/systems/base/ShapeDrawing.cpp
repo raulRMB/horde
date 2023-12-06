@@ -67,6 +67,11 @@ void SShapeDrawing::Draw()
         }
     }
 
+    for(const entt::entity& entity : Game::GetRegistry().view<CMoveCircle>()) {
+        CMoveCircle& mc = Game::GetRegistry().get<CMoveCircle>(entity);
+        raylib::DrawCircle3D(ToRaylibVector3(mc.Position), mc.Radius, (raylib::Vector3){1.0f, 0.0f, 0.0f}, 90.0f, raylib::GREEN);
+    }
+
     for(const entt::entity& entity : Game::GetRegistry().view<CSphere, CTransform>())
     {
         const CSphere sphere = GetComponent<CSphere>(entity);

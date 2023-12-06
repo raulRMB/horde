@@ -1,5 +1,6 @@
 #include "Particle.h"
 #include "components/Particle.h"
+#include "components/Shapes.h"
 
 namespace tZ
 {
@@ -31,6 +32,14 @@ void SParticle::Update(float deltaSeconds) {
                 ec->ParticleCount--;
             }
             registry.destroy(entity);
+        }
+    }
+
+    for(const entt::entity& entity : Game::GetRegistry().view<CMoveCircle>()) {
+        CMoveCircle& mc = Game::GetRegistry().get<CMoveCircle>(entity);
+        mc.Radius = mc.Radius - (10.0f * deltaSeconds);
+        if(mc.Radius <= 0.3) {
+            Game::GetRegistry().destroy(entity);
         }
     }
 }
