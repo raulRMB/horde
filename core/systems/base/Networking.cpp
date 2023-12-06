@@ -2,19 +2,21 @@
 #include "entt/entt.hpp"
 #include "components/Network.h"
 #include "Game.h"
-#include <raymath.h>
 #include "networking/NetworkDriver.h"
 #include "components/Attribute.h"
+
+namespace tZ
+{
 
 void SNetworking::Update(float deltaSeconds)
 {
     if(NetworkDriver::IsServer()) {
-        for (const entt::entity &entity: Game::GetRegistry().view<Transform, CNetwork>()) {
-            Transform t = Game::GetRegistry().get<Transform>(entity);
+        for (const entt::entity &entity: Game::GetRegistry().view<CTransform, CNetwork>()) {
+            CTransform t = Game::GetRegistry().get<CTransform>(entity);
             CNetwork& cn = Game::GetRegistry().get<CNetwork>(entity);
 
-            if(abs(Vector3Distance(t.translation, cn.prevTransform.translation)) > 0.2) {
-                cn.prevTransform.translation = t.translation;
+            if(abs(glm::distance(t.Position, cn.PrevTransform.Position)) > 0.2) {
+                cn.PrevTransform.Position = t.Position;
                 NetworkDriver::GetServer()->Sync(entity, t, NetworkDriver::GetConnections());
             }
         }
@@ -26,4 +28,6 @@ void SNetworking::Update(float deltaSeconds)
             }
         }
     }
+}
+
 }

@@ -4,6 +4,9 @@
 #include <entt/entt.hpp>
 #include "systems/System.h"
 
+namespace tZ
+{
+
 class Scene
 {
 protected:
@@ -58,5 +61,6 @@ public:
     }
 };
 
+}
 
 #endif //SCENE_H

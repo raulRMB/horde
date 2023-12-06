@@ -1,6 +1,12 @@
 #include "NetworkDriver.h"
+
+#include <thread>
+
 #include "components/Follow.h"
 #include "networking/buffers/Events_generated.h"
+
+namespace tZ
+{
 
 NetworkDriver::NetworkDriver(){}
 
@@ -50,7 +56,7 @@ void NetworkDriver::ProcessQueues() {
         GetInboundQueue().pop();
     }
     while(!GetOutboundQueue().empty()) {
-        OutboundMessage som = GetOutboundQueue().front();
+        NetOutboundMessage som = GetOutboundQueue().front();
         if(IsServer()) {
             Instance().server->SendOutboundMessage(som);
         } else {
@@ -83,4 +89,5 @@ bool NetworkDriver::IsServer() {
 
 bool NetworkDriver::IsOfflineMode() {
     return Instance().offlineMode;
+}
 }

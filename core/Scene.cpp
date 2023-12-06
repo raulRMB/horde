@@ -13,9 +13,11 @@
 #include "systems/moba/Spawn.h"
 #include "systems/moba/AttributeUI.h"
 
-void Scene::Start()
+namespace tZ
 {
 
+void Scene::Start()
+{
     UpdateSystems.push_back(&System::Get<SNavigation>());
     UpdateSystems.push_back(&System::Get<SFollow>());
     UpdateSystems.push_back(&System::Get<SPhysics>());
@@ -32,6 +34,14 @@ void Scene::Start()
         UpdateSystems.push_back(&System::Get<SNetworking>());
     }
 
+}
+
+void Scene::DrawUI()
+{
+    for(DrawingSystem* system : DrawingSystems)
+    {
+        system->Draw2D();
+    }
 }
 
 void Scene::Update(float deltaSeconds)
@@ -67,8 +77,4 @@ void Scene::Clean()
     DrawingSystems.clear();
 }
 
-void Scene::DrawUI() {
-    for(DrawingSystem* system : DrawingSystems) {
-        system->Draw2D();
-    }
 }

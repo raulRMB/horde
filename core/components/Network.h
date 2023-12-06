@@ -3,10 +3,15 @@
 
 #include <set>
 #include <string>
+#include "components/Transform.h"
+
+namespace tZ
+{
 
 struct CNetwork {
-    std::set<std::string> tags;
-    Transform prevTransform = Transform{};
+    std::set<std::string> Tags;
+    CTransform PrevTransform = CTransform{};
 };
 
+}
 #endif

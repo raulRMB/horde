@@ -1,53 +1,66 @@
 #include "Button.h"
+#include "components/Rectangle.h"
+#include "raylibEx.h"
 
-Button::Button(Rectangle box, char* text) {
-    this->text = text;
-    this->box = box;
+namespace tZ
+{
+
+Button::Button(CRectangle box, char* text)
+{
+    Text = text;
+    Box = box;
 }
 
-bool Button::isHovered() {
-    return CheckCollisionPointRec(GetMousePosition(), box);
+bool Button::isHovered()
+{
+    return CheckCollisionPointRec(GetMousePosition(), ToRaylibRect(Box));
 }
 
-void Button::Draw(DrawData data) {
-    DrawRectangleRounded(box, 0.2, 10, GetBgColor());
-    DrawText(text, box.x, box.y, 28, GetTextColor());
+void Button::Draw(DrawData data)
+{
+    DrawRectangleRounded(ToRaylibRect(Box), 0.2, 10, ToRaylibColor(GetBgColor()));
+    DrawText(Text, static_cast<int>(Box.X), static_cast<int>(Box.Y), 28, ToRaylibColor(GetTextColor()));
 }
 
-void Button::OnAdded() {
+void Button::OnAdded()
+{
     
 }
 
-void Button::OnWindowResize(Vector2 screenSize) {
+void Button::OnWindowResize(v2 screenSize)
+{
     
 }
 
-std::any Button::OnDrag() {
-    TraceLog(LOG_INFO, "Drag Started %s", text);
-    return std::make_any<char*>(text);
+std::any Button::OnDrag()
+{
+    TraceLog(LOG_INFO, "Drag Started %s", Text);
+    return std::make_any<char*>(Text);
 }
 
-void Button::OnHover() {
-    TraceLog(LOG_INFO, "Hovered %s", text);
+void Button::OnHover()
+{
+    TraceLog(LOG_INFO, "Hovered %s", Text);
 }
 
-void Button::OnHoverExit() {
-    TraceLog(LOG_INFO, "Exit hover %s", text);
+void Button::OnHoverExit()
+{
+    TraceLog(LOG_INFO, "Exit hover %s", Text);
 }
 
 void Button::OnDragCancelled() {
-    TraceLog(LOG_INFO, "Drag Cancelled %s", text);
+    TraceLog(LOG_INFO, "Drag Cancelled %s", Text);
 }
 
 void Button::OnDrop(Element* source, std::any payload) {
-    TraceLog(LOG_INFO, "Dropped %s", text);
+    TraceLog(LOG_INFO, "Dropped %s", Text);
     try {
         char* castedPayload = std::any_cast<char*>(payload);
-        char* tmp = text;
+        char* tmp = Text;
         if(castedPayload != nullptr) {
-            text = castedPayload;
+            Text = castedPayload;
             Button* button = (Button*)source;
-            button->text = tmp;
+            button->Text = tmp;
         }
     } catch (const std::bad_any_cast& e) {}
 }
@@ -55,29 +68,31 @@ void Button::OnDrop(Element* source, std::any payload) {
 void Button::Update() {
     bool hovered = isHovered();
     if(!hovered) {
-        activeClick = false;
+        bActiveClick = false;
     }
     if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && hovered) {
-        activeClick = true;
+        bActiveClick = true;
     }
     if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        if(activeClick && hovered) {
-            activeClick = false;
-            TraceLog(LOG_INFO, "Clicked %s", text);
+        if(bActiveClick && hovered) {
+            bActiveClick = false;
+            TraceLog(LOG_INFO, "Clicked %s", Text);
         }
     }
 }
 
-Color Button::GetBgColor() {
+FColor Button::GetBgColor() {
     if(isHovered())
-        return baseBgColor;
+        return BaseBgColor;
     else
-        return hoveredBgColor;
+        return HoveredBgColor;
 }
 
-Color Button::GetTextColor() {
+FColor Button::GetTextColor() {
     if(isHovered())
-        return baseTextColor;
+        return BaseTextColor;
     else
-        return hoveredTextColor;
+        return HoveredTextColor;
+}
+
 }

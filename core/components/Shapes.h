@@ -5,50 +5,48 @@
 #ifndef HORDE_SHAPES_H
 #define HORDE_SHAPES_H
 
-#include <raylib.h>
 #include <vector>
+
+namespace tZ
+{
 
 struct CCube
 {
-    Vector3 Position;
-    Vector3 Size;
-    Color color;
+    v3 Position;
+    v3 Size;
+    FColor Color;
 };
 
 struct CCapsule
 {
-    Vector3 Position;
+    v3 Position;
     float Radius;
     float Height;
     int Slices;
-    Color color;
+    FColor Color;
 };
 
 struct CSphere
 {
-    Vector3 Position;
+    v3 Position;
     float Radius;
-    Color color;
-};
-
-struct CRay
-{
-    Ray ray;
-    Color color;
+    FColor Color;
 };
 
 struct CTriangle
 {
-    Vector3 V1;
-    Vector3 V2;
-    Vector3 V3;
-    Color color;
+    v3 V1;
+    v3 V2;
+    v3 V3;
+    FColor Color;
 };
 
 struct CLineStrip
 {
-    std::vector<Vector3> Points;
-    Color color;
+    std::vector<v3> Points;
+    FColor Color;
 };
+
+}
 
 #endif //HORDE_SHAPES_H

@@ -2,9 +2,13 @@
 #include "MainScene.h"
 
 #include "Player.h"
+#include "components/Transform.h"
 #include "ui/elements/slot/Slot.h"
 #include "ui/elements/hotbar/Hotbar.h"
 #include "systems/moba/Navigation.h"
+
+namespace tZ
+{
 
 MainScene::MainScene()
 {
@@ -52,12 +56,12 @@ void MainScene::Update(float deltaSeconds)
     Scene::Update(deltaSeconds);
     if(!Game::IsServer()) {
         mainCanvas->Update();
-        Camera3D &cam = Game::Instance().GetActiveCamera();
+        CCamera3D& cam = Game::Instance().GetActiveCamera();
         Player* player = GetActivePlayer();
         if(player != nullptr) {
-            Vector3 playerPos = player->GetComponent<Transform>().translation;
-            cam.position = Vector3{playerPos.x - 20, cam.position.y, playerPos.z - 40};
-            cam.target = playerPos;
+            const v3& playerPos = player->GetComponent<CTransform>().Position;
+            cam.Position = v3(playerPos.x - 20, cam.Position.y, playerPos.z - 40);
+            cam.Target = playerPos;
         }
     }
 }
@@ -98,4 +102,6 @@ void MainScene::Save()
 void MainScene::Load()
 {
     System::Get<SNavigation>().LoadNavMesh();
+}
+
 }

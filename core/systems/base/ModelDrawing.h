@@ -3,10 +3,15 @@
 
 #include "systems/System.h"
 
+namespace tZ
+{
+
 class SModelDrawing final : public DrawingSystem
 {
 public:
     void Draw() override;
 };
+
+}
 
 #endif

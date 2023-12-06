@@ -4,6 +4,9 @@
 #include <entt/entt.hpp>
 #include "Game.h"
 
+namespace tZ
+{
+
 class SmartEntity
 {
 private:
@@ -49,6 +52,7 @@ public:
     explicit operator entt::entity() const { return Entity; }
 };
 
+}
 
 
 #endif //SMARTENTITY_H

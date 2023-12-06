@@ -1,7 +1,10 @@
 #ifndef HORDE_PHYSICS_H
 #define HORDE_PHYSICS_H
 
-#include <raylib.h>
+#include "Rectangle.h"
+
+namespace tZ
+{
 
 enum class ECollision2DType
 {
@@ -16,18 +19,20 @@ struct CPhysics2D
 
     ECollision2DType CollisionType;
     float CollisionRadius;
-    Rectangle CollisionBox;
+    CRectangle CollisionBox;
 
-    Vector2 Velocity{ };
-    Vector2 Acceleration{};
+    v2 Velocity{ };
+    v2 Acceleration{};
 };
 
 struct CPhysics3D
 {
     float Speed = 0.f;
     float MaxSpeed = 0.f;
-    Vector3 Velocity{ };
-    Vector3 Acceleration{};
+    v3 Velocity{ };
+    v3 Acceleration{};
 };
+
+}
 
 #endif //HORDE_PHYSICS_H

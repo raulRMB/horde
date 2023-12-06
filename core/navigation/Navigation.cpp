@@ -4,12 +4,13 @@
 #include "../util/raymathEx.h"
 #include <set>
 
-namespace Navigation
+namespace tZ::Navigation
 {
+
 bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge)
 {
     int sharedVerts = 0;
-    for (const Vector2 &vertex : triangle.Indecies)
+    for (const v2 &vertex : triangle.Indecies)
     {
         if (vertex == edge.vertices[0] || vertex == edge.vertices[1])
         {
@@ -19,27 +20,27 @@ bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge)
     return sharedVerts == 2;
 }
 
-Vector3 Intersect(Vector3 planeP, Vector3 planeN, Vector3 rayP, Vector3 rayD)
+v3 Intersect(v3 planeP, v3 planeN, v3 rayP, v3 rayD)
 {
-    float d = Vector3DotProduct(planeP, -planeN);
-    float t = -(d + Vector3DotProduct(rayP, planeN)) / Vector3DotProduct(rayD, planeN);
+    float d = glm::dot(planeP, -planeN);
+    float t = -(d + glm::dot(rayP, planeN)) / glm::dot(rayD, planeN);
     return rayP + rayD * t;
 }
 
-void FindIncenter(const Triangle2D& triangle, Vector2& incenter)
+void FindIncenter(const Triangle2D& triangle, v2& incenter)
 {
-    float a = Vector2Distance(triangle.Vertices.B, triangle.Vertices.C);
-    float b = Vector2Distance(triangle.Vertices.A, triangle.Vertices.C);
-    float c = Vector2Distance(triangle.Vertices.A, triangle.Vertices.B);
+    float a = glm::distance(triangle.Vertices.B, triangle.Vertices.C);
+    float b = glm::distance(triangle.Vertices.A, triangle.Vertices.C);
+    float c = glm::distance(triangle.Vertices.A, triangle.Vertices.B);
 
     incenter = (a * triangle.Vertices.A + b * triangle.Vertices.B + c * triangle.Vertices.C) / (a + b + c);
 }
 
-void FindCircumcircle(const Triangle2D &triangle, Vector2 &circumcenter, float &circumradius)
+void FindCircumcircle(const Triangle2D &triangle, v2 &circumcenter, float &circumradius)
 {
-    Vector2 A = triangle.Vertices.A;
-    Vector2 B = triangle.Vertices.B;
-    Vector2 C = triangle.Vertices.C;
+    v2 A = triangle.Vertices.A;
+    v2 B = triangle.Vertices.B;
+    v2 C = triangle.Vertices.C;
 
     float D = 2.0f * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y));
     if (std::abs(D) < glm::epsilon<float>()) {
@@ -55,23 +56,23 @@ void FindCircumcircle(const Triangle2D &triangle, Vector2 &circumcenter, float &
                                 (B.x * B.x + B.y * B.y) * (A.x - C.x) +
                                 (C.x * C.x + C.y * C.y) * (B.x - A.x));
 
-    circumradius = Vector2Distance(A, circumcenter);
+    circumradius = glm::distance(A, circumcenter);
 }
 
-std::vector<TriangleNode> BowyerWatson(std::vector<Vector2>& points)
+std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points)
 {
     TriangleNode supraTriangle = TriangleNode(Triangle2D({-1000.0f, -1000.0f}, {1000.0f, -1000.0f}, {0.0f, 1000.0f}));
 
     std::vector<TriangleNode> graphTriangles = {supraTriangle};
-    for (Vector2& point : points)
+    for (v2& point : points)
     {
         std::vector<TriangleNode> badTriangles = {};
         for (TriangleNode& triangle : graphTriangles)
         {
-            Vector2 circumCenter;
+            v2 circumCenter;
             float circumRadius;
             FindCircumcircle(triangle.GetTriangle(), circumCenter, circumRadius);
-            if(Vector2Distance(point, circumCenter) < circumRadius)
+            if(glm::distance(point, circumCenter) < circumRadius)
             {
                 badTriangles.push_back(triangle);
             }
@@ -144,9 +145,9 @@ std::vector<TriangleNode> BowyerWatson(std::vector<Vector2>& points)
     return graphTriangles;
 }
 
-bool PointInTriangle(const Vector2 &p, const Triangle2D &triangle)
+bool PointInTriangle(const v2 &p, const Triangle2D &triangle)
 {
-    const Vector2* v = triangle.Indecies;
+    const v2* v = triangle.Indecies;
 
     float s = (v[0].x - v[2].x) * (p.y - v[2].y) - (v[0].y - v[2].y) * (p.x - v[2].x);
     float t = (v[1].x - v[0].x) * (p.y - v[0].y) - (v[1].y - v[0].y) * (p.x - v[0].x);
@@ -180,12 +181,12 @@ std::vector<TriangleNode*> ReconstructPath(TriangleNode* end, TriangleNode* star
         {
             if(IsOnRight(path[i]->GetCircumCenter(), path[i + 1]->GetCircumCenter(), SharedEdge->vertices[0]))
             {
-                Vector2 directionZero = Vector2Normalize(path[i]->GetInCenter() - SharedEdge->vertices[0]);
-                Vector2 directionOne = Vector2Normalize(path[i]->GetInCenter() - SharedEdge->vertices[1]);
+                v2 directionZero = glm::normalize(path[i]->GetInCenter() - SharedEdge->vertices[0]);
+                v2 directionOne = glm::normalize(path[i]->GetInCenter() - SharedEdge->vertices[1]);
 
                 float Offset = 2.f;
-                Vector2 offsetZero = directionZero * Offset;
-                Vector2 offsetOne = directionOne * Offset;
+                v2 offsetZero = directionZero * Offset;
+                v2 offsetOne = directionOne * Offset;
                 portals.push_back({SharedEdge->vertices[1] + offsetOne, SharedEdge->vertices[0] + offsetZero});
             }
             else
@@ -198,7 +199,7 @@ std::vector<TriangleNode*> ReconstructPath(TriangleNode* end, TriangleNode* star
     return path;
 }
 
-void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<Vector2>& points)
+void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<v2>& points)
 {
     TriangleNode* startTriangle = nullptr;
     TriangleNode* endTriangle = nullptr;
@@ -253,12 +254,12 @@ void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> 
                 continue;
             }
 
-            float newMovementCostToNeighbor = current->GetGCost() + Vector2Distance(current->GetCircumCenter(),
+            float newMovementCostToNeighbor = current->GetGCost() + glm::distance(current->GetCircumCenter(),
                                                                                     neighbor->GetCircumCenter());
             if(newMovementCostToNeighbor < neighbor->GetGCost() || open.find(neighbor) == open.end())
             {
                 neighbor->SetGCost(newMovementCostToNeighbor);
-                neighbor->SetHCost(Vector2Distance(neighbor->GetCircumCenter(), endTriangle->GetCircumCenter()));
+                neighbor->SetHCost(glm::distance(neighbor->GetCircumCenter(), endTriangle->GetCircumCenter()));
                 neighbor->SetParent(current);
                 open.emplace(neighbor);
             }
@@ -268,7 +269,7 @@ void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> 
     path = ReconstructPath(endTriangle, startTriangle, portals);
 }
 
-void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<TriangleNode>& graphTriangles)
+void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<TriangleNode>& graphTriangles)
 {
     TriangleNode* startTriangle = nullptr;
     TriangleNode* endTriangle = nullptr;
@@ -321,12 +322,12 @@ void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> 
                 continue;
             }
 
-            float newMovementCostToNeighbor = current->GetGCost() + Vector2Distance(current->GetCircumCenter(),
+            float newMovementCostToNeighbor = current->GetGCost() + glm::distance(current->GetCircumCenter(),
                                                                                     neighbor->GetCircumCenter());
             if(newMovementCostToNeighbor < neighbor->GetGCost() || open.find(neighbor) == open.end())
             {
                 neighbor->SetGCost(newMovementCostToNeighbor);
-                neighbor->SetHCost(Vector2Distance(neighbor->GetCircumCenter(), endTriangle->GetCircumCenter()));
+                neighbor->SetHCost(glm::distance(neighbor->GetCircumCenter(), endTriangle->GetCircumCenter()));
                 neighbor->SetParent(current);
                 open.emplace(neighbor);
             }
@@ -336,7 +337,7 @@ void AStar(const Vector2 &start, const Vector2 &end, std::vector<TriangleNode*> 
     path = ReconstructPath(endTriangle, startTriangle, portals);
 }
 
-float TriangleArea2(const Vector2 &A, const Vector2 &B, const Vector2 &C)
+float TriangleArea2(const v2 &A, const v2 &B, const v2 &C)
 {
     const float ax = B.x - A.x;
     const float ay = B.y - A.y;
@@ -347,9 +348,9 @@ float TriangleArea2(const Vector2 &A, const Vector2 &B, const Vector2 &C)
 
 struct CFunnelLeft
 {
-    Vector2 pos;
+    v2 pos;
 
-    void operator = (const Vector2& pos)
+    void operator = (const v2& pos)
     {
         this->pos = pos;
     }
@@ -357,9 +358,9 @@ struct CFunnelLeft
 
 struct CFunnelRight
 {
-    Vector2 pos;
+    v2 pos;
 
-    void operator = (const Vector2& pos)
+    void operator = (const v2& pos)
     {
         this->pos = pos;
     }
@@ -367,23 +368,23 @@ struct CFunnelRight
 
 struct CFunnelApex
 {
-    Vector2 pos;
+    v2 pos;
 
-    void operator = (const Vector2& pos)
+    void operator = (const v2& pos)
     {
         this->pos = pos;
     }
 } funnelApex;
 
 
-std::vector<Vector2> StringPull(std::vector<Edge2D> &portals, const Vector2 &start, const Vector2 &end)
+std::vector<v2> StringPull(std::vector<Edge2D> &portals, const v2 &start, const v2 &end)
 {
-    std::vector<Vector2> path;
+    std::vector<v2> path;
 
 
-    Vector2 portalApex = start;
-    Vector2 portalLeft{};
-    Vector2 portalRight{};
+    v2 portalApex = start;
+    v2 portalLeft{};
+    v2 portalRight{};
     if(!portals.empty())
     {
         portalLeft = portals[0].vertices[0];
@@ -401,8 +402,8 @@ std::vector<Vector2> StringPull(std::vector<Edge2D> &portals, const Vector2 &sta
 
     for(int i = 1; i < portals.size(); ++i)
     {
-        const Vector2& left = portals[i].vertices[0];
-        const Vector2& right = portals[i].vertices[1];
+        const v2& left = portals[i].vertices[0];
+        const v2& right = portals[i].vertices[1];
 
         float area = Navigation::TriangleArea2(portalApex, portalRight, right);
         if(area <= 0.0f)
@@ -473,10 +474,10 @@ const Edge2D* GetSharedEdge(const Triangle2D &t1, const Triangle2D &t2)
     return nullptr;
 }
 
-bool IsOnRight(const Vector2 &O, const Vector2 &A, const Vector2 &B)
+bool IsOnRight(const v2 &O, const v2 &A, const v2 &B)
 {
-    Vector2 a = Vector2Normalize(A - O);
-    Vector2 b = Vector2Normalize(B - O);
+    v2 a = glm::normalize(A - O);
+    v2 b = glm::normalize(B - O);
 
     return a.x * -b.y + a.y * b.x > 0;
 }

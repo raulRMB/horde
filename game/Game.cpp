@@ -4,20 +4,22 @@
 #include "Player.h"
 #include <thread>
 #include <chrono>
-#include "components/Follow.h"
-#include "systems/moba/Navigation.h"
 #include "networking/NetworkDriver.h"
+#include "raylibEx.h"
+
+namespace tZ
+{
 
 double tickRate = 60.0;
 long long periodMicroseconds = static_cast<long long>(1e6 / tickRate);
 
-Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(BLACK)
+Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(0x000000FF)
 {
-    Camera.position = {50.0f, 50.0f, 50.0f};
-    Camera.target = {0.0f, 0.0f, 0.0f};
-    Camera.up = {0.0f, 1.0f, 0.0f};
-    Camera.fovy = 45.0f;
-    Camera.projection = CAMERA_PERSPECTIVE;
+    Camera.Position = {50.0f, 50.0f, 50.0f};
+    Camera.Target = {0.0f, 0.0f, 0.0f};
+    Camera.Up = {0.0f, 1.0f, 0.0f};
+    Camera.Fovy = 45.0f;
+    Camera.Projection = CAMERA_PERSPECTIVE;
 }
 
 Game& Game::Instance()
@@ -26,11 +28,11 @@ Game& Game::Instance()
     return instance;
 }
 
-void Game::SpawnPlayer(u_int32_t networkId, Transform& t, bool owned) {
+void Game::SpawnPlayer(u_int32_t networkId, CTransform& t, bool owned) {
     Instance().Spawn(networkId, t, owned);
 }
 
-void Game::Spawn(u_int32_t networkId, Transform& t, bool owned) {
+void Game::Spawn(u_int32_t networkId, CTransform& t, bool owned) {
     if(!IsServer()) {
         if(owned) {
             ownedPlayer = new Player();
@@ -62,7 +64,7 @@ void Game::Loop() {
     NetworkDriver::ProcessQueues();
     if(!Game::IsServer()) {
         BeginDrawing();
-        ClearBackground(BackgroundColor);
+        ClearBackground(ToRaylibColor(BackgroundColor));
         Draw();
         DrawUI();
         CalculateFPS();
@@ -175,7 +177,7 @@ void Game::Update(float deltaTime) const
 
 void Game::Draw() const
 {
-    BeginMode3D(Camera);
+    BeginMode3D(ToRaylibCamera(Camera));
     ActiveScene->Draw();
     EndMode3D();
 }
@@ -206,4 +208,6 @@ entt::registry& Game::GetRegistry()
 entt::dispatcher& Game::GetDispatcher()
 {
     return Instance().ActiveScene->GetDispatcher();
+}
+
 }

@@ -7,10 +7,15 @@
 
 #include "systems/System.h"
 
+namespace tZ
+{
+
 class SPhysics : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;
 };
+
+}
 
 #endif //PHYSICSSYSTEM_H

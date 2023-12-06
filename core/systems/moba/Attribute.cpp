@@ -2,6 +2,9 @@
 #include "entt/entt.hpp"
 #include "Game.h"
 
+namespace tZ
+{
+
 void SAttribute::Init()
 {
     Game::GetDispatcher().sink<FEffect>().connect<&SAttribute::OnEffect>();
@@ -29,7 +32,7 @@ void SAttribute::Update(float deltaSeconds)
         CAttributes& ac = registry.get<CAttributes>(entity);
         for (auto it = ac.effects.begin(); it != ac.effects.end();) {
             FEffect& effect = *it;
-            if(effect.isExpired() && effect.type == DURATION) {
+            if(effect.isExpired() && effect.type == EEffectType::Duration) {
                 removeEffect(effect);
                 it = ac.effects.erase(it);
             } else {
@@ -50,13 +53,15 @@ void SAttribute::Update(float deltaSeconds)
 void SAttribute::OnEffect(const FEffect &effect) {
     CAttributes& target = Game::GetRegistry().get<CAttributes>(effect.target);
     CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
-    if(effect.type == INSTANT) {
+    if(effect.type == EEffectType::Infinite) {
         effect.callback(target, source);
         target.needsSync = true;
-    } else if(effect.type == DURATION || effect.type == INFINITE) {
+    } else if(effect.type == EEffectType::Duration || effect.type == EEffectType::Infinite) {
         if(effect.callOnInit) {
             effect.callback(target, source);
         }
         target.effects.push_back(effect);
     }
+}
+
 }

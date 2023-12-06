@@ -1,14 +1,22 @@
 #include "Player.h"
-#include "raymath.h"
 #include "components/Follow.h"
 #include "util/Util.h"
 #include "Particles.h"
 #include "abilities/Projectile.h"
 #include "systems/moba/Navigation.h"
-#include "components/Animation.h"
 #include "components/Model.h"
 #include "networking/NetworkDriver.h"
 #include "components/Network.h"
+#include "components/Physics.h"
+#include "components/RayCollision.h"
+#include "components/Animation.h"
+#include "raymath.h"
+
+
+static Font font;
+
+namespace tZ
+{
 
 Player::Player()
 {
@@ -27,7 +35,7 @@ Player::Player()
         NetworkDriver::GetNetworkedEntities().Add(GetEntity());
     }
 
-    Transform transform{};
+    CTransform transform{};
 
     std::list<FAttribute> attributes;
     FAttribute Health = {
@@ -55,7 +63,7 @@ Player::Player()
         }
     };
     FEffect healthRegen = FEffect{};
-    healthRegen.type = INFINITE;
+    healthRegen.type = EEffectType::Infinite;
     healthRegen.target = GetEntity();
     healthRegen.source = GetEntity();
     healthRegen.callback = healthRegenCallback;
@@ -64,7 +72,7 @@ Player::Player()
     CFollow follow{};
     follow.Index = 0;
     follow.FollowState = EFollowState::Idle;
-    follow.Goal = {transform.translation.x, transform.translation.z};
+    follow.Goal = {transform.Position.x, transform.Position.z};
 
     CPhysics2D physics{};
     physics.Speed = 9.f;
@@ -90,7 +98,7 @@ void Player::HandleInput(entt::registry* Registry)
 {
     if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        Vector2 mousePos = Util::GetMouseWorldPosition2D();
+        v2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {
 //             CFollow& followComponent = GetComponent<CFollow>();
@@ -106,10 +114,10 @@ void Player::HandleInput(entt::registry* Registry)
     if(IsKeyPressed(KEY_Q))
     {
         if(!Game::IsServer()) {
-            RayCollision Collision = Util::GetMouseCollision();
-            Transform clickPoint = Transform{Collision.point.x, 0.0f, Collision.point.z};
-            Transform t = GetComponent<Transform>();
-            Projectile(GetEntity(), clickPoint.translation, t.translation);
+            FRayCollision Collision = Util::GetMouseCollision();
+            CTransform clickPoint = CTransform{v3(Collision.point.x, 0.0f, Collision.point.z)};
+            CTransform t = GetComponent<CTransform>();
+            Projectile(GetEntity(), clickPoint.Position, t.Position);
         }
     }
     if(IsKeyPressed(KEY_W))
@@ -120,7 +128,7 @@ void Player::HandleInput(entt::registry* Registry)
             health.base = std::clamp(newHealth, health.min, health.max);
         };
         FEffect effect = FEffect{};
-        effect.type = INSTANT;
+        effect.type = EEffectType::Instant;
         effect.target = GetEntity();
         effect.source = GetEntity();
         effect.callback = effectCallback;
@@ -140,7 +148,7 @@ void Player::HandleInput(entt::registry* Registry)
             };
             moveSpeed.mods.push_back(moveSpeedMod);
         };
-        effect.type = DURATION;
+        effect.type = EEffectType::Duration;
         effect.duration = 4;
         effect.rate = -1;
         effect.callOnInit = true;
@@ -161,9 +169,9 @@ void Player::Kill()
     SmartEntity::Kill();
 }
 
-void Player::SetTransform(Transform &t) {
-    Transform& x = Game::GetRegistry().get<Transform>(GetEntity());
-    x.translation = t.translation;
-    x.scale = t.scale;
-    x.rotation = t.rotation;
+void Player::SetTransform(CTransform &t) {
+    CTransform& x = Game::GetRegistry().get<CTransform>(GetEntity());
+    x.Position = t.Position;
+    x.Scale = t.Scale;
+    x.Rotation = t.Rotation;
 }

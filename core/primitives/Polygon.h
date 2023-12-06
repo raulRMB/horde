@@ -5,13 +5,17 @@
 #ifndef HORDE_POLYGON_H
 #define HORDE_POLYGON_H
 
-#include <raylib.h>
 #include <vector>
+#include "defines.h"
+
+namespace tZ
+{
 
 struct Polygon2D
 {
-    std::vector<Vector2> Vertices;
+    std::vector<v2> Vertices;
 };
 
+}
 
 #endif //HORDE_POLYGON_H

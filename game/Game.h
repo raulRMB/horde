@@ -1,10 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <raylib.h>
 #include <chrono>
 #include <entt/entt.hpp>
 
+#include "components/Camera.h"
+#include "../core/primitives/Color.h"
+
+namespace tZ
+{
+    
 class Game
 {
     class Player* ownedPlayer;
@@ -18,9 +23,9 @@ class Game
     class Scene* ActiveScene;
     bool bRunning;
 
-    Color BackgroundColor;
+    FColor BackgroundColor;
 
-    Camera3D Camera{};
+    CCamera3D Camera{};
 
 public:
     Game();
@@ -49,14 +54,14 @@ public:
     void SetActiveScene(Scene* scene);
     [[nodiscard]] inline Scene* GetActiveScene() const { return ActiveScene; }
 
-    [[nodiscard]] Camera3D& GetActiveCamera() { return Camera; }
+    [[nodiscard]] CCamera3D& GetActiveCamera() { return Camera; }
 
 
     static entt::registry& GetRegistry();
     static entt::dispatcher& GetDispatcher();
 
-    static void SpawnPlayer(u_int32_t networkId, Transform& t, bool owned);
-    void Spawn(u_int32_t networkId, Transform& t, bool owned);
+    static void SpawnPlayer(u_int32_t networkId, CTransform& t, bool owned);
+    void Spawn(u_int32_t networkId, CTransform& t, bool owned);
 
     static bool IsServer();
     static bool IsOfflineMode();
@@ -69,6 +74,7 @@ public:
 
 };
 
+}
 
 
 #endif //GAME_H

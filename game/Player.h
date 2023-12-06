@@ -3,6 +3,9 @@
 
 #include "SmartEntity.h"
 
+namespace tZ
+{
+
 class Player final : public SmartEntity
 {
 public:
@@ -16,5 +19,7 @@ public:
 
     void Kill() override;
 };
+
+}
 
 #endif //PLAYER_H
