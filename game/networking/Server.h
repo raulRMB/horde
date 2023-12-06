@@ -4,10 +4,14 @@
 #include <enet/enet.h>
 #include <entt/entt.hpp>
 #include <vector>
-#include <raylib.h>
 #include "NetMessage.h"
 #include "Player.h"
 #include "buffers/Events_generated.h"
+
+namespace tZ
+{
+
+struct CTransform;
 
 class Server {
 public:
@@ -23,10 +27,12 @@ public:
     void SendOutboundMessage(OutboundMessage msg);
     void SendPlayerJoined(uint32_t netId);
     void flush() { enet_host_flush(server); }
-    void Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c);
+    void Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c);
     void Sync(entt::entity e, struct CAttributes& ac, std::vector<ENetPeer*> c);
 private:
     void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c);
 };
+
+}
 
 #endif

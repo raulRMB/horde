@@ -1,5 +1,8 @@
 #include <enet/enet.h>
+namespace raylib
+{
 #include "raylib.h"
+}
 #include "Server.h"
 #include "Game.h"
 #include "NetworkDriver.h"
@@ -13,19 +16,22 @@
 #include "components/Attribute.h"
 #include "networking/buffers/Events_generated.h"
 
+namespace tZ
+{
+
 Server::Server() {
     if (enet_initialize() != 0) {
-        TraceLog(LOG_INFO, "Failed to initialize ENet");
+        raylib::TraceLog(raylib::LOG_INFO, "Failed to initialize ENet");
     }
     ENetAddress address;
     address.host = ENET_HOST_ANY;
     address.port = 7777;
     server = enet_host_create(&address, 32, 2, 0, 0);
     if (server == nullptr) {
-        TraceLog(LOG_INFO, "Failed to create server");
+        raylib::TraceLog(raylib::LOG_INFO, "Failed to create server");
         enet_deinitialize();
     }
-    TraceLog(LOG_INFO, "Server Running");
+    raylib::TraceLog(raylib::LOG_INFO, "Server Running");
 }
 
 void Server::Loop() {
@@ -46,7 +52,7 @@ void Server::Loop() {
             enet_packet_destroy(event.packet);
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
-            TraceLog(LOG_INFO, "DISCONNECTED!");
+            raylib::TraceLog(raylib::LOG_INFO, "DISCONNECTED!");
         }
      }
 }
@@ -59,7 +65,7 @@ void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
         }
         case Net::Events_OnMoveTo: {
             auto res = header->Event_as_OnMoveTo();
-            Vector2 vec = Vector2{res->pos()->x(), res->pos()->y()};
+            v2 vec = v2{res->pos()->x(), res->pos()->y()};
             if (System::Get<SNavigation>().IsValidPoint(vec)) {
                 auto e = NetworkDriver::GetNetworkedEntities().Get(res->netId());
                 CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
@@ -101,11 +107,7 @@ void Server::SendOutboundMessage(OutboundMessage msg) {
 void Server::SendConnectResponse(ENetPeer* peer, uint32_t netId) {
     flatbuffers::FlatBufferBuilder builder;
     auto otherPlayers = FlatBufferUtil::GetOtherPlayers(builder, peer);
-
-    Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(netId));
-
-//    Transform f = Transform {};
-//    f.translation.x = -5;
+    CTransform& t = Game::GetRegistry().get<CTransform>(NetworkDriver::GetNetworkedEntities().Get(netId));
     flatbuffers::Offset<Net::PlayerSpawn> ps = FlatBufferUtil::CreatePlayerSpawn(builder, t, netId);
 
     auto vec = builder.CreateVector(otherPlayers);
@@ -126,7 +128,7 @@ void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, fla
     NetworkDriver::GetOutboundQueue().push(msg);
 }
 
-void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
+void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
     flatbuffers::FlatBufferBuilder builder;
     auto x = FlatBufferUtil::CreateTransform(builder, t);
     Net::SyncTransformBuilder stb = Net::SyncTransformBuilder(builder);
@@ -145,4 +147,6 @@ void Server::Sync(entt::entity e, CAttributes& ac, std::vector<ENetPeer*> c) {
 void Server::Close() {
     enet_host_destroy(server);
     enet_deinitialize();
+}
+
 }

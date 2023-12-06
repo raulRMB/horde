@@ -3,9 +3,12 @@
 
 #include <enet/enet.h>
 #include "entt/entt.hpp"
-#include "raylib.h"
 #include "NetMessage.h"
 #include "buffers/Events_generated.h"
+#include "defines.h"
+
+namespace tZ
+{
 
 class Client {
 public:
@@ -13,7 +16,7 @@ public:
     ENetPeer* peer;
     Client();
     void Loop();
-    void SendMoveTo(Vector2 pos, u_int32_t NetworkId);
+    void SendMoveTo(v2 pos, uint32_t NetworkId);
     void OnInboundMessage(const Net::Header* header);
     void SendInitialConnection();
     void SendOutboundMessage(ENetPacket* packet);
@@ -23,5 +26,7 @@ private:
     void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data);
 
 };
+
+}
 
 #endif

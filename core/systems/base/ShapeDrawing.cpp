@@ -4,10 +4,12 @@
 #include "primitives/Polygon.h"
 #include "components/Shapes.h"
 #include "components/Physics.h"
+namespace raylib
+{
 #include <raylib.h>
-
-#include "raylibEx.h"
 #include "raymath.h"
+}
+#include "raylibEx.h"
 #include "components/Ray.h"
 
 namespace tZ
@@ -19,7 +21,7 @@ void SShapeDrawing::Draw()
     for(const entt::entity& entity : Game::GetRegistry().view<CCube>())
     {
         const CCube& cubeComponent = Game::GetRegistry().get<CCube>(entity);
-        DrawCube(ToRaylibVector3(cubeComponent.Position), cubeComponent.Size.x, cubeComponent.Size.y, cubeComponent.Size.z, ToRaylibColor(cubeComponent.Color));
+        raylib::DrawCube(ToRaylibVector3(cubeComponent.Position), cubeComponent.Size.x, cubeComponent.Size.y, cubeComponent.Size.z, ToRaylibColor(cubeComponent.Color));
     }
 
     // DrawCapsules
@@ -30,15 +32,15 @@ void SShapeDrawing::Draw()
         v3 offset = v3{0.0f, capsuleComponent.Height / 2.0f, 0.0f};
         v3 top = transform.Position + offset;
         v3 bottom = transform.Position - offset;
-        DrawCapsule(ToRaylibVector3(top), ToRaylibVector3(bottom),  capsuleComponent.Radius, 5, 3, ToRaylibColor(capsuleComponent.Color));
+        raylib::DrawCapsule(ToRaylibVector3(top), ToRaylibVector3(bottom),  capsuleComponent.Radius, 5, 3, ToRaylibColor(capsuleComponent.Color));
     }
 
     // Rays
     for(const entt::entity& entity : Game::GetRegistry().view<CRay>())
     {
         const CRay& rayComponent = Game::GetRegistry().get<CRay>(entity);
-        Ray ray = {ToRaylibVector3(rayComponent.Ray.Origin), ToRaylibVector3(rayComponent.Ray.Direction)};
-        DrawRay(ray, ToRaylibColor(rayComponent.Color));
+        raylib::Ray ray = {ToRaylibVector3(rayComponent.Ray.Origin), ToRaylibVector3(rayComponent.Ray.Direction)};
+        raylib::DrawRay(ray, ToRaylibColor(rayComponent.Color));
     }
 
     // Draw Triangles
@@ -50,7 +52,7 @@ void SShapeDrawing::Draw()
         triangle3D.B = {triangleComponent.Vertices.B.x, 0.0f, triangleComponent.Vertices.B.y};
         triangle3D.C = {triangleComponent.Vertices.C.x, 0.0f, triangleComponent.Vertices.C.y};
 
-        DrawTriangle3D(ToRaylibVector3(triangle3D.C), ToRaylibVector3(triangle3D.B), ToRaylibVector3(triangle3D.A), ToRaylibColor(triangleComponent.color));
+        raylib::DrawTriangle3D(ToRaylibVector3(triangle3D.C), ToRaylibVector3(triangle3D.B), ToRaylibVector3(triangle3D.A), ToRaylibColor(triangleComponent.color));
     }
 
     // Draw Linestrip
@@ -59,16 +61,16 @@ void SShapeDrawing::Draw()
         const CLineStrip& lineStripComponent = Game::GetRegistry().get<CLineStrip>(entity);
         for(int i = 0; i < lineStripComponent.Points.size() - 1; i++)
         {
-            Vector3 v1 = {lineStripComponent.Points[i].x, 0.0f, lineStripComponent.Points[i].y};
-            Vector3 v2 = {lineStripComponent.Points[i + 1].x, 0.0f, lineStripComponent.Points[i + 1].y};
-            DrawLine3D(v1, v2, ToRaylibColor(lineStripComponent.Color));
+            raylib::Vector3 v1 = {lineStripComponent.Points[i].x, 0.0f, lineStripComponent.Points[i].y};
+            raylib::Vector3 v2 = {lineStripComponent.Points[i + 1].x, 0.0f, lineStripComponent.Points[i + 1].y};
+            raylib::DrawLine3D(v1, v2, ToRaylibColor(lineStripComponent.Color));
         }
     }
 
     for(const entt::entity& entity : Game::GetRegistry().view<CSphere, CTransform>())
     {
         const CSphere sphere = GetComponent<CSphere>(entity);
-        DrawSphere(ToRaylibVector3(GetComponent<CTransform>(entity).Position), sphere.Radius, ToRaylibColor(sphere.Color));
+        raylib::DrawSphere(ToRaylibVector3(GetComponent<CTransform>(entity).Position), sphere.Radius, ToRaylibColor(sphere.Color));
     }
 
     for(const entt::entity& entity : Game::GetRegistry().view<CPhysics2D, CTransform>())
@@ -76,7 +78,7 @@ void SShapeDrawing::Draw()
         auto physics = GetComponent<CPhysics2D>(entity);
         auto transform = GetComponent<CTransform>(entity);
         if(physics.CollisionType == ECollision2DType::Circle) {
-            DrawCircle3D(ToRaylibVector3(transform.Position), physics.CollisionRadius, Vector3{1.0f, 0.0f, 0.0f}, 90.0f, BLUE);
+            raylib::DrawCircle3D(ToRaylibVector3(transform.Position), physics.CollisionRadius, raylib::Vector3{1.0f, 0.0f, 0.0f}, 90.0f, raylib::BLUE);
         }
     }
 
@@ -85,9 +87,9 @@ void SShapeDrawing::Draw()
         const Polygon2D poly = GetComponent<Polygon2D>(entity);
         for(int i = 0; i < poly.Vertices.size() - 1; i++)
         {
-            Vector3 v1 = {poly.Vertices[i].x, 0.0f, poly.Vertices[i].y};
-            Vector3 v2 = {poly.Vertices[i + 1].x, 0.0f, poly.Vertices[i + 1].y};
-            DrawLine3D(v1, v2, GREEN);
+            raylib::Vector3 v1 = {poly.Vertices[i].x, 0.0f, poly.Vertices[i].y};
+            raylib::Vector3 v2 = {poly.Vertices[i + 1].x, 0.0f, poly.Vertices[i + 1].y};
+            raylib::DrawLine3D(v1, v2, raylib::GREEN);
         }
     }
 }

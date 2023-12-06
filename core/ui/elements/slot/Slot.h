@@ -2,18 +2,20 @@
 #define SLOT_H
 
 #include "../../Element.h"
+namespace raylib
+{
 #include <raylib.h>
-
+}
 namespace tZ
 {
 
 class Slot : public Element
 {
-    Rectangle box;
-    Texture2D image;
+    raylib::Rectangle box;
+    raylib::Texture2D image;
 
 public:
-    Slot(Rectangle box);
+    Slot(raylib::Rectangle box);
     virtual bool isHovered() override;
     virtual std::any OnDrag() override;
     virtual void OnHover() override;
@@ -24,8 +26,8 @@ public:
     virtual void OnDrop(Element* source, std::any payload) override;
     virtual void Draw(DrawData data) override;
     virtual void Update() override;
-    void SetImage(Texture2D image);
-    void SetBox(Rectangle box);
+    void SetImage(raylib::Texture2D image);
+    void SetBox(raylib::Rectangle box);
 };
 
 }

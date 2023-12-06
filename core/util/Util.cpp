@@ -1,7 +1,10 @@
 #include "Util.h"
 #include "components/Physics.h"
 
+namespace raylib
+{
 #include <raylib.h>
+}
 
 #include "components/Attribute.h"
 #include "components/RayCollision.h"
@@ -15,9 +18,9 @@ namespace tZ
 
 v3 Util::RandVec3(int min, int max) {
     return v3 {
-            static_cast<float>(GetRandomValue(min, max)),
-            static_cast<float>(GetRandomValue(min, max)),
-            static_cast<float>(GetRandomValue(min, max))
+            static_cast<float>(raylib::GetRandomValue(min, max)),
+            static_cast<float>(raylib::GetRandomValue(min, max)),
+            static_cast<float>(raylib::GetRandomValue(min, max))
     };
 }
 
@@ -32,19 +35,19 @@ tZ::FAttribute* Util::GetAttribute(tZ::CAttributes& ac, const std::string& attr)
     {
         return &(*it);
     }
-    TraceLog(LOG_ERROR, "Attribute %s not found", attr.c_str());
+    raylib::TraceLog(raylib::LOG_ERROR, "Attribute %s not found", attr.c_str());
     return nullptr;
 }
 
 FRayCollision Util::GetMouseCollision()
 {
-    Ray ray = GetMouseRay(GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
-    Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-    Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-    Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-    Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+    raylib::Ray ray = raylib::GetMouseRay(raylib::GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
+    raylib::Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+    raylib::Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+    raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+    raylib::Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
 
-    RayCollision raylibCol = GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
+    raylib::RayCollision raylibCol = raylib::GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
     FRayCollision collision{};
     collision.point = v3(raylibCol.point.x, raylibCol.point.y, raylibCol.point.z);
     collision.normal = v3(raylibCol.normal.x, raylibCol.normal.y, raylibCol.normal.z);
@@ -54,8 +57,8 @@ FRayCollision Util::GetMouseCollision()
 }
 
 bool Util::Check2DCollision(CPhysics2D& x, CTransform& xT, CPhysics2D& y, CTransform& yT) {
-    Vector2 xVec = Vector2{xT.Position.x, xT.Position.z};
-    Vector2 yVec = Vector2{yT.Position.x, yT.Position.z};
+    raylib::Vector2 xVec = raylib::Vector2{xT.Position.x, xT.Position.z};
+    raylib::Vector2 yVec = raylib::Vector2{yT.Position.x, yT.Position.z};
     if(x.CollisionType == ECollision2DType::Circle && y.CollisionType == ECollision2DType::Circle)
     {
         return CheckCollisionCircles(xVec, x.CollisionRadius, yVec, y.CollisionRadius);
@@ -74,12 +77,12 @@ FColor Util::RandColor() {
 
 v3 Util::GetMouseWorldPosition()
 {
-    const Ray ray = GetMouseRay(GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
-    constexpr Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-    constexpr Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-    constexpr Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-    constexpr Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
-    const RayCollision Collision = GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+    const raylib::Ray ray = raylib::GetMouseRay(raylib::GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
+    constexpr raylib::Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+    constexpr raylib::Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+    constexpr raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+    constexpr raylib::Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+    const raylib::RayCollision Collision = raylib::GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
     return v3(Collision.point.z, Collision.point.y, Collision.point.z);
 }
 
@@ -171,7 +174,7 @@ v2 Util::MinimumTranslationVector(const Polygon2D &polygon, const v2 &point)
 {
     if (polygon.Vertices.size() < 3)
     {
-        TraceLog(LOG_ERROR, "Error: Polygon must have at least 3 vertices.\n");
+        raylib::TraceLog(raylib::LOG_ERROR, "Error: Polygon must have at least 3 vertices.\n");
         return {0.0, 0.0};
     }
 

@@ -15,7 +15,7 @@ public:
 
     void HandleInput(entt::registry* Registry);
     void DrawUI();
-    void SetTransform(Transform& t);
+    void SetTransform(CTransform& t);
 
     void Kill() override;
 };

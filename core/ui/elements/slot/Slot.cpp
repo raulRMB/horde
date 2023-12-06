@@ -3,27 +3,27 @@
 namespace tZ
 {
 
-Slot::Slot(Rectangle box) {
+Slot::Slot(raylib::Rectangle box) {
     this->box = box;
 }
 
 bool Slot::isHovered() {
-    return CheckCollisionPointRec(GetMousePosition(), box);
+    return raylib::CheckCollisionPointRec(raylib::GetMousePosition(), box);
 }
 
 void Slot::OnHover() {
-    TraceLog(LOG_INFO, "Hovered slot");
+    raylib::TraceLog(raylib::LOG_INFO, "Hovered slot");
 }
 
-void Slot::SetImage(Texture2D img) {
+void Slot::SetImage(raylib::Texture2D img) {
     image = img;
 }
 
 void Slot::OnHoverExit() {
-    TraceLog(LOG_INFO, "Exit hover slot");
+    raylib::TraceLog(raylib::LOG_INFO, "Exit hover slot");
 }
 
-void Slot::SetBox(Rectangle box) {
+void Slot::SetBox(raylib::Rectangle box) {
     this->box = box;
 }
 
@@ -31,18 +31,18 @@ void Slot::Draw(DrawData data) {
     if(isHovered() && data.activeDrag) {
         int op = 3;
         int os = op * 2;
-        DrawRectangleLines(box.x-op, box.y-op, box.width+os, box.height+os, {255,255,255,255});
+        raylib::DrawRectangleLines(box.x-op, box.y-op, box.width+os, box.height+os, {255,255,255,255});
     }
     if(image.id <= 0) {
-        DrawRectangleRec(box, {255,255,255,255});        
+        raylib::DrawRectangleRec(box, {255,255,255,255});
     } else {
-        NPatchInfo npatchInfo = { 0 };
+        raylib::NPatchInfo npatchInfo = { 0 };
         npatchInfo.source = { 0, 0, (float)image.width, (float)image.height };
         npatchInfo.left = 0;
         npatchInfo.top = 0;
         npatchInfo.right = 0;
         npatchInfo.bottom = 0;
-        DrawTextureNPatch(image, npatchInfo, box, {0,0}, 0, {255,255,255,255});
+        raylib::DrawTextureNPatch(image, npatchInfo, box, {0,0}, 0, {255,255,255,255});
     }
 }
 
@@ -51,7 +51,7 @@ void Slot::Update() {
 }
 
 std::any Slot::OnDrag() {
-    return std::make_any<Texture2D*>(&image);
+    return std::make_any<raylib::Texture2D*>(&image);
 }
 
 void Slot::OnAdded() {
@@ -63,13 +63,13 @@ void Slot::OnWindowResize(v2 screenSize) {
 }
 
 void Slot::OnDragCancelled() {
-    TraceLog(LOG_INFO, "Drag Cancelled");
+    raylib::TraceLog(raylib::LOG_INFO, "Drag Cancelled");
 }
 
 void Slot::OnDrop(Element* source, std::any payload) {
     auto tmp = image;
     try {
-        Texture2D* texture = std::any_cast<Texture2D*>(payload);
+        raylib::Texture2D* texture = std::any_cast<raylib::Texture2D*>(payload);
         if(texture != nullptr) {
             image = *texture;
             Slot* slot = (Slot*)source;

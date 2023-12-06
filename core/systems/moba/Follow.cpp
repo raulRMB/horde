@@ -1,7 +1,11 @@
 #include "Follow.h"
 
+namespace raylib
+{
 #include "raylib.h"
 #include "raymath.h"
+}
+
 #include "components/Follow.h"
 
 #include <glm/gtx/norm.inl>
@@ -23,10 +27,10 @@ void SFollow::Update(float deltaSeconds)
         CPhysics2D& pc = GetComponent<CPhysics2D>(entity);
         CTransform& t = GetComponent<CTransform>(entity);
 
-        Vector3 dir = {pc.Velocity.x, 0, pc.Velocity.y};
+        raylib::Vector3 dir = {pc.Velocity.x, 0, pc.Velocity.y};
         dir = Vector3Normalize(dir);
         t.Rotation.z = atan2(dir.x, -dir.z) + PI;
-        modelComponent.model.transform = MatrixRotateXYZ(Vector3{PI/2, 0, t.Rotation.z});
+        modelComponent.model.transform = MatrixRotateXYZ(raylib::Vector3{PI/2, 0, t.Rotation.z});
     }
     for(const entt::entity& entity : registry.view<CFollow, CTransform, CPhysics2D>())
     {

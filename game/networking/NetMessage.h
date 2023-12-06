@@ -1,7 +1,6 @@
 #ifndef NET_MESSAGES
 #define NET_MESSAGES
 
-#include <raylib.h>
 #include <entt/entt.hpp>
 #include <vector>
 

@@ -3,7 +3,10 @@
 #include "components/Animation.h"
 #include "components/Model.h"
 #include "Game.h"
+namespace raylib
+{
 #include <raylib.h>
+}
 #include <algorithm>
 
 namespace tZ
@@ -14,9 +17,9 @@ void SAnimation::Update(float deltaSeconds)
     for(const entt::entity& entity : Game::GetRegistry().view<CAnimation, CModel>())
     {
         CAnimation& animationComponent = Game::GetRegistry().get<CAnimation>(entity);
-        const Model& model = Game::GetRegistry().get<CModel>(entity).model;
+        const raylib::Model& model = Game::GetRegistry().get<CModel>(entity).model;
 
-        ::ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
+        raylib::ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
 
         animationComponent.CurrentFrameTime += 0.1f;
 
@@ -31,7 +34,7 @@ void SAnimation::Update(float deltaSeconds)
             }
         }
 
-        UpdateModelAnimation(model, animation, animationComponent.CurrentFrame);
+        raylib::UpdateModelAnimation(model, animation, animationComponent.CurrentFrame);
     }
 }
 

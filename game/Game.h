@@ -3,13 +3,12 @@
 
 #include <chrono>
 #include <entt/entt.hpp>
-
 #include "components/Camera.h"
 #include "../core/primitives/Color.h"
+#include "components/Transform.h"
 
 namespace tZ
 {
-    
 class Game
 {
     class Player* ownedPlayer;
@@ -60,8 +59,8 @@ public:
     static entt::registry& GetRegistry();
     static entt::dispatcher& GetDispatcher();
 
-    static void SpawnPlayer(u_int32_t networkId, CTransform& t, bool owned);
-    void Spawn(u_int32_t networkId, CTransform& t, bool owned);
+    static void SpawnPlayer(uint32_t networkId, CTransform& t, bool owned);
+    void Spawn(uint32_t networkId, CTransform& t, bool owned);
 
     static bool IsServer();
     static bool IsOfflineMode();

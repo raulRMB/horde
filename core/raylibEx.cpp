@@ -8,6 +8,6 @@ namespace tZ
 {
     v2 GetMousePositionGLM()
     {
-        return {GetMouseX(), GetMouseY()};
+        return {raylib::GetMouseX(), raylib::GetMouseY()};
     }
 }

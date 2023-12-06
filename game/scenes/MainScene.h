@@ -5,15 +5,12 @@
 #include "ui/Canvas.h"
 #include "primitives/Triangles.h"
 
-struct Vector2;
-
 namespace tZ
 {
 
 class MainScene final : public Scene
 {
-    std::vector<Vector2> Points;
-
+    std::vector<v2> Points;
     std::vector<Edge2D> Portals = {};
 
     class Player* GetActivePlayer();

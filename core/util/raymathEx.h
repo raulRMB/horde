@@ -5,6 +5,8 @@
 
 #pragma region Vector2
 
+namespace raylib
+{
 inline Vector2 operator+(const Vector2& v1, const Vector2& v2)
 {
     return Vector2Add(v1, v2);
@@ -152,6 +154,7 @@ inline Vector3& operator*=(Vector3& v, const float& f)
     return v;
 }
 
+}
 
 
 #endif //RAYMATHEX_H

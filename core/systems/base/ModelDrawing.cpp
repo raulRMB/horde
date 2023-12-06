@@ -2,8 +2,6 @@
 #include "entt/entt.hpp"
 #include "components/Model.h"
 #include "components/Transform.h"
-
-#include <raylib.h>
 #include "raylibEx.h"
 
 namespace tZ
@@ -17,7 +15,7 @@ void SModelDrawing::Draw()
         const CTransform& t = Game::GetRegistry().get<CTransform>(entity);
         if(!modelComponent.hidden)
         {
-            DrawModel(modelComponent.model, ToRaylibVector3(t.Position), modelComponent.scale, WHITE);
+            raylib::DrawModel(modelComponent.model, ToRaylibVector3(t.Position), modelComponent.scale, raylib::WHITE);
         }
     }
 }

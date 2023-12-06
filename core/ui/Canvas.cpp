@@ -8,7 +8,7 @@ namespace tZ
 {
 
 Canvas::Canvas() {
-    screenSize = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+    screenSize = {(float)raylib::GetScreenWidth(), (float)raylib::GetScreenHeight()};
 }
 
 void Canvas::Add(Element* element) {
@@ -19,9 +19,9 @@ void Canvas::Add(Element* element) {
 }
 
 void Canvas::Draw() {
-    bool resize = IsWindowResized();
+    bool resize = raylib::IsWindowResized();
     if (resize) {
-        screenSize = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+        screenSize = {(float)raylib::GetScreenWidth(), (float)raylib::GetScreenHeight()};
     }
     for (Element* element : elements) {
         element->Draw({activeDrag, screenSize});
@@ -31,22 +31,22 @@ void Canvas::Draw() {
     }
     if(activeDrag) {
         v2 currMouse = GetMousePositionGLM();
-        NPatchInfo npatchInfo = { 0 };
+        raylib::NPatchInfo npatchInfo = { 0 };
         try {
-            Texture2D* payloadImage = std::any_cast<Texture2D*>(draggedPayload);
+            raylib::Texture2D* payloadImage = std::any_cast<raylib::Texture2D*>(draggedPayload);
             if(payloadImage != nullptr) {
-                Texture2D dragImage = *payloadImage;
+                raylib::Texture2D dragImage = *payloadImage;
                 npatchInfo.source = { 0, 0, (float)dragImage.width, (float)dragImage.height };
                 npatchInfo.left = 0;
                 npatchInfo.top = 0;
                 npatchInfo.right = 0;
                 npatchInfo.bottom = 0;
                 int size = 40;
-                auto box = Rectangle{currMouse.x - (size / 2), currMouse.y - (size / 2), (float)size, (float)size};
+                auto box = raylib::Rectangle{currMouse.x - (size / 2), currMouse.y - (size / 2), (float)size, (float)size};
                 DrawTextureNPatch(dragImage, npatchInfo, box, {0,0}, 0, {255,255,255,200});
             }
         } catch (const std::bad_any_cast& e) {
-            DrawRectangle(currMouse.x - 15, currMouse.y - 15, 30, 30, {255,255,255,150});
+            raylib::DrawRectangle(currMouse.x - 15, currMouse.y - 15, 30, 30, {255,255,255,150});
         }
     }
 }
@@ -78,12 +78,12 @@ Element* Canvas::FindFirstHoveredElement() {
 
 void Canvas::HandleEvents() {
     float dragThreshold = 0.5;
-    if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if(IsMouseButtonPressed(raylib::MOUSE_LEFT_BUTTON)) {
         activeClick = true;
         activeDragStartPos = GetMousePositionGLM();
     }
     if(activeClick) {
-        if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        if(IsMouseButtonReleased(raylib::MOUSE_LEFT_BUTTON)) {
             activeClick = false;
             if(activeDrag) {
                 activeDrag = false;

@@ -7,6 +7,11 @@
 
 #include "defines.h"
 
+namespace raylib
+{
+    struct Camera3D;
+}
+
 namespace tZ
 {
 
@@ -19,8 +24,11 @@ typedef struct CCamera3D {
 
 } CCamera3D;
 
+    struct raylib::Camera3D ToRaylibCamera(const tZ::CCamera3D& camera);
 }
 
-struct Camera3D ToRaylibCamera(const tZ::CCamera3D& camera);
+
+
+
 
 #endif //C_CAMERA_H

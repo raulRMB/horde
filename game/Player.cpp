@@ -10,21 +10,21 @@
 #include "components/Physics.h"
 #include "components/RayCollision.h"
 #include "components/Animation.h"
-#include "raymath.h"
 
+//#include "raymath.h"
 
-static Font font;
 
 namespace tZ
 {
+static raylib::Font font;
 
 Player::Player()
 {
     if(!Game::IsServer()) {
         CAnimation animation{};
-        CModel mc = {LoadModel("../assets/anim.glb"), 0.05, false};
-        mc.model.transform = MatrixRotateX(PI/2);
-        animation.Animations = LoadModelAnimations("../assets/anim.glb", &animation.AnimsCount);
+        CModel mc = {raylib::LoadModel("../assets/anim.glb"), 0.05, false};
+//        mc.model.transform = MatrixRotateX(PI/2);
+        animation.Animations = raylib::LoadModelAnimations("../assets/anim.glb", &animation.AnimsCount);
         animation.AnimsIndex = 1;
         animation.bPlaying = true;
         AddComponent(animation);
@@ -96,7 +96,7 @@ void Player::Start()
 
 void Player::HandleInput(entt::registry* Registry)
 {
-    if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    if(raylib::IsMouseButtonPressed(raylib::MOUSE_BUTTON_RIGHT))
     {
         v2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
@@ -111,7 +111,7 @@ void Player::HandleInput(entt::registry* Registry)
             }
         }
     }
-    if(IsKeyPressed(KEY_Q))
+    if(raylib::IsKeyPressed(raylib::KEY_Q))
     {
         if(!Game::IsServer()) {
             FRayCollision Collision = Util::GetMouseCollision();
@@ -120,7 +120,7 @@ void Player::HandleInput(entt::registry* Registry)
             Projectile(GetEntity(), clickPoint.Position, t.Position);
         }
     }
-    if(IsKeyPressed(KEY_W))
+    if(raylib::IsKeyPressed(raylib::KEY_W))
     {
         OnApply effectCallback = [](CAttributes& target, CAttributes& source) {
             FAttribute& health = *Util::GetAttribute(target, "health");
@@ -134,7 +134,7 @@ void Player::HandleInput(entt::registry* Registry)
         effect.callback = effectCallback;
         Game::GetDispatcher().trigger(effect);
     }
-    if(IsKeyPressed(KEY_E))
+    if(raylib::IsKeyPressed(raylib::KEY_E))
     {
         FEffect effect = FEffect{};
         OnApply effectCallback = [&effect](CAttributes& target, CAttributes& source) {
@@ -157,7 +157,7 @@ void Player::HandleInput(entt::registry* Registry)
         effect.callback = effectCallback;
         Game::GetDispatcher().trigger(effect);
     }
-    if(IsKeyPressed(KEY_R))
+    if(raylib::IsKeyPressed(raylib::KEY_R))
     {
     }
 }
@@ -174,4 +174,6 @@ void Player::SetTransform(CTransform &t) {
     x.Position = t.Position;
     x.Scale = t.Scale;
     x.Rotation = t.Rotation;
+}
+
 }

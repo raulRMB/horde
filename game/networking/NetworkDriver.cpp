@@ -56,7 +56,7 @@ void NetworkDriver::ProcessQueues() {
         GetInboundQueue().pop();
     }
     while(!GetOutboundQueue().empty()) {
-        NetOutboundMessage som = GetOutboundQueue().front();
+        OutboundMessage som = GetOutboundQueue().front();
         if(IsServer()) {
             Instance().server->SendOutboundMessage(som);
         } else {

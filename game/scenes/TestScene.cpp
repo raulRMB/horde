@@ -7,7 +7,12 @@
 #include "util/Util.h"
 #include "components/Shapes.h"
 #include "primitives/Polygon.h"
+#include "components/Transform.h"
+
+namespace raylib
+{
 #include <raylib.h>
+}
 
 namespace tZ
 {
@@ -68,7 +73,7 @@ void TestScene::Clean()
 
 void TestScene::HandleInput()
 {
-    if(IsKeyDown(KEY_A))
+    if(IsKeyDown(raylib::KEY_A))
     {
         v2 pos = Util::GetMouseWorldPosition2D();
 
@@ -89,8 +94,8 @@ void TestScene::HandleInput()
 //            }
 //        }
         pos -= Util::MinimumTranslationVector(polygon, pos);
-        Transform t{};
-        t.translation = {pos.x, 0.f, pos.y};
+        CTransform t{};
+        t.Position = {pos.x, 0.f, pos.y};
         AddComponent(e, t);
     }
 }

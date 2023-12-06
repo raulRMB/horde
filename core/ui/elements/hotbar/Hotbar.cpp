@@ -36,7 +36,7 @@ void Hotbar::OnWindowResize(v2 screenSize) {
     float px = 6;
     float py = 10;
     for(Slot* slot : slots) {
-        Rectangle slotBox = Rectangle{
+        raylib::Rectangle slotBox = raylib::Rectangle{
             hotbarBox.x + (slotIndex * slotWidth) + (px * slotIndex) + slotIndex,
             hotbarBox.y - py,
             slotWidth,
@@ -70,7 +70,7 @@ void Hotbar::OnAdded() {
 
 void Hotbar::AddSlot(std::string texturePath) {
     Slot* slot = new Slot({0, 0, 0, 0});
-    auto slotImg = LoadTexture(texturePath.c_str());
+    auto slotImg = raylib::LoadTexture(texturePath.c_str());
     slot->SetImage(slotImg);
     slots.push_back(slot);
 }

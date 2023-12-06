@@ -13,7 +13,7 @@ Button::Button(CRectangle box, char* text)
 
 bool Button::isHovered()
 {
-    return CheckCollisionPointRec(GetMousePosition(), ToRaylibRect(Box));
+    return CheckCollisionPointRec(raylib::GetMousePosition(), ToRaylibRect(Box));
 }
 
 void Button::Draw(DrawData data)
@@ -34,26 +34,26 @@ void Button::OnWindowResize(v2 screenSize)
 
 std::any Button::OnDrag()
 {
-    TraceLog(LOG_INFO, "Drag Started %s", Text);
+    raylib::TraceLog(raylib::LOG_INFO, "Drag Started %s", Text);
     return std::make_any<char*>(Text);
 }
 
 void Button::OnHover()
 {
-    TraceLog(LOG_INFO, "Hovered %s", Text);
+    raylib::TraceLog(raylib::LOG_INFO, "Hovered %s", Text);
 }
 
 void Button::OnHoverExit()
 {
-    TraceLog(LOG_INFO, "Exit hover %s", Text);
+    raylib::TraceLog(raylib::LOG_INFO, "Exit hover %s", Text);
 }
 
 void Button::OnDragCancelled() {
-    TraceLog(LOG_INFO, "Drag Cancelled %s", Text);
+    raylib::TraceLog(raylib::LOG_INFO, "Drag Cancelled %s", Text);
 }
 
 void Button::OnDrop(Element* source, std::any payload) {
-    TraceLog(LOG_INFO, "Dropped %s", Text);
+    raylib::TraceLog(raylib::LOG_INFO, "Dropped %s", Text);
     try {
         char* castedPayload = std::any_cast<char*>(payload);
         char* tmp = Text;
@@ -70,13 +70,13 @@ void Button::Update() {
     if(!hovered) {
         bActiveClick = false;
     }
-    if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && hovered) {
+    if(IsMouseButtonPressed(raylib::MOUSE_LEFT_BUTTON) && hovered) {
         bActiveClick = true;
     }
-    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+    if (IsMouseButtonReleased(raylib::MOUSE_LEFT_BUTTON)) {
         if(bActiveClick && hovered) {
             bActiveClick = false;
-            TraceLog(LOG_INFO, "Clicked %s", Text);
+            raylib::TraceLog(raylib::LOG_INFO, "Clicked %s", Text);
         }
     }
 }

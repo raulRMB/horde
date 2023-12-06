@@ -1,6 +1,5 @@
-#include <enet/enet.h>
 #include <cstring>
-#include "raylib.h"
+#include <enet/enet.h>
 #include "Client.h"
 #include "Game.h"
 #include "NetworkDriver.h"
@@ -9,14 +8,23 @@
 #include "networking/buffers/FlatBufferUtil.h"
 #include "components/Attribute.h"
 #include "util/Util.h"
+#include "components/Transform.h"
+
+namespace raylib
+{
+#include "raylib.h"
+}
+
+namespace tZ
+{
 
 Client::Client() {
     if (enet_initialize() != 0) {
-        TraceLog(LOG_INFO, "Failed to initialize ENet");
+        raylib::TraceLog(raylib::LOG_INFO, "Failed to initialize ENet");
     }
     client = enet_host_create(nullptr, 1, 2, 0, 0);
     if (client == nullptr) {
-        TraceLog(LOG_INFO, "Failed to create server");
+        raylib::TraceLog(raylib::LOG_INFO, "Failed to create server");
         enet_deinitialize();
     }
     ENetAddress address;
@@ -24,14 +32,14 @@ Client::Client() {
     address.port = 7777;
     peer = enet_host_connect(client, &address, 2, 0);
     if (peer == nullptr) {
-        TraceLog(LOG_INFO, "No available peers for initiating an ENet connection");
+        raylib::TraceLog(raylib::LOG_INFO, "No available peers for initiating an ENet connection");
         enet_host_destroy(client);
         enet_deinitialize();
     }
-    TraceLog(LOG_INFO, "Client Running");
+    raylib::TraceLog(raylib::LOG_INFO, "Client Running");
 }
 
-void Client::SendMoveTo(Vector2 pos, u_int32_t NetworkId) {
+void Client::SendMoveTo(v2 pos, uint32_t NetworkId) {
     flatbuffers::FlatBufferBuilder builder;
     auto vec = Net::CreateVector2(builder, pos.x, pos.y);
     Net::OnMoveToBuilder mtbuilder(builder);
@@ -68,7 +76,7 @@ void Client::Loop() {
     if(enet_host_service(client, &event, 2000) > 0)
     {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {
-            TraceLog(LOG_INFO, "CONNECT!");
+            raylib::TraceLog(raylib::LOG_INFO, "CONNECT!");
             SendInitialConnection();
         } else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
             IncomingMessage msg;
@@ -79,7 +87,7 @@ void Client::Loop() {
             NetworkDriver::GetInboundQueue().push(msg);
             enet_packet_destroy(event.packet);
         } else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
-            TraceLog(LOG_INFO, "DISCONNECT!");
+            raylib::TraceLog(raylib::LOG_INFO, "DISCONNECT!");
         }
     }
 }
@@ -101,7 +109,7 @@ void Client::OnInboundMessage(const Net::Header* header) {
         }
         case Net::Events_SyncTransform: {
             auto res = header->Event_as_SyncTransform();
-            Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+            CTransform& t = Game::GetRegistry().get<CTransform>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
             t = FlatBufferUtil::NetTransformToTransform(res->transform());
             break;
         }
@@ -118,7 +126,7 @@ void Client::OnInboundMessage(const Net::Header* header) {
         }
         case Net::Events_OnPlayerJoined: {
             auto res = header->Event_as_OnPlayerJoined();
-            auto t = Transform{};
+            CTransform t = CTransform{};
             Game::SpawnPlayer(res->netId(), t, false);
             break;
         }
@@ -132,4 +140,6 @@ void Client::SendOutboundMessage(ENetPacket* packet) {
 void Client::Close() {
     enet_host_destroy(client);
     enet_deinitialize();
+}
+
 }

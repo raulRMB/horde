@@ -1,11 +1,10 @@
-#include "raylib.h"
 #include "MainScene.h"
-
 #include "Player.h"
 #include "components/Transform.h"
 #include "ui/elements/slot/Slot.h"
 #include "ui/elements/hotbar/Hotbar.h"
 #include "systems/moba/Navigation.h"
+#include "raylibEx.h"
 
 namespace tZ
 {
@@ -69,12 +68,12 @@ void MainScene::Update(float deltaSeconds)
 void MainScene::Draw()
 {
     Scene::Draw();
-    DrawGrid(30, 1.0f);
-    for(const entt::entity& entity : Registry.view<Model, Transform>())
+    raylib::DrawGrid(30, 1.0f);
+    for(const entt::entity& entity : Registry.view<raylib::Model, CTransform>())
     {
-        const Model& model = Registry.get<Model>(entity);
-        const Transform& transform = Registry.get<Transform>(entity);
-        DrawModel(model, transform.translation, 0.1f, WHITE);
+        const raylib::Model& model = Registry.get<raylib::Model>(entity);
+        const CTransform& transform = Registry.get<CTransform>(entity);
+        raylib::DrawModel(model, ToRaylibVector3(transform.Position), 0.1f, raylib::WHITE);
     }
 }
 

@@ -10,6 +10,9 @@
 #include <thread>
 #include <mutex>
 
+namespace tZ
+{
+
 class NetworkDriver {
 
     NetworkDriver();
@@ -43,5 +46,7 @@ public:
     static NetworkedEntities& GetNetworkedEntities();
     static void SetIsServer(bool isServer);
 };
+
+}
 
 #endif

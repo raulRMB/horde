@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "components/Follow.h"
-#include "raylib.h"
 #include "components/Transform.h"
 #include "util/Util.h"
 

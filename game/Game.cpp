@@ -6,6 +6,7 @@
 #include <chrono>
 #include "networking/NetworkDriver.h"
 #include "raylibEx.h"
+#include "components/Transform.h"
 
 namespace tZ
 {
@@ -13,13 +14,13 @@ namespace tZ
 double tickRate = 60.0;
 long long periodMicroseconds = static_cast<long long>(1e6 / tickRate);
 
-Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(0x000000FF)
+Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(0x000000FF), fpsString(std::string("FPS: 0"))
 {
     Camera.Position = {50.0f, 50.0f, 50.0f};
     Camera.Target = {0.0f, 0.0f, 0.0f};
     Camera.Up = {0.0f, 1.0f, 0.0f};
     Camera.Fovy = 45.0f;
-    Camera.Projection = CAMERA_PERSPECTIVE;
+    Camera.Projection = raylib::CAMERA_PERSPECTIVE;
 }
 
 Game& Game::Instance()
@@ -28,11 +29,11 @@ Game& Game::Instance()
     return instance;
 }
 
-void Game::SpawnPlayer(u_int32_t networkId, CTransform& t, bool owned) {
+void Game::SpawnPlayer(uint32_t networkId, CTransform& t, bool owned) {
     Instance().Spawn(networkId, t, owned);
 }
 
-void Game::Spawn(u_int32_t networkId, CTransform& t, bool owned) {
+void Game::Spawn(uint32_t networkId, CTransform& t, bool owned) {
     if(!IsServer()) {
         if(owned) {
             ownedPlayer = new Player();
@@ -56,20 +57,20 @@ void Game::Loop() {
         HandleInput();
     }
     if(!Game::IsServer()) {
-        Update(GetFrameTime());
+        Update(raylib::GetFrameTime());
     }
     else {
         Update(1.0f / tickRate);
     }
     NetworkDriver::ProcessQueues();
     if(!Game::IsServer()) {
-        BeginDrawing();
+        raylib::BeginDrawing();
         ClearBackground(ToRaylibColor(BackgroundColor));
         Draw();
         DrawUI();
         CalculateFPS();
-        EndDrawing();
-        bRunning = bRunning && !WindowShouldClose();
+        raylib::EndDrawing();
+        bRunning = bRunning && !raylib::WindowShouldClose();
     }
 }
 
@@ -117,11 +118,11 @@ bool Game::IsOfflineMode() {
 }
 
 void Game::Fullscreen() {
-    auto monitor = GetCurrentMonitor();
-    int monitorWidth = GetMonitorWidth(monitor);
-    int monitorHeight = GetMonitorHeight(monitor);
-    SetWindowSize(monitorWidth , monitorHeight);
-    ToggleFullscreen();
+    auto monitor = raylib::GetCurrentMonitor();
+    int monitorWidth = raylib::GetMonitorWidth(monitor);
+    int monitorHeight = raylib::GetMonitorHeight(monitor);
+    raylib::SetWindowSize(monitorWidth , monitorHeight);
+    raylib::ToggleFullscreen();
 }
 
 //Server* Game::GetServer() {
@@ -135,8 +136,8 @@ void Game::Fullscreen() {
 bool Game::Init()
 {
     if(!Game::IsServer() || serverDraw) {
-        SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-        InitWindow(800, 600, "Horde");
+        SetConfigFlags(raylib::FLAG_WINDOW_RESIZABLE);
+        raylib::InitWindow(800, 600, "Horde");
         // Fullscreen();
     }
     bRunning = true;
@@ -154,7 +155,7 @@ bool Game::IsServer() {
 void Game::Start() const
 {
     if(NetworkDriver::IsOfflineMode()) {
-        auto t = Transform{};
+        CTransform t = CTransform{};
         SpawnPlayer(1, t, true);
     }
     ActiveScene->Start();
@@ -162,7 +163,7 @@ void Game::Start() const
 
 void Game::HandleInput()
 {
-    if(IsKeyDown(KEY_F12))
+    if(IsKeyDown(raylib::KEY_F12))
     {
         bRunning = false;
     }
@@ -179,13 +180,13 @@ void Game::Draw() const
 {
     BeginMode3D(ToRaylibCamera(Camera));
     ActiveScene->Draw();
-    EndMode3D();
+    raylib::EndMode3D();
 }
 
 void Game::DrawUI() const
 {
     ActiveScene->DrawUI();
-    DrawText(fpsString.c_str(), 5, 5, 10, {237, 203, 102, 255});
+//    raylib::DrawText("hello", 5, 5, 10, raylib::WHITE);
 }
 
 void Game::Clean() const
