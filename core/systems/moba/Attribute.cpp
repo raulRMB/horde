@@ -38,6 +38,7 @@ void SAttribute::Update(float deltaSeconds)
                     CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
                     effect.callback(target, source);
                     effect.reset();
+                    ac.needsSync = true;
                 }
                 effect.addElapsed(deltaSeconds);
                 ++it;
@@ -51,6 +52,7 @@ void SAttribute::OnEffect(const FEffect &effect) {
     CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
     if(effect.type == INSTANT) {
         effect.callback(target, source);
+        target.needsSync = true;
     } else if(effect.type == DURATION || effect.type == INFINITE) {
         if(effect.callOnInit) {
             effect.callback(target, source);

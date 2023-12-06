@@ -17,6 +17,8 @@ public:
     static flatbuffers::Offset<Net::PlayerSpawn> CreatePlayerSpawn(flatbuffers::FlatBufferBuilder &builder, Transform& t, uint32_t netId);
     static std::vector<flatbuffers::Offset<Net::PlayerSpawn>> GetOtherPlayers(flatbuffers::FlatBufferBuilder &builder, ENetPeer* peer);
     static Transform NetTransformToTransform(const Net::Transform* t);
+    static flatbuffers::Offset<Net::Attribute> CreateAttribute(flatbuffers::FlatBufferBuilder &builder, struct FAttribute& attr);
+    static flatbuffers::Offset<Net::SyncAttributeComponent> CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, struct CAttributes& ac, uint32_t netId);
 };
 
 #endif //HORDE_FLATBUFFERUTIL_H

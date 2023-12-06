@@ -38,11 +38,14 @@ struct FAttribute
     float min;
     std::list<AttrMod> mods;
     float get() {
-        float x = base;
-        for(AttrMod mod : mods) {
-            x = mod.callback(x);
+        if(Game::IsServer()) {
+            float x = base;
+            for (AttrMod mod: mods) {
+                x = mod.callback(x);
+            }
+            return x;
         }
-        return x;
+        return base;
     }
 };
 
@@ -91,6 +94,7 @@ struct CAttributes
 {
     std::list<FAttribute> attributes;
     std::list<FEffect> effects;
+    bool needsSync = false;
 };
 
 #endif //HORDE_ATTRIBUTE_H

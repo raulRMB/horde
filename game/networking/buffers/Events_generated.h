@@ -27,6 +27,12 @@ struct Vector4Builder;
 struct Transform;
 struct TransformBuilder;
 
+struct Attribute;
+struct AttributeBuilder;
+
+struct SyncAttributeComponent;
+struct SyncAttributeComponentBuilder;
+
 struct SyncTransform;
 struct SyncTransformBuilder;
 
@@ -55,37 +61,40 @@ enum Events : uint8_t {
   Events_OnMoveTo = 3,
   Events_SyncTransform = 4,
   Events_OnPlayerJoined = 5,
+  Events_SyncAttributeComponent = 6,
   Events_MIN = Events_NONE,
-  Events_MAX = Events_OnPlayerJoined
+  Events_MAX = Events_SyncAttributeComponent
 };
 
-inline const Events (&EnumValuesEvents())[6] {
+inline const Events (&EnumValuesEvents())[7] {
   static const Events values[] = {
     Events_NONE,
     Events_OnConnectionResponse,
     Events_OnConnection,
     Events_OnMoveTo,
     Events_SyncTransform,
-    Events_OnPlayerJoined
+    Events_OnPlayerJoined,
+    Events_SyncAttributeComponent
   };
   return values;
 }
 
 inline const char * const *EnumNamesEvents() {
-  static const char * const names[7] = {
+  static const char * const names[8] = {
     "NONE",
     "OnConnectionResponse",
     "OnConnection",
     "OnMoveTo",
     "SyncTransform",
     "OnPlayerJoined",
+    "SyncAttributeComponent",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameEvents(Events e) {
-  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_OnPlayerJoined)) return "";
+  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_SyncAttributeComponent)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesEvents()[index];
 }
@@ -112,6 +121,10 @@ template<> struct EventsTraits<Net::SyncTransform> {
 
 template<> struct EventsTraits<Net::OnPlayerJoined> {
   static const Events enum_value = Events_OnPlayerJoined;
+};
+
+template<> struct EventsTraits<Net::SyncAttributeComponent> {
+  static const Events enum_value = Events_SyncAttributeComponent;
 };
 
 bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Events type);
@@ -362,6 +375,145 @@ inline ::flatbuffers::Offset<Transform> CreateTransform(
   builder_.add_scale(scale);
   builder_.add_translation(translation);
   return builder_.Finish();
+}
+
+struct Attribute FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef AttributeBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NAME = 4,
+    VT_VALUE = 6,
+    VT_MAX = 8
+  };
+  const ::flatbuffers::String *name() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_NAME);
+  }
+  float value() const {
+    return GetField<float>(VT_VALUE, 0.0f);
+  }
+  float max() const {
+    return GetField<float>(VT_MAX, 0.0f);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.VerifyString(name()) &&
+           VerifyField<float>(verifier, VT_VALUE, 4) &&
+           VerifyField<float>(verifier, VT_MAX, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct AttributeBuilder {
+  typedef Attribute Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_name(::flatbuffers::Offset<::flatbuffers::String> name) {
+    fbb_.AddOffset(Attribute::VT_NAME, name);
+  }
+  void add_value(float value) {
+    fbb_.AddElement<float>(Attribute::VT_VALUE, value, 0.0f);
+  }
+  void add_max(float max) {
+    fbb_.AddElement<float>(Attribute::VT_MAX, max, 0.0f);
+  }
+  explicit AttributeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<Attribute> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<Attribute>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<Attribute> CreateAttribute(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> name = 0,
+    float value = 0.0f,
+    float max = 0.0f) {
+  AttributeBuilder builder_(_fbb);
+  builder_.add_max(max);
+  builder_.add_value(value);
+  builder_.add_name(name);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<Attribute> CreateAttributeDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    float value = 0.0f,
+    float max = 0.0f) {
+  auto name__ = name ? _fbb.CreateString(name) : 0;
+  return Net::CreateAttribute(
+      _fbb,
+      name__,
+      value,
+      max);
+}
+
+struct SyncAttributeComponent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef SyncAttributeComponentBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NETID = 4,
+    VT_ATTRIBUTES = 6
+  };
+  uint32_t netId() const {
+    return GetField<uint32_t>(VT_NETID, 0);
+  }
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Net::Attribute>> *attributes() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Net::Attribute>> *>(VT_ATTRIBUTES);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
+           VerifyOffset(verifier, VT_ATTRIBUTES) &&
+           verifier.VerifyVector(attributes()) &&
+           verifier.VerifyVectorOfTables(attributes()) &&
+           verifier.EndTable();
+  }
+};
+
+struct SyncAttributeComponentBuilder {
+  typedef SyncAttributeComponent Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_netId(uint32_t netId) {
+    fbb_.AddElement<uint32_t>(SyncAttributeComponent::VT_NETID, netId, 0);
+  }
+  void add_attributes(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::Attribute>>> attributes) {
+    fbb_.AddOffset(SyncAttributeComponent::VT_ATTRIBUTES, attributes);
+  }
+  explicit SyncAttributeComponentBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<SyncAttributeComponent> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<SyncAttributeComponent>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<SyncAttributeComponent> CreateSyncAttributeComponent(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t netId = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::Attribute>>> attributes = 0) {
+  SyncAttributeComponentBuilder builder_(_fbb);
+  builder_.add_attributes(attributes);
+  builder_.add_netId(netId);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<SyncAttributeComponent> CreateSyncAttributeComponentDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t netId = 0,
+    const std::vector<::flatbuffers::Offset<Net::Attribute>> *attributes = nullptr) {
+  auto attributes__ = attributes ? _fbb.CreateVector<::flatbuffers::Offset<Net::Attribute>>(*attributes) : 0;
+  return Net::CreateSyncAttributeComponent(
+      _fbb,
+      netId,
+      attributes__);
 }
 
 struct SyncTransform FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
@@ -705,6 +857,9 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const Net::OnPlayerJoined *Event_as_OnPlayerJoined() const {
     return Event_type() == Net::Events_OnPlayerJoined ? static_cast<const Net::OnPlayerJoined *>(Event()) : nullptr;
   }
+  const Net::SyncAttributeComponent *Event_as_SyncAttributeComponent() const {
+    return Event_type() == Net::Events_SyncAttributeComponent ? static_cast<const Net::SyncAttributeComponent *>(Event()) : nullptr;
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
@@ -732,6 +887,10 @@ template<> inline const Net::SyncTransform *Header::Event_as<Net::SyncTransform>
 
 template<> inline const Net::OnPlayerJoined *Header::Event_as<Net::OnPlayerJoined>() const {
   return Event_as_OnPlayerJoined();
+}
+
+template<> inline const Net::SyncAttributeComponent *Header::Event_as<Net::SyncAttributeComponent>() const {
+  return Event_as_SyncAttributeComponent();
 }
 
 struct HeaderBuilder {
@@ -788,6 +947,10 @@ inline bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Eve
     }
     case Events_OnPlayerJoined: {
       auto ptr = reinterpret_cast<const Net::OnPlayerJoined *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case Events_SyncAttributeComponent: {
+      auto ptr = reinterpret_cast<const Net::SyncAttributeComponent *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

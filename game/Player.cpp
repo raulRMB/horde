@@ -75,8 +75,9 @@ Player::Player()
     AddComponent(ac);
     AddComponent(physics);
     AddComponent(follow);
-
-    Game::GetDispatcher().trigger(healthRegen);
+    if(Game::IsServer()) {
+        Game::GetDispatcher().trigger(healthRegen);
+    }
 }
 
 Player::~Player() = default;

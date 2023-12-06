@@ -5,6 +5,7 @@
 #include "components/Follow.h"
 #include "flatbuffers/flatbuffers.h"
 #include "networking/buffers/Events_generated.h"
+#include "components/Attribute.h"
 #include "networking/NetworkDriver.h"
 
 std::vector<ENetPeer*>& FlatBufferUtil::CreatePeerVector(ENetPeer* peer) {
@@ -52,4 +53,18 @@ flatbuffers::Offset<Net::Transform> FlatBufferUtil::CreateTransform(flatbuffers:
     auto scale = CreateVector3(builder, t.scale);
     auto quat = CreateVector4(builder, t.rotation);
     return Net::CreateTransform(builder, translation, scale, quat);
+}
+
+flatbuffers::Offset<Net::Attribute> FlatBufferUtil::CreateAttribute(flatbuffers::FlatBufferBuilder &builder, FAttribute& attr) {
+    auto name = builder.CreateString(attr.id);
+    return Net::CreateAttribute(builder, name, attr.get(), attr.max);
+}
+
+flatbuffers::Offset<Net::SyncAttributeComponent> FlatBufferUtil::CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, CAttributes& ac, uint32_t netId) {
+    auto vec = std::vector<flatbuffers::Offset<Net::Attribute>>();
+    for(auto attr : ac.attributes) {
+        vec.push_back(CreateAttribute(builder, attr));
+    }
+    auto v = builder.CreateVector(vec);
+    return Net::CreateSyncAttributeComponent(builder, netId, v);
 }

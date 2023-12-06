@@ -24,6 +24,17 @@ table Transform {
     quaternion: Vector4;
 }
 
+table Attribute {
+    name: string;
+    value: float;
+    max: float;
+}
+
+table SyncAttributeComponent {
+    netId: uint;
+    attributes: [Attribute];
+}
+
 table SyncTransform {
     transform: Transform;
     netId: uint;
@@ -52,7 +63,14 @@ table OnMoveTo {
     pos: Vector2;
 }
 
-union Events { OnConnectionResponse, OnConnection, OnMoveTo, SyncTransform, OnPlayerJoined }
+union Events {
+    OnConnectionResponse,
+    OnConnection,
+    OnMoveTo,
+    SyncTransform,
+    OnPlayerJoined,
+    SyncAttributeComponent
+}
 
 table Header {
     Event: Events;

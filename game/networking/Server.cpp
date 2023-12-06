@@ -10,6 +10,7 @@
 
 #include "flatbuffers/flatbuffers.h"
 #include "buffers/FlatBufferUtil.h"
+#include "components/Attribute.h"
 #include "networking/buffers/Events_generated.h"
 
 Server::Server() {
@@ -133,6 +134,12 @@ void Server::Sync(entt::entity e, Transform& t, std::vector<ENetPeer*> c) {
     stb.add_transform(x);
     auto payload = stb.Finish();
     Send(builder, Net::Events::Events_SyncTransform, payload.Union(), c);
+}
+
+void Server::Sync(entt::entity e, CAttributes& ac, std::vector<ENetPeer*> c) {
+    flatbuffers::FlatBufferBuilder builder;
+    auto x = FlatBufferUtil::CreateSyncAttributes(builder, ac, NetworkDriver::GetNetworkedEntities().Get(e));
+    Send(builder, Net::Events::Events_SyncAttributeComponent, x.Union(), c);
 }
 
 void Server::Close() {

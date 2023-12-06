@@ -7,6 +7,8 @@
 #include "NetMessage.h"
 #include "networking/buffers/Events_generated.h"
 #include "networking/buffers/FlatBufferUtil.h"
+#include "components/Attribute.h"
+#include "util/Util.h"
 
 Client::Client() {
     if (enet_initialize() != 0) {
@@ -101,6 +103,17 @@ void Client::OnInboundMessage(const Net::Header* header) {
             auto res = header->Event_as_SyncTransform();
             Transform& t = Game::GetRegistry().get<Transform>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
             t = FlatBufferUtil::NetTransformToTransform(res->transform());
+            break;
+        }
+        case Net::Events_SyncAttributeComponent: {
+            auto res = header->Event_as_SyncAttributeComponent();
+            CAttributes& ac = Game::GetRegistry().get<CAttributes>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+            std::vector stdVector(res->attributes()->begin(), res->attributes()->end());
+            for(auto a : stdVector) {
+                FAttribute* attr = Util::GetAttribute(ac, a->name()->str());
+                attr->base = a->value();
+                attr->max = a->max();
+            }
             break;
         }
         case Net::Events_OnPlayerJoined: {
