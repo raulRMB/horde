@@ -7,17 +7,14 @@
 
 namespace tZ
 {
-    struct CPhysics2D;
-    struct FAttribute;
-    struct CAttributes;
-    struct FRayCollision;
-    struct CTransform;
-    struct Polygon2D;
-    struct Triangle2D;
-}
 
-namespace tZ
-{
+struct CPhysics2D;
+struct FAttribute;
+struct CAttributes;
+struct FRayCollision;
+struct CTransform;
+struct Polygon2D;
+struct Triangle2D;
 
 namespace Util
 {
@@ -32,7 +29,7 @@ namespace Util
     v2 ClosestPointOnLine(const v2& start, const v2& end, v2 P);
     v2 MinimumTranslationVector(const Polygon2D& polygon, const v2& point);
 
-    bool Check2DCollision(CPhysics2D &x, CTransform &xT, CPhysics2D &y, CTransform &yT);
+    bool Check2DCollision(CPhysics2D &x, CTransform& xT, CPhysics2D& y, CTransform& yT);
 }
 
 }

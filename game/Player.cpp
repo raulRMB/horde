@@ -172,6 +172,7 @@ void Player::DrawUI() {
     if (health.id != "empty") {
         DrawRectangle(healthBarPos.x, healthBarPos.y, 80, 10, GRAY);
         DrawRectangle(healthBarPos.x, healthBarPos.y, 80 * health.get()/health.max, 10, GREEN);
+        DrawTextEx(font, std::to_string(health.get()).c_str(), Vector2{healthBarPos.x, healthBarPos.y - 15}, 10, 1, WHITE);
     }
 }
 

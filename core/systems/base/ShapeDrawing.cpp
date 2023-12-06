@@ -23,14 +23,14 @@ void SShapeDrawing::Draw()
     }
 
     // DrawCapsules
-    for(const entt::entity& entity : Game::GetRegistry().view<CCapsule, Transform>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CCapsule, CTransform>())
     {
         const CCapsule& capsuleComponent = Game::GetRegistry().get<CCapsule>(entity);
-        const Transform& transform = Game::GetRegistry().get<Transform>(entity);
-        Vector3 offset = {0.0f, capsuleComponent.Height / 2.0f, 0.0f};
-        Vector3 top = Vector3Add(transform.translation, offset);
-        Vector3 bottom = Vector3Subtract(transform.translation, offset);
-        DrawCapsule(top, bottom,  capsuleComponent.Radius, 5, 3, ToRaylibColor(capsuleComponent.Color));
+        const CTransform& transform = Game::GetRegistry().get<CTransform>(entity);
+        v3 offset = v3{0.0f, capsuleComponent.Height / 2.0f, 0.0f};
+        v3 top = transform.Position + offset;
+        v3 bottom = transform.Position - offset;
+        DrawCapsule(ToRaylibVector3(top), ToRaylibVector3(bottom),  capsuleComponent.Radius, 5, 3, ToRaylibColor(capsuleComponent.Color));
     }
 
     // Rays
@@ -65,13 +65,13 @@ void SShapeDrawing::Draw()
         }
     }
 
-    for(const entt::entity& entity : Game::GetRegistry().view<CSphere, Transform>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CSphere, CTransform>())
     {
         const CSphere sphere = GetComponent<CSphere>(entity);
         DrawSphere(ToRaylibVector3(GetComponent<CTransform>(entity).Position), sphere.Radius, ToRaylibColor(sphere.Color));
     }
 
-    for(const entt::entity& entity : Game::GetRegistry().view<CPhysics2D, Transform>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CPhysics2D, CTransform>())
     {
         auto physics = GetComponent<CPhysics2D>(entity);
         auto transform = GetComponent<CTransform>(entity);

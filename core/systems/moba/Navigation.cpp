@@ -9,6 +9,7 @@
 
 #include "components/Follow.h"
 #include "raylib.h"
+#include "components/Transform.h"
 #include "util/Util.h"
 
 namespace tZ
@@ -17,7 +18,7 @@ namespace tZ
 void SNavigation::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    const auto followEntities = registry.view<CFollow, Transform>();
+    const auto followEntities = registry.view<CFollow, CTransform>();
     for(const entt::entity& followEntity : followEntities)
     {
         CFollow& followComponent = GetComponent<CFollow>(followEntity);
@@ -31,7 +32,7 @@ void SNavigation::Update(float deltaSeconds)
 
         v2& targetPos = followComponent.TargetPos;
         unsigned int& followIndex = followComponent.Index;
-        v2 startPoint = {GetComponent<Transform>(followEntity).translation.x, GetComponent<Transform>(followEntity).translation.z};
+        v2 startPoint = {GetComponent<CTransform>(followEntity).Position.x, GetComponent<CTransform>(followEntity).Position.z};
 
         std::vector<Edge2D> portals;
         std::vector<Navigation::TriangleNode*> path;
@@ -75,8 +76,8 @@ void SNavigation::LoadNavMesh()
         for(const Navigation::TriangleNode& graphTriangle : NavMesh)
         {
             auto e = CreateEntity();
-            Transform transform;
-            transform.translation = {graphTriangle.GetCircumCenter().x, 0.f, graphTriangle.GetCircumCenter().y};
+            CTransform transform;
+            transform.Position = v3{graphTriangle.GetCircumCenter().x, 0.f, graphTriangle.GetCircumCenter().y};
             AddComponent(e, transform);
             if(graphTriangle.IsBlocked())
             {
