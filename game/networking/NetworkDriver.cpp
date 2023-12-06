@@ -39,7 +39,10 @@ void NetworkDriver::Init(long long periodMicroseconds) {
 }
 
 void NetworkDriver::ProcessQueues() {
+    int inboundProcessed = 0;
+    int outboundProcessed = 0;
     while(!GetInboundQueue().empty()) {
+        inboundProcessed += 1;
         auto msg = GetInboundQueue().front();
         auto header = Net::GetHeader(msg.data);
         if(IsServer()) {
@@ -50,6 +53,7 @@ void NetworkDriver::ProcessQueues() {
         GetInboundQueue().pop();
     }
     while(!GetOutboundQueue().empty()) {
+        outboundProcessed += 1;
         OutboundMessage som = GetOutboundQueue().front();
         if(IsServer()) {
             Instance().server->SendOutboundMessage(som);
@@ -58,10 +62,12 @@ void NetworkDriver::ProcessQueues() {
         }
         GetOutboundQueue().pop();
     }
-    if(IsServer()) {
-        Instance().server->flush();
-    } else {
-        Instance().client->flush();
+    if(inboundProcessed > 0 || outboundProcessed > 0) {
+        if (IsServer()) {
+            Instance().server->flush();
+        } else {
+            Instance().client->flush();
+        }
     }
 }
 
