@@ -7,6 +7,7 @@
 #include "networking/buffers/Events_generated.h"
 #include "networking/buffers/FlatBufferUtil.h"
 #include "components/Attribute.h"
+#include "components/CharacterAnimation.h"
 #include "util/Util.h"
 #include "components/Transform.h"
 
@@ -47,6 +48,13 @@ void Client::SendMoveTo(v2 pos, uint32_t NetworkId) {
     mtbuilder.add_pos(vec);
     auto moveto = mtbuilder.Finish();
     Send(builder, Net::Events_OnMoveTo, moveto.Union());
+}
+
+void Client::TriggerAbility(u32 networkId)
+{
+    flatbuffers::FlatBufferBuilder builder;
+    flatbuffers::Offset<Net::TriggerAbility> trigger = Net::CreateTriggerAbility(builder, networkId, 0);
+    Send(builder, Net::Events_TriggerAbility, trigger.Union());
 }
 
 void Client::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data) {
@@ -114,7 +122,7 @@ void Client::OnInboundMessage(const Net::Header* header) {
             break;
         }
         case Net::Events_SyncAttributeComponent: {
-            auto res = header->Event_as_SyncAttributeComponent();
+            const Net::SyncAttributeComponent* res = header->Event_as_SyncAttributeComponent();
             CAttributes& ac = Game::GetRegistry().get<CAttributes>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
             std::vector stdVector(res->attributes()->begin(), res->attributes()->end());
             for(auto a : stdVector) {
@@ -125,9 +133,16 @@ void Client::OnInboundMessage(const Net::Header* header) {
             break;
         }
         case Net::Events_OnPlayerJoined: {
-            auto res = header->Event_as_OnPlayerJoined();
+            const Net::OnPlayerJoined* res = header->Event_as_OnPlayerJoined();
             CTransform t = CTransform{};
             Game::SpawnPlayer(res->netId(), t, false);
+            break;
+        }
+        case Net::Events_SyncCharacterAnimState :
+        {
+            const Net::SyncCharacterAnimState* res = header->Event_as_SyncCharacterAnimState();
+            CCharacterAnimation& ca = Game::GetRegistry().get<CCharacterAnimation>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+            ca.AnimState = static_cast<ECharacterAnimState>(res->state());
             break;
         }
     }

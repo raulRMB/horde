@@ -10,11 +10,11 @@ namespace raylib
 #include "systems/System.h"
 #include "systems/moba/Navigation.h"
 #include "components/Follow.h"
-
 #include "flatbuffers/flatbuffers.h"
 #include "buffers/FlatBufferUtil.h"
 #include "components/Attribute.h"
 #include "networking/buffers/Events_generated.h"
+#include "components/CharacterAnimation.h"
 
 namespace tZ
 {
@@ -74,6 +74,16 @@ void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
                 followComponent.Goal = vec;
                 break;
             }
+        }
+        case Net::Events_TriggerAbility: {
+            const Net::TriggerAbility* res = header->Event_as_TriggerAbility();
+            entt::entity e = NetworkDriver::GetNetworkedEntities().Get(res->netId());
+            CCharacterAnimation& charAnim =  Game::GetRegistry().get<CCharacterAnimation>(e);
+            charAnim.AnimState = ECharacterAnimState::Attacking1;
+            charAnim.bOverrideAnim = true;
+            charAnim.EndAnimTime = 10.f;
+            charAnim.bNeedsNetSync = true;
+            break;
         }
     }
 }
@@ -142,6 +152,14 @@ void Server::Sync(entt::entity e, CAttributes& ac, std::vector<ENetPeer*> c) {
     flatbuffers::FlatBufferBuilder builder;
     auto x = FlatBufferUtil::CreateSyncAttributes(builder, ac, NetworkDriver::GetNetworkedEntities().Get(e));
     Send(builder, Net::Events::Events_SyncAttributeComponent, x.Union(), c);
+}
+
+void Server::Sync(entt::entity e, CCharacterAnimation& ca, std::vector<ENetPeer*> c)
+{
+    flatbuffers::FlatBufferBuilder builder;
+    auto msg = Net::CreateSyncCharacterAnimState(builder, NetworkDriver::GetNetworkedEntities().Get(e), (int)ca.AnimState);
+    Send(builder, Net::Events::Events_SyncCharacterAnimState, msg.Union(), c);
+
 }
 
 void Server::Close() {

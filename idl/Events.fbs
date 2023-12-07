@@ -63,13 +63,27 @@ table OnMoveTo {
     pos: Vector2;
 }
 
+table SyncCharacterAnimState
+{
+    netId: uint;
+    state: int;
+}
+
+table TriggerAbility
+{
+    netId: uint;
+    abilityId: uint;
+}
+
 union Events {
     OnConnectionResponse,
     OnConnection,
     OnMoveTo,
     SyncTransform,
     OnPlayerJoined,
-    SyncAttributeComponent
+    SyncAttributeComponent,
+    SyncCharacterAnimState,
+    TriggerAbility
 }
 
 table Header {

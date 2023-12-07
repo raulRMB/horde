@@ -51,6 +51,12 @@ struct OnConnectionBuilder;
 struct OnMoveTo;
 struct OnMoveToBuilder;
 
+struct SyncCharacterAnimState;
+struct SyncCharacterAnimStateBuilder;
+
+struct TriggerAbility;
+struct TriggerAbilityBuilder;
+
 struct Header;
 struct HeaderBuilder;
 
@@ -62,11 +68,13 @@ enum Events : uint8_t {
   Events_SyncTransform = 4,
   Events_OnPlayerJoined = 5,
   Events_SyncAttributeComponent = 6,
+  Events_SyncCharacterAnimState = 7,
+  Events_TriggerAbility = 8,
   Events_MIN = Events_NONE,
-  Events_MAX = Events_SyncAttributeComponent
+  Events_MAX = Events_TriggerAbility
 };
 
-inline const Events (&EnumValuesEvents())[7] {
+inline const Events (&EnumValuesEvents())[9] {
   static const Events values[] = {
     Events_NONE,
     Events_OnConnectionResponse,
@@ -74,13 +82,15 @@ inline const Events (&EnumValuesEvents())[7] {
     Events_OnMoveTo,
     Events_SyncTransform,
     Events_OnPlayerJoined,
-    Events_SyncAttributeComponent
+    Events_SyncAttributeComponent,
+    Events_SyncCharacterAnimState,
+    Events_TriggerAbility
   };
   return values;
 }
 
 inline const char * const *EnumNamesEvents() {
-  static const char * const names[8] = {
+  static const char * const names[10] = {
     "NONE",
     "OnConnectionResponse",
     "OnConnection",
@@ -88,13 +98,15 @@ inline const char * const *EnumNamesEvents() {
     "SyncTransform",
     "OnPlayerJoined",
     "SyncAttributeComponent",
+    "SyncCharacterAnimState",
+    "TriggerAbility",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameEvents(Events e) {
-  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_SyncAttributeComponent)) return "";
+  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_TriggerAbility)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesEvents()[index];
 }
@@ -125,6 +137,14 @@ template<> struct EventsTraits<Net::OnPlayerJoined> {
 
 template<> struct EventsTraits<Net::SyncAttributeComponent> {
   static const Events enum_value = Events_SyncAttributeComponent;
+};
+
+template<> struct EventsTraits<Net::SyncCharacterAnimState> {
+  static const Events enum_value = Events_SyncCharacterAnimState;
+};
+
+template<> struct EventsTraits<Net::TriggerAbility> {
+  static const Events enum_value = Events_TriggerAbility;
 };
 
 bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Events type);
@@ -829,6 +849,108 @@ inline ::flatbuffers::Offset<OnMoveTo> CreateOnMoveTo(
   return builder_.Finish();
 }
 
+struct SyncCharacterAnimState FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef SyncCharacterAnimStateBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NETID = 4,
+    VT_STATE = 6
+  };
+  uint32_t netId() const {
+    return GetField<uint32_t>(VT_NETID, 0);
+  }
+  int32_t state() const {
+    return GetField<int32_t>(VT_STATE, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
+           VerifyField<int32_t>(verifier, VT_STATE, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct SyncCharacterAnimStateBuilder {
+  typedef SyncCharacterAnimState Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_netId(uint32_t netId) {
+    fbb_.AddElement<uint32_t>(SyncCharacterAnimState::VT_NETID, netId, 0);
+  }
+  void add_state(int32_t state) {
+    fbb_.AddElement<int32_t>(SyncCharacterAnimState::VT_STATE, state, 0);
+  }
+  explicit SyncCharacterAnimStateBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<SyncCharacterAnimState> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<SyncCharacterAnimState>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<SyncCharacterAnimState> CreateSyncCharacterAnimState(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t netId = 0,
+    int32_t state = 0) {
+  SyncCharacterAnimStateBuilder builder_(_fbb);
+  builder_.add_state(state);
+  builder_.add_netId(netId);
+  return builder_.Finish();
+}
+
+struct TriggerAbility FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef TriggerAbilityBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NETID = 4,
+    VT_ABILITYID = 6
+  };
+  uint32_t netId() const {
+    return GetField<uint32_t>(VT_NETID, 0);
+  }
+  uint32_t abilityId() const {
+    return GetField<uint32_t>(VT_ABILITYID, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
+           VerifyField<uint32_t>(verifier, VT_ABILITYID, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct TriggerAbilityBuilder {
+  typedef TriggerAbility Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_netId(uint32_t netId) {
+    fbb_.AddElement<uint32_t>(TriggerAbility::VT_NETID, netId, 0);
+  }
+  void add_abilityId(uint32_t abilityId) {
+    fbb_.AddElement<uint32_t>(TriggerAbility::VT_ABILITYID, abilityId, 0);
+  }
+  explicit TriggerAbilityBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<TriggerAbility> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<TriggerAbility>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<TriggerAbility> CreateTriggerAbility(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t netId = 0,
+    uint32_t abilityId = 0) {
+  TriggerAbilityBuilder builder_(_fbb);
+  builder_.add_abilityId(abilityId);
+  builder_.add_netId(netId);
+  return builder_.Finish();
+}
+
 struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef HeaderBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -859,6 +981,12 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const Net::SyncAttributeComponent *Event_as_SyncAttributeComponent() const {
     return Event_type() == Net::Events_SyncAttributeComponent ? static_cast<const Net::SyncAttributeComponent *>(Event()) : nullptr;
+  }
+  const Net::SyncCharacterAnimState *Event_as_SyncCharacterAnimState() const {
+    return Event_type() == Net::Events_SyncCharacterAnimState ? static_cast<const Net::SyncCharacterAnimState *>(Event()) : nullptr;
+  }
+  const Net::TriggerAbility *Event_as_TriggerAbility() const {
+    return Event_type() == Net::Events_TriggerAbility ? static_cast<const Net::TriggerAbility *>(Event()) : nullptr;
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -891,6 +1019,14 @@ template<> inline const Net::OnPlayerJoined *Header::Event_as<Net::OnPlayerJoine
 
 template<> inline const Net::SyncAttributeComponent *Header::Event_as<Net::SyncAttributeComponent>() const {
   return Event_as_SyncAttributeComponent();
+}
+
+template<> inline const Net::SyncCharacterAnimState *Header::Event_as<Net::SyncCharacterAnimState>() const {
+  return Event_as_SyncCharacterAnimState();
+}
+
+template<> inline const Net::TriggerAbility *Header::Event_as<Net::TriggerAbility>() const {
+  return Event_as_TriggerAbility();
 }
 
 struct HeaderBuilder {
@@ -951,6 +1087,14 @@ inline bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Eve
     }
     case Events_SyncAttributeComponent: {
       auto ptr = reinterpret_cast<const Net::SyncAttributeComponent *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case Events_SyncCharacterAnimState: {
+      auto ptr = reinterpret_cast<const Net::SyncCharacterAnimState *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case Events_TriggerAbility: {
+      auto ptr = reinterpret_cast<const Net::TriggerAbility *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

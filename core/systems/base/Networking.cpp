@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "networking/NetworkDriver.h"
 #include "components/Attribute.h"
+#include "components/CharacterAnimation.h"
 
 namespace tZ
 {
@@ -25,6 +26,14 @@ void SNetworking::Update(float deltaSeconds)
             if(ac.needsSync) {
                 NetworkDriver::GetServer()->Sync(entity, ac, NetworkDriver::GetConnections());
                 ac.needsSync = false;
+            }
+        }
+        for(const entt::entity& entity : GetView<CCharacterAnimation, CNetwork>())
+        {
+            CCharacterAnimation& characterAnim = GetComponent<CCharacterAnimation>(entity);
+            if(characterAnim.bNeedsNetSync) {
+                NetworkDriver::GetServer()->Sync(entity, characterAnim, NetworkDriver::GetConnections());
+                characterAnim.bNeedsNetSync = false;
             }
         }
     }

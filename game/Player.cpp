@@ -10,9 +10,7 @@
 #include "components/Physics.h"
 #include "components/RayCollision.h"
 #include "components/Animation.h"
-
-//#include "raymath.h"
-
+#include "components/CharacterAnimation.h"
 
 namespace tZ
 {
@@ -22,10 +20,9 @@ Player::Player()
 {
     if(!Game::IsServer()) {
         CAnimation animation{};
-        CModel mc = {raylib::LoadModel("../assets/anim.glb"), 0.05, false};
-//        mc.model.transform = MatrixRotateX(PI/2);
-        animation.Animations = raylib::LoadModelAnimations("../assets/anim.glb", &animation.AnimsCount);
-        animation.AnimsIndex = 1;
+        CModel mc = {raylib::LoadModel("../assets/playerCharacter.glb"), 0.05, false};
+        animation.Animations = raylib::LoadModelAnimations("../assets/playerCharacter.glb", &animation.AnimsCount);
+        animation.AnimsIndex = (i32)ECharacterAnimState::Idle;
         animation.bPlaying = true;
         AddComponent(animation);
         AddComponent(mc);
@@ -79,6 +76,11 @@ Player::Player()
     physics.MaxSpeed = 9.f;
     physics.CollisionType = ECollision2DType::Circle;
     physics.CollisionRadius = 1.5f;
+
+    CCharacterAnimation characterAnim{};
+    characterAnim.AnimState = ECharacterAnimState::Idle;
+
+    AddComponent(characterAnim);
     AddComponent(transform);
     AddComponent(ac);
     AddComponent(physics);
@@ -165,6 +167,12 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(raylib::IsKeyPressed(raylib::KEY_R))
     {
+        GetComponent<CAnimation>().AnimsIndex++;
+    }
+
+    if(raylib::IsKeyPressed(raylib::KEY_A))
+    {
+        NetworkDriver::GetClient()->TriggerAbility(NetworkDriver::GetNetworkedEntities().Get(GetEntity()));
     }
 }
 

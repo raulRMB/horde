@@ -7,7 +7,6 @@ namespace raylib
 {
 #include <raylib.h>
 }
-#include <algorithm>
 
 namespace tZ
 {
@@ -21,7 +20,7 @@ void SAnimation::Update(float deltaSeconds)
 
         raylib::ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
 
-        animationComponent.CurrentFrameTime += 0.1f;
+        animationComponent.CurrentFrameTime += 60.f * deltaSeconds;
 
         if(animationComponent.CurrentFrameTime >= 1.0f)
         {

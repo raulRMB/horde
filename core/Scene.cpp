@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "systems/base/Animation.h"
+#include "systems/base/CharacterAnimation.h"
 #include "systems/moba/Follow.h"
 #include "systems/base/Physics.h"
 #include "systems/base/ShapeDrawing.h"
@@ -21,6 +22,8 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<SNavigation>());
     UpdateSystems.push_back(&System::Get<SFollow>());
     UpdateSystems.push_back(&System::Get<SPhysics>());
+    UpdateSystems.push_back(&System::Get<SNetworking>());
+    UpdateSystems.push_back(&System::Get<SCharacterAnimation>());
 
     UpdateSystems.push_back(&System::Get<SSpawn>());
     if(!Game::IsServer()) {
@@ -31,7 +34,6 @@ void Scene::Start()
         DrawingSystems.push_back(&System::Get<SAttributeUI>());
     } else {
         UpdateSystems.push_back(&System::Get<SAttribute>());
-        UpdateSystems.push_back(&System::Get<SNetworking>());
     }
 
 }
