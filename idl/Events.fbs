@@ -76,6 +76,14 @@ table TriggerAbility
     targetVec: Vector3;
 }
 
+table SpawnProjectile
+{
+    netid: uint;
+    porjectileId: uint;
+    position: Vector2;
+    direction: Vector2;
+}
+
 union Events {
     OnConnectionResponse,
     OnConnection,
@@ -84,7 +92,8 @@ union Events {
     OnPlayerJoined,
     SyncAttributeComponent,
     SyncCharacterAnimState,
-    TriggerAbility
+    TriggerAbility,
+    SpawnProjectile
 }
 
 table Header {

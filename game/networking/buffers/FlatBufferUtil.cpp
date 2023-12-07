@@ -64,17 +64,25 @@ flatbuffers::Offset<Net::Transform> FlatBufferUtil::CreateTransform(flatbuffers:
 }
 
 flatbuffers::Offset<Net::Attribute> FlatBufferUtil::CreateAttribute(flatbuffers::FlatBufferBuilder &builder, FAttribute& attr) {
-    auto name = builder.CreateString(attr.id);
+    flatbuffers::Offset<flatbuffers::String> name = builder.CreateString(attr.id);
     return Net::CreateAttribute(builder, name, attr.get(), attr.max);
 }
 
 flatbuffers::Offset<Net::SyncAttributeComponent> FlatBufferUtil::CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, CAttributes& ac, uint32_t netId) {
-    auto vec = std::vector<flatbuffers::Offset<Net::Attribute>>();
+    std::vector<flatbuffers::Offset<Net::Attribute>> vec = std::vector<flatbuffers::Offset<Net::Attribute>>();
     for(auto attr : ac.attributes) {
         vec.push_back(CreateAttribute(builder, attr));
     }
-    auto v = builder.CreateVector(vec);
+    const flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Net::Attribute>>> v = builder.CreateVector(vec);
     return Net::CreateSyncAttributeComponent(builder, netId, v);
+}
+
+flatbuffers::Offset<Net::SpawnProjectile> FlatBufferUtil::CreateSpawnProjectile(flatbuffers::FlatBufferBuilder &builder,
+    const u32 netId, const v2& pos, const v2& dir)
+{
+    const flatbuffers::Offset<Net::Vector2> posOffset = Net::CreateVector2(builder, pos.x, pos.y);
+    const flatbuffers::Offset<Net::Vector2> dirOffset = Net::CreateVector2(builder, dir.x, dir.y);
+    return Net::CreateSpawnProjectile(builder, netId, 0,posOffset, dirOffset);
 }
 
 }

@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "NetworkDriver.h"
 #include "NetMessage.h"
+#include "abilities/Projectile.h"
 #include "networking/buffers/Events_generated.h"
 #include "networking/buffers/FlatBufferUtil.h"
 #include "components/Attribute.h"
@@ -144,6 +145,14 @@ void Client::OnInboundMessage(const Net::Header* header) {
             const Net::SyncCharacterAnimState* res = header->Event_as_SyncCharacterAnimState();
             CCharacterAnimation& ca = Game::GetRegistry().get<CCharacterAnimation>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
             ca.AnimState = static_cast<ECharacterAnimState>(res->state());
+            break;
+        }
+        case Net::Events_SpawnProjectile:
+        {
+            const Net::SpawnProjectile* res = header->Event_as_SpawnProjectile();
+            const v2 pos(res->position()->x(), res->position()->y());
+            const v2 dir(res->direction()->x(), res->direction()->y());
+            SpawnProjectile(NetworkDriver::GetNetworkedEntities().Get(res->netid()), pos, dir);
             break;
         }
     }

@@ -7,7 +7,7 @@ namespace tZ
 
 struct CComponent
 {
-    bool bNeedsNetSync;
+    bool bNeedsNetSync = false;
 };
 
 

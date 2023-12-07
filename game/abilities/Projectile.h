@@ -11,7 +11,7 @@
 namespace tZ
 {
 
-Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {
+inline Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {
 
     pc.MaxLife = 0.2;
 
@@ -37,7 +37,7 @@ Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry
     registry.emplace<CTransform>(e, t);
 };
 
-void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation)
+inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation)
 {
     entt::registry& registry = Game::GetRegistry();
 
@@ -52,8 +52,7 @@ void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation)
     effect.callback = effectCallback;
 
     auto e = registry.create();
-    registry.emplace<CEmitter>(e,
-                                        CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
+    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
     CPhysics3D phc = {};
     phc.Velocity = glm::normalize(cursorLocation - playerLocation) * 50.f;
     phc.MaxSpeed = 100;
@@ -66,6 +65,35 @@ void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation)
     registry.emplace<FEffect>(e, effect);
     registry.emplace<CPhysics3D>(e, phc);
     registry.emplace<CTransform>(e, playerLocation + glm::normalize(cursorLocation - playerLocation) * 3.f);
+}
+
+inline void SpawnProjectile(entt::entity source, const v2 pos, const v2 dir)
+{
+    entt::registry& registry = Game::GetRegistry();
+
+    OnApply effectCallback = [](CAttributes &target, CAttributes &source) {
+        FAttribute &health = *Util::GetAttribute(target, "health");
+        float newHealth = health.base - 150;
+        health.base = std::clamp(newHealth, health.min, health.max);
+    };
+    FEffect effect = FEffect{};
+    effect.type = EEffectType::Instant;
+    effect.source = source;
+    effect.callback = effectCallback;
+
+    auto e = registry.create();
+    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
+    CPhysics3D phc = {};
+    phc.Velocity = glm::normalize(v3{dir.x, 0, dir.y}) * 30.f;
+    phc.MaxSpeed = 100;
+
+    CPhysics2D p2d = {};
+    p2d.CollisionType = ECollision2DType::Circle;
+    p2d.CollisionRadius = 1.f;
+    registry.emplace<CPhysics2D>(e, p2d);
+    registry.emplace<FEffect>(e, effect);
+    registry.emplace<CPhysics3D>(e, phc);
+    registry.emplace<CTransform>(e, v3(pos.x, 0, pos.y) + glm::normalize(v3{dir.x, 0, dir.y}) * 3.f);
 }
 
 

@@ -57,6 +57,9 @@ struct SyncCharacterAnimStateBuilder;
 struct TriggerAbility;
 struct TriggerAbilityBuilder;
 
+struct SpawnProjectile;
+struct SpawnProjectileBuilder;
+
 struct Header;
 struct HeaderBuilder;
 
@@ -70,11 +73,12 @@ enum Events : uint8_t {
   Events_SyncAttributeComponent = 6,
   Events_SyncCharacterAnimState = 7,
   Events_TriggerAbility = 8,
+  Events_SpawnProjectile = 9,
   Events_MIN = Events_NONE,
-  Events_MAX = Events_TriggerAbility
+  Events_MAX = Events_SpawnProjectile
 };
 
-inline const Events (&EnumValuesEvents())[9] {
+inline const Events (&EnumValuesEvents())[10] {
   static const Events values[] = {
     Events_NONE,
     Events_OnConnectionResponse,
@@ -84,13 +88,14 @@ inline const Events (&EnumValuesEvents())[9] {
     Events_OnPlayerJoined,
     Events_SyncAttributeComponent,
     Events_SyncCharacterAnimState,
-    Events_TriggerAbility
+    Events_TriggerAbility,
+    Events_SpawnProjectile
   };
   return values;
 }
 
 inline const char * const *EnumNamesEvents() {
-  static const char * const names[10] = {
+  static const char * const names[11] = {
     "NONE",
     "OnConnectionResponse",
     "OnConnection",
@@ -100,13 +105,14 @@ inline const char * const *EnumNamesEvents() {
     "SyncAttributeComponent",
     "SyncCharacterAnimState",
     "TriggerAbility",
+    "SpawnProjectile",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameEvents(Events e) {
-  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_TriggerAbility)) return "";
+  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_SpawnProjectile)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesEvents()[index];
 }
@@ -145,6 +151,10 @@ template<> struct EventsTraits<Net::SyncCharacterAnimState> {
 
 template<> struct EventsTraits<Net::TriggerAbility> {
   static const Events enum_value = Events_TriggerAbility;
+};
+
+template<> struct EventsTraits<Net::SpawnProjectile> {
+  static const Events enum_value = Events_SpawnProjectile;
 };
 
 bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Events type);
@@ -962,6 +972,79 @@ inline ::flatbuffers::Offset<TriggerAbility> CreateTriggerAbility(
   return builder_.Finish();
 }
 
+struct SpawnProjectile FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef SpawnProjectileBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NETID = 4,
+    VT_PORJECTILEID = 6,
+    VT_POSITION = 8,
+    VT_DIRECTION = 10
+  };
+  uint32_t netid() const {
+    return GetField<uint32_t>(VT_NETID, 0);
+  }
+  uint32_t porjectileId() const {
+    return GetField<uint32_t>(VT_PORJECTILEID, 0);
+  }
+  const Net::Vector2 *position() const {
+    return GetPointer<const Net::Vector2 *>(VT_POSITION);
+  }
+  const Net::Vector2 *direction() const {
+    return GetPointer<const Net::Vector2 *>(VT_DIRECTION);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
+           VerifyField<uint32_t>(verifier, VT_PORJECTILEID, 4) &&
+           VerifyOffset(verifier, VT_POSITION) &&
+           verifier.VerifyTable(position()) &&
+           VerifyOffset(verifier, VT_DIRECTION) &&
+           verifier.VerifyTable(direction()) &&
+           verifier.EndTable();
+  }
+};
+
+struct SpawnProjectileBuilder {
+  typedef SpawnProjectile Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_netid(uint32_t netid) {
+    fbb_.AddElement<uint32_t>(SpawnProjectile::VT_NETID, netid, 0);
+  }
+  void add_porjectileId(uint32_t porjectileId) {
+    fbb_.AddElement<uint32_t>(SpawnProjectile::VT_PORJECTILEID, porjectileId, 0);
+  }
+  void add_position(::flatbuffers::Offset<Net::Vector2> position) {
+    fbb_.AddOffset(SpawnProjectile::VT_POSITION, position);
+  }
+  void add_direction(::flatbuffers::Offset<Net::Vector2> direction) {
+    fbb_.AddOffset(SpawnProjectile::VT_DIRECTION, direction);
+  }
+  explicit SpawnProjectileBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<SpawnProjectile> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<SpawnProjectile>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<SpawnProjectile> CreateSpawnProjectile(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t netid = 0,
+    uint32_t porjectileId = 0,
+    ::flatbuffers::Offset<Net::Vector2> position = 0,
+    ::flatbuffers::Offset<Net::Vector2> direction = 0) {
+  SpawnProjectileBuilder builder_(_fbb);
+  builder_.add_direction(direction);
+  builder_.add_position(position);
+  builder_.add_porjectileId(porjectileId);
+  builder_.add_netid(netid);
+  return builder_.Finish();
+}
+
 struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef HeaderBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -998,6 +1081,9 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const Net::TriggerAbility *Event_as_TriggerAbility() const {
     return Event_type() == Net::Events_TriggerAbility ? static_cast<const Net::TriggerAbility *>(Event()) : nullptr;
+  }
+  const Net::SpawnProjectile *Event_as_SpawnProjectile() const {
+    return Event_type() == Net::Events_SpawnProjectile ? static_cast<const Net::SpawnProjectile *>(Event()) : nullptr;
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1038,6 +1124,10 @@ template<> inline const Net::SyncCharacterAnimState *Header::Event_as<Net::SyncC
 
 template<> inline const Net::TriggerAbility *Header::Event_as<Net::TriggerAbility>() const {
   return Event_as_TriggerAbility();
+}
+
+template<> inline const Net::SpawnProjectile *Header::Event_as<Net::SpawnProjectile>() const {
+  return Event_as_SpawnProjectile();
 }
 
 struct HeaderBuilder {
@@ -1106,6 +1196,10 @@ inline bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Eve
     }
     case Events_TriggerAbility: {
       auto ptr = reinterpret_cast<const Net::TriggerAbility *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case Events_SpawnProjectile: {
+      auto ptr = reinterpret_cast<const Net::SpawnProjectile *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
