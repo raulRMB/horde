@@ -17,6 +17,12 @@ struct CAnimation
     float CurrentFrameTime;
     float FrameTime;
     raylib::ModelAnimation* Animations;
+    void Reset(int index) {
+        AnimsIndex = index;
+        CurrentFrame = 0;
+        CurrentFrameTime = 0;
+        FrameTime = 0;
+    }
 };
     
 }

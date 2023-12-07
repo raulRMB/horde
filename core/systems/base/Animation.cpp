@@ -3,6 +3,8 @@
 #include "components/Animation.h"
 #include "components/Model.h"
 #include "Game.h"
+#include "components/CharacterAnimation.h"
+
 namespace raylib
 {
 #include <raylib.h>
@@ -34,6 +36,15 @@ void SAnimation::Update(float deltaSeconds)
         }
 
         raylib::UpdateModelAnimation(model, animation, animationComponent.CurrentFrame);
+    }
+
+    for(const entt::entity& entity : Game::GetRegistry().view<CAnimation, CCharacterAnimation>())
+    {
+        CAnimation& animationComponent = Game::GetRegistry().get<CAnimation>(entity);
+        CCharacterAnimation& characterAnimation = Game::GetRegistry().get<CCharacterAnimation>(entity);
+        if(animationComponent.AnimsIndex != (int)characterAnimation.AnimState) {
+            animationComponent.Reset((int)characterAnimation.AnimState);
+        }
     }
 }
 

@@ -79,9 +79,9 @@ void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
             const Net::TriggerAbility* res = header->Event_as_TriggerAbility();
             entt::entity e = NetworkDriver::GetNetworkedEntities().Get(res->netId());
             CCharacterAnimation& charAnim =  Game::GetRegistry().get<CCharacterAnimation>(e);
-            charAnim.AnimState = ECharacterAnimState::Attacking1;
             charAnim.bOverrideAnim = true;
-            charAnim.EndAnimTime = 10.f;
+            charAnim.EndAnimTime = 1.5f;
+            charAnim.AnimState = ECharacterAnimState::Attacking1;
             charAnim.bNeedsNetSync = true;
             break;
         }

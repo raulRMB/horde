@@ -15,7 +15,7 @@ void SCharacterAnimation::Update(float deltaSeconds)
             CPhysics2D& physics = GetComponent<CPhysics2D>(entity);
             CCharacterAnimation& characterAnim = GetComponent<CCharacterAnimation>(entity);
 
-            if(characterAnim.CurrentAnimTime >= characterAnim.EndAnimTime && characterAnim.EndAnimTime > 0.f)
+            if(characterAnim.bOverrideAnim)
             {
                 DecideOverrideAnimation(deltaSeconds, characterAnim);
             }
@@ -37,7 +37,6 @@ void SCharacterAnimation::ResetAttackAnimation(CCharacterAnimation &characterAni
         case ECharacterAnimState::Attacking4:
             characterAnim.EndAnimTime = -1.f;
             characterAnim.CurrentAnimTime = 0.f;
-            characterAnim.AnimState = ECharacterAnimState::Idle;
             characterAnim.bOverrideAnim = false;
             break;
         default:
@@ -49,13 +48,15 @@ void SCharacterAnimation::DecideBaseAnimation(CCharacterAnimation& characterAnim
 {
     f32 speed = abs(glm::length(physics.Velocity));
 
-    if(speed > 0.1f)
+    if(speed > 0.1f && characterAnim.AnimState != ECharacterAnimState::Walking)
     {
         characterAnim.AnimState = ECharacterAnimState::Walking;
+        characterAnim.bNeedsNetSync = true;
     }
-    else
+    else if(speed <= 0.1f && characterAnim.AnimState != ECharacterAnimState::Idle)
     {
         characterAnim.AnimState = ECharacterAnimState::Idle;
+        characterAnim.bNeedsNetSync = true;
     }
 }
 
