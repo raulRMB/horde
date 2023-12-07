@@ -4,6 +4,9 @@
 #include "util/Util.h"
 #include "components/Attribute.h"
 #include <entt/entt.hpp>
+#include "components/Particle.h"
+#include "components/Physics.h"
+#include "components/Shapes.h"
 
 namespace tZ
 {

@@ -15,6 +15,7 @@ namespace raylib
 #include "components/Attribute.h"
 #include "networking/buffers/Events_generated.h"
 #include "components/CharacterAnimation.h"
+#include "abilities/Projectile.h"
 
 namespace tZ
 {
@@ -83,6 +84,12 @@ void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
             charAnim.EndAnimTime = 1.5f;
             charAnim.AnimState = ECharacterAnimState::Attacking1;
             charAnim.bNeedsNetSync = true;
+
+            auto c = v3{res->targetVec()->x(), res->targetVec()->y(), res->targetVec()->z()};
+            CTransform clickPoint = CTransform{c};
+            CTransform& t = Game::GetRegistry().get<CTransform>(e);
+            Projectile(e, clickPoint.Position, t.Position);
+
             break;
         }
     }

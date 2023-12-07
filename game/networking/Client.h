@@ -18,7 +18,7 @@ public:
     Client();
     void Loop();
     void SendMoveTo(v2 pos, uint32_t NetworkId);
-    void TriggerAbility(u32 netId);
+    void TriggerAbility(u32 networkId, int abilityId, v3 targeting);
     void OnInboundMessage(const Net::Header* header);
     void SendInitialConnection();
     void SendOutboundMessage(ENetPacket* packet);

@@ -904,7 +904,8 @@ struct TriggerAbility FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef TriggerAbilityBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NETID = 4,
-    VT_ABILITYID = 6
+    VT_ABILITYID = 6,
+    VT_TARGETVEC = 8
   };
   uint32_t netId() const {
     return GetField<uint32_t>(VT_NETID, 0);
@@ -912,10 +913,15 @@ struct TriggerAbility FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   uint32_t abilityId() const {
     return GetField<uint32_t>(VT_ABILITYID, 0);
   }
+  const Net::Vector3 *targetVec() const {
+    return GetPointer<const Net::Vector3 *>(VT_TARGETVEC);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
            VerifyField<uint32_t>(verifier, VT_ABILITYID, 4) &&
+           VerifyOffset(verifier, VT_TARGETVEC) &&
+           verifier.VerifyTable(targetVec()) &&
            verifier.EndTable();
   }
 };
@@ -929,6 +935,9 @@ struct TriggerAbilityBuilder {
   }
   void add_abilityId(uint32_t abilityId) {
     fbb_.AddElement<uint32_t>(TriggerAbility::VT_ABILITYID, abilityId, 0);
+  }
+  void add_targetVec(::flatbuffers::Offset<Net::Vector3> targetVec) {
+    fbb_.AddOffset(TriggerAbility::VT_TARGETVEC, targetVec);
   }
   explicit TriggerAbilityBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -944,8 +953,10 @@ struct TriggerAbilityBuilder {
 inline ::flatbuffers::Offset<TriggerAbility> CreateTriggerAbility(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t netId = 0,
-    uint32_t abilityId = 0) {
+    uint32_t abilityId = 0,
+    ::flatbuffers::Offset<Net::Vector3> targetVec = 0) {
   TriggerAbilityBuilder builder_(_fbb);
+  builder_.add_targetVec(targetVec);
   builder_.add_abilityId(abilityId);
   builder_.add_netId(netId);
   return builder_.Finish();

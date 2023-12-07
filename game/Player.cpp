@@ -2,12 +2,12 @@
 #include "components/Follow.h"
 #include "util/Util.h"
 #include "Particles.h"
-#include "abilities/Projectile.h"
 #include "systems/moba/Navigation.h"
 #include "components/Model.h"
 #include "networking/NetworkDriver.h"
 #include "components/Network.h"
 #include "components/Physics.h"
+#include "components/Attribute.h"
 #include "components/RayCollision.h"
 #include "components/Animation.h"
 #include "components/CharacterAnimation.h"
@@ -123,9 +123,12 @@ void Player::HandleInput(entt::registry* Registry)
     {
         if(!Game::IsServer()) {
             FRayCollision Collision = Util::GetMouseCollision();
-            CTransform clickPoint = CTransform{v3(Collision.point.x, 0.0f, Collision.point.z)};
-            CTransform t = GetComponent<CTransform>();
-            Projectile(GetEntity(), clickPoint.Position, t.Position);
+            auto vec = v3(Collision.point.x, 0.0f, Collision.point.z);
+            auto netId = NetworkDriver::GetNetworkedEntities().Get(GetEntity());
+            NetworkDriver::GetClient()->TriggerAbility(netId, 0, vec);
+//            CTransform clickPoint = CTransform{vec};
+//            CTransform t = GetComponent<CTransform>();
+//            Projectile(GetEntity(), clickPoint.Position, t.Position);
         }
     }
     if(raylib::IsKeyPressed(raylib::KEY_W))
@@ -168,11 +171,6 @@ void Player::HandleInput(entt::registry* Registry)
     if(raylib::IsKeyPressed(raylib::KEY_R))
     {
         GetComponent<CAnimation>().AnimsIndex++;
-    }
-
-    if(raylib::IsKeyPressed(raylib::KEY_A))
-    {
-        NetworkDriver::GetClient()->TriggerAbility(NetworkDriver::GetNetworkedEntities().Get(GetEntity()));
     }
 }
 

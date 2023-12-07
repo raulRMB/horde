@@ -73,6 +73,7 @@ table TriggerAbility
 {
     netId: uint;
     abilityId: uint;
+    targetVec: Vector3;
 }
 
 union Events {

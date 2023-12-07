@@ -50,10 +50,11 @@ void Client::SendMoveTo(v2 pos, uint32_t NetworkId) {
     Send(builder, Net::Events_OnMoveTo, moveto.Union());
 }
 
-void Client::TriggerAbility(u32 networkId)
+void Client::TriggerAbility(u32 networkId, int abilityId, v3 targeting)
 {
     flatbuffers::FlatBufferBuilder builder;
-    flatbuffers::Offset<Net::TriggerAbility> trigger = Net::CreateTriggerAbility(builder, networkId, 0);
+    auto v = FlatBufferUtil::CreateVector3(builder, targeting);
+    flatbuffers::Offset<Net::TriggerAbility> trigger = Net::CreateTriggerAbility(builder, networkId, abilityId, v);
     Send(builder, Net::Events_TriggerAbility, trigger.Union());
 }
 
