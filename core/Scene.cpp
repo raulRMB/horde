@@ -20,7 +20,6 @@ namespace tZ
 void Scene::Start()
 {
     UpdateSystems.push_back(&System::Get<SNavigation>());
-    UpdateSystems.push_back(&System::Get<SFollow>());
     UpdateSystems.push_back(&System::Get<SPhysics>());
 
     UpdateSystems.push_back(&System::Get<SSpawn>());
@@ -34,6 +33,7 @@ void Scene::Start()
         UpdateSystems.push_back(&System::Get<SAttribute>());
         UpdateSystems.push_back(&System::Get<SNetworking>());
         UpdateSystems.push_back(&System::Get<SCharacterAnimation>());
+        UpdateSystems.push_back(&System::Get<SFollow>());
     }
 
 }

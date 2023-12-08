@@ -4,8 +4,8 @@
 namespace tZ
 {
 
-CTransform::CTransform(const v3& position, const v3& scale, const v4& vRotation, const quat& rotation)
-    : Position(position), Scale(scale), VRotation(vRotation), Rotation(rotation), Matrix(m4(1.f))
+CTransform::CTransform(const v3& position, const v3& scale, const quat& rotation)
+    : Position(position), Scale(scale), Rotation(rotation), Matrix(m4(1.f))
 {
     UpdateMatrix();
 }
