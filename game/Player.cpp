@@ -26,6 +26,8 @@ Player::Player()
         animation.bPlaying = true;
         AddComponent(animation);
         AddComponent(mc);
+        CNetwork n = CNetwork{};
+        Game::GetRegistry().emplace<CNetwork>(GetEntity(), n);
     } else {
         CNetwork n = CNetwork{};
         Game::GetRegistry().emplace<CNetwork>(GetEntity(), n);

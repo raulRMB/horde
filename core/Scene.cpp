@@ -23,6 +23,8 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<SNavigation>());
     UpdateSystems.push_back(&System::Get<SPhysics>());
     UpdateSystems.push_back(&System::Get<SSpawn>());
+    UpdateSystems.push_back(&System::Get<SNetworking>());
+    UpdateSystems.push_back(&System::Get<SFollow>());
     
     if(!Game::IsServer()) {
         UpdateSystems.push_back(&System::Get<SAnimation>());
@@ -33,9 +35,7 @@ void Scene::Start()
         DrawingSystems.push_back(&System::Get<SAttributeUI>());
     } else {
         UpdateSystems.push_back(&System::Get<SAttribute>());
-        UpdateSystems.push_back(&System::Get<SNetworking>());
         UpdateSystems.push_back(&System::Get<SCharacterAnimation>());
-        UpdateSystems.push_back(&System::Get<SFollow>());
     }
 
 }

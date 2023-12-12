@@ -11,6 +11,7 @@
 #include "components/CharacterAnimation.h"
 #include "util/Util.h"
 #include "components/Transform.h"
+#include "components/Network.h"
 
 namespace raylib
 {
@@ -117,9 +118,9 @@ bool Client::ExpiredMessage(Net::Events type, long timestamp) {
 
 int gotPackets = 0;
 void Client::OnInboundMessage(const Net::Header* header) {
-    if(ExpiredMessage(header->Event_type(), header->Timestamp())) {
-        return;
-    }
+//    if(ExpiredMessage(header->Event_type(), header->Timestamp())) {
+//        return;
+//    }
     gotPackets++;
     switch (header->Event_type()) {
         case Net::Events_OnConnectionResponse: {
@@ -135,8 +136,8 @@ void Client::OnInboundMessage(const Net::Header* header) {
         }
         case Net::Events_SyncTransform: {
             auto res = header->Event_as_SyncTransform();
-            CTransform& t = Game::GetRegistry().get<CTransform>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-            t = FlatBufferUtil::NetTransformToTransform(res->transform());
+            CNetwork& t = Game::GetRegistry().get<CNetwork>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+            t.TargetTransform = FlatBufferUtil::NetTransformToTransform(res->transform());
             break;
         }
         case Net::Events_SyncAttributeComponent: {

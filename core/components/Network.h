@@ -11,6 +11,7 @@ namespace tZ
 struct CNetwork {
     std::set<std::string> Tags;
     CTransform PrevTransform = CTransform{};
+    CTransform TargetTransform = CTransform{};
 };
 
 }
