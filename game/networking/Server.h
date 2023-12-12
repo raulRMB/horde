@@ -32,7 +32,8 @@ public:
     void Sync(entt::entity e, struct CAttributes& ac, std::vector<ENetPeer*> c);
     void Sync(entt::entity e, struct CCharacterAnimation& ca, std::vector<ENetPeer*> c);
 private:
-    void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c);
+    void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c,
+              ENetPacketFlag flag);
 };
 
 }

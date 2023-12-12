@@ -105,14 +105,14 @@ void Server::SendPlayerJoined(uint32_t netId) {
     Net::OnPlayerJoinedBuilder pjb(builder);
     pjb.add_netId(netId);
     auto pj = pjb.Finish();
-    Send(builder, Net::Events::Events_OnPlayerJoined, pj.Union(), NetworkDriver::GetConnections());
+    Send(builder, Net::Events::Events_OnPlayerJoined, pj.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
 }
 
 void Server::SendSpawnProjectile(u32 netId, v2 pos, v2 dir)
 {
     flatbuffers::FlatBufferBuilder builder;
     flatbuffers::Offset<Net::SpawnProjectile> msg = FlatBufferUtil::CreateSpawnProjectile(builder, netId, pos, dir);
-    Send(builder, Net::Events::Events_SpawnProjectile, msg.Union(), NetworkDriver::GetConnections());
+    Send(builder, Net::Events::Events_SpawnProjectile, msg.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
 }
 
 void Server::OnConnect(ENetPeer* peer) {
@@ -144,13 +144,14 @@ void Server::SendConnectResponse(ENetPeer* peer, uint32_t netId) {
     crbuilder.add_self(ps);
     crbuilder.add_others(vec);
     auto connectionResponse = crbuilder.Finish();
-    Send(builder, Net::Events::Events_OnConnectionResponse, connectionResponse.Union(), FlatBufferUtil::CreatePeerVector(peer));
+    Send(builder, Net::Events::Events_OnConnectionResponse, connectionResponse.Union(), FlatBufferUtil::CreatePeerVector(peer), ENET_PACKET_FLAG_RELIABLE);
 }
 
-void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c) {
+void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c,
+                  ENetPacketFlag flag) {
     auto header = CreateHeader(builder, type, data);
     builder.Finish(header);
-    ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), ENET_PACKET_FLAG_RELIABLE);
+    ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), flag);
     OutboundMessage msg = OutboundMessage{};
     msg.Packet = packet;
     msg.Connections = c;
@@ -164,20 +165,20 @@ void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
     stb.add_netId(NetworkDriver::GetNetworkedEntities().Get(e));
     stb.add_transform(x);
     auto payload = stb.Finish();
-    Send(builder, Net::Events::Events_SyncTransform, payload.Union(), c);
+    Send(builder, Net::Events::Events_SyncTransform, payload.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
 }
 
 void Server::Sync(entt::entity e, CAttributes& ac, std::vector<ENetPeer*> c) {
     flatbuffers::FlatBufferBuilder builder;
     auto x = FlatBufferUtil::CreateSyncAttributes(builder, ac, NetworkDriver::GetNetworkedEntities().Get(e));
-    Send(builder, Net::Events::Events_SyncAttributeComponent, x.Union(), c);
+    Send(builder, Net::Events::Events_SyncAttributeComponent, x.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
 }
 
 void Server::Sync(entt::entity e, CCharacterAnimation& ca, std::vector<ENetPeer*> c)
 {
     flatbuffers::FlatBufferBuilder builder;
     auto msg = Net::CreateSyncCharacterAnimState(builder, NetworkDriver::GetNetworkedEntities().Get(e), (int)ca.AnimState);
-    Send(builder, Net::Events::Events_SyncCharacterAnimState, msg.Union(), c);
+    Send(builder, Net::Events::Events_SyncCharacterAnimState, msg.Union(), c, ENET_PACKET_FLAG_RELIABLE);
 
 }
 
