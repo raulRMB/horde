@@ -40,6 +40,8 @@ void SParticleDrawing::Draw()
         ParticleMesh = raylib::GenMeshPlane(1.f, 1.f, 1.f, 1.f);
 
         ParticleShader = raylib::LoadShader("../assets/shaders/instanced_test.vs", "../assets/shaders/base.fs");
+
+        ParticleShader.locs[raylib::SHADER_LOC_MATRIX_MVP] = GetShaderLocation(ParticleShader, "mvp");
         ParticleShader.locs[raylib::SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(ParticleShader, "viewPos");
         ParticleShader.locs[raylib::SHADER_LOC_MATRIX_MODEL] = GetShaderLocationAttrib(ParticleShader, "instanceTransform");
 
