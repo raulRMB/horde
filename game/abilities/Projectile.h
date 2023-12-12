@@ -15,13 +15,6 @@ inline Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::r
 
     pc.MaxLife = 0.2;
 
-    CCapsule cc = {};
-    cc.Color = Util::RandColor();
-    cc.Height = 0.5;
-    cc.Position = v3{0,0,0};
-    cc.Radius = 0.5;
-    cc.Slices = 1;
-
     CPhysics3D phc = {};
     phc.Velocity = Util::RandVec3(-2, 2);
     phc.MaxSpeed = 100;
@@ -32,7 +25,6 @@ inline Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::r
     t.Position += transform.Position;
 
     registry.emplace<CParticle>(e, pc);
-    registry.emplace<CCapsule>(e, cc);
     registry.emplace<CPhysics3D>(e, phc);
     registry.emplace<CTransform>(e, t);
 };
@@ -51,8 +43,8 @@ inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation
     effect.source = source;
     effect.callback = effectCallback;
 
-    auto e = registry.create();
-    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
+    entt::entity e = registry.create();
+    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.00001, .MaxParticles=100000, .spawner=spawnParticle});
     CPhysics3D phc = {};
     phc.Velocity = glm::normalize(cursorLocation - playerLocation) * 50.f;
     phc.MaxSpeed = 100;

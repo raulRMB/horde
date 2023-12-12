@@ -11,8 +11,8 @@
 namespace tZ
 {
 
-double tickRate = 60.0;
-long long periodMicroseconds = static_cast<long long>(1e6 / tickRate);
+constexpr double tickRate = 60.0;
+constexpr long long periodMicroseconds = static_cast<long long>(1e6 / tickRate);
 
 Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(0x000000FF), fpsString(std::string("FPS: 0"))
 {
@@ -152,8 +152,20 @@ bool Game::IsServer() {
     return NetworkDriver::IsServer();
 }
 
+//raylib::Mesh m;
+//raylib::Material material;
+//raylib::Matrix mat = { 1.0f, 0.0f, 0.0f, 0.0f,
+//                       0.0f, 1.0f, 0.0f, 0.0f,
+//                       0.0f, 0.0f, 1.0f, 0.0f,
+//                       0.0f, 0.0f, 0.0f, 1.0f };
 void Game::Start() const
 {
+//    if(!Game::IsServer())
+//    {
+//        m = raylib::GenMeshPlane(250.f, 250.f, 1.f, 1.f);
+//        material = raylib::LoadMaterialDefault();
+//        material.maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
+//    }
     if(NetworkDriver::IsOfflineMode()) {
         CTransform t = CTransform{};
         SpawnPlayer(1, t, true);
@@ -179,6 +191,8 @@ void Game::Update(float deltaTime) const
 void Game::Draw() const
 {
     BeginMode3D(ToRaylibCamera(Camera));
+//    if(!Game::IsServer())
+//        raylib::DrawMesh(m, material, mat);
     ActiveScene->Draw();
     raylib::EndMode3D();
 }

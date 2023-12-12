@@ -68,7 +68,6 @@ void MainScene::Update(float deltaSeconds)
 void MainScene::Draw()
 {
     Scene::Draw();
-    raylib::DrawGrid(30, 1.0f);
     for(const entt::entity& entity : Registry.view<raylib::Model, CTransform>())
     {
         const raylib::Model& model = Registry.get<raylib::Model>(entity);

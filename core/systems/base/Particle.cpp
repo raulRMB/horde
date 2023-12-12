@@ -12,13 +12,18 @@ void SParticle::Update(float deltaSeconds) {
         CEmitter& emitter = registry.get<CEmitter>(entity);
         CTransform& transform = registry.get<CTransform>(entity);
         emitter.Time += deltaSeconds;
-        if(emitter.Time > emitter.Frequency && emitter.ParticleCount < emitter.MaxParticles) {
-            emitter.ParticleCount++;
+        if(emitter.Time > emitter.Frequency && emitter.ParticleCount < emitter.MaxParticles)
+        {
+            u32 particlesToSpawn = (u32)(emitter.Time / emitter.Frequency);
+            for(u32 i = 0; i < particlesToSpawn; i++)
+            {
+                emitter.ParticleCount++;
+                entt::entity e = registry.create();
+                CParticle pc = {};
+                pc.emitterId = entity;
+                emitter.spawner(e, transform, registry, pc);
+            }
             emitter.Time = 0;
-            entt::entity e = registry.create();
-            CParticle pc = {};
-            pc.emitterId = entity;
-            emitter.spawner(e, transform, registry, pc);
         }
     }
 
@@ -27,7 +32,7 @@ void SParticle::Update(float deltaSeconds) {
         CParticle& pc = registry.get<CParticle>(entity);
         pc.Lifetime += deltaSeconds;
         if(pc.Lifetime > pc.MaxLife) {
-            auto ec = registry.try_get<CEmitter>(pc.emitterId);
+            CEmitter* ec = registry.try_get<CEmitter>(pc.emitterId);
             if(ec != nullptr) {
                 ec->ParticleCount--;
             }

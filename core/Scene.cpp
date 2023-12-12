@@ -13,6 +13,7 @@
 #include "systems/moba/Attribute.h"
 #include "systems/moba/Spawn.h"
 #include "systems/moba/AttributeUI.h"
+#include "systems/base/ParticleDrawing.h"
 
 namespace tZ
 {
@@ -22,11 +23,12 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<SNavigation>());
     UpdateSystems.push_back(&System::Get<SFollow>());
     UpdateSystems.push_back(&System::Get<SPhysics>());
-
     UpdateSystems.push_back(&System::Get<SSpawn>());
+    
     if(!Game::IsServer()) {
         UpdateSystems.push_back(&System::Get<SAnimation>());
         UpdateSystems.push_back(&System::Get<SParticle>());
+        DrawingSystems.push_back(&System::Get<SParticleDrawing>());
         DrawingSystems.push_back(&System::Get<SShapeDrawing>());
         DrawingSystems.push_back(&System::Get<SModelDrawing>());
         DrawingSystems.push_back(&System::Get<SAttributeUI>());
