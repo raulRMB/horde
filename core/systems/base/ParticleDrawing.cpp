@@ -1,9 +1,10 @@
 #include "ParticleDrawing.h"
 #include "components/Particle.h"
 #include "raylibEx.h"
+#include "glm/gtc/quaternion.hpp"
+
 namespace raylib
 {
-
 #include "raymath.h"
 }
 namespace tZ
@@ -23,9 +24,8 @@ void SParticleDrawing::Draw()
 
         CTransform& transform = registry.get<CTransform>(entity);
         m4 mat = glm::translate(glm::mat4(1.0f), transform.Position);
-        mat = glm::rotate(mat, glm::radians(transform.VRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        mat = glm::rotate(mat, glm::radians(transform.VRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        mat = glm::rotate(mat, glm::radians(transform.VRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        mat = glm::mat4_cast(transform.Rotation) * mat;
         mat = glm::scale(mat, transform.Scale);
         InstanceTransforms[idx] = ToRaylibMatrix(mat);
         idx++;
