@@ -68,7 +68,8 @@ void Game::Loop() {
         ClearBackground(ToRaylibColor(BackgroundColor));
         Draw();
         DrawUI();
-        CalculateFPS();
+        //CalculateFPS();
+        raylib::DrawFPS(5, 5);
         raylib::EndDrawing();
         bRunning = bRunning && !raylib::WindowShouldClose();
     }
