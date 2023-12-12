@@ -5,10 +5,12 @@ in vec2 fragTexCoord;
 //in vec4 fragColor;
 in vec3 fragNormal;
 
+out vec4 finalColor;
+
 uniform sampler2D texture0;
 
 void main()
 {
     vec4 texelColor = texture(texture0, fragTexCoord);
-    gl_FragColor = texelColor;
+    finalColor = texelColor;
 }
