@@ -149,7 +149,7 @@ void Server::SendConnectResponse(ENetPeer* peer, uint32_t netId) {
 
 void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c,
                   ENetPacketFlag flag) {
-    auto header = CreateHeader(builder, type, data);
+    auto header = CreateHeader(builder, Util::GenerateTimestamp(), type, data);
     builder.Finish(header);
     ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), flag);
     OutboundMessage msg = OutboundMessage{};

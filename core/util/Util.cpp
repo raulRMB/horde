@@ -12,6 +12,7 @@ namespace raylib
 #include "components/Transform.h"
 #include "primitives/Polygon.h"
 #include "primitives/Triangles.h"
+#include <chrono>
 
 namespace tZ
 {
@@ -22,6 +23,14 @@ v3 Util::RandVec3(int min, int max) {
             static_cast<float>(raylib::GetRandomValue(min, max)),
             static_cast<float>(raylib::GetRandomValue(min, max))
     };
+}
+
+long Util::GenerateTimestamp() {
+    auto currentTime = std::chrono::system_clock::now();
+    long timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+            currentTime.time_since_epoch()
+    ).count();
+    return timestamp;
 }
 
 tZ::FAttribute* Util::GetAttribute(tZ::CAttributes& ac, const std::string& attr)

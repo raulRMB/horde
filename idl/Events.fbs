@@ -97,6 +97,7 @@ union Events {
 }
 
 table Header {
+    Timestamp: long;
     Event: Events;
 }
 

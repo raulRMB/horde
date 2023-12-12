@@ -25,6 +25,8 @@ public:
     void flush() { enet_host_flush(client); }
     void Close();
 private:
+    std::map<Net::Events, long> lastMessageTimestamp;
+    bool ExpiredMessage(Net::Events type, long timestamp);
     void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data);
 };
 

@@ -134,44 +134,12 @@ void Player::HandleInput(entt::registry* Registry)
     }
     if(raylib::IsKeyPressed(raylib::KEY_W))
     {
-        OnApply effectCallback = [](CAttributes& target, CAttributes& source) {
-            FAttribute& health = *Util::GetAttribute(target, "health");
-            float newHealth = health.base - (0.2f * health.max);
-            health.base = std::clamp(newHealth, health.min, health.max);
-        };
-        FEffect effect = FEffect{};
-        effect.type = EEffectType::Instant;
-        effect.target = GetEntity();
-        effect.source = GetEntity();
-        effect.callback = effectCallback;
-        Game::GetDispatcher().trigger(effect);
     }
     if(raylib::IsKeyPressed(raylib::KEY_E))
     {
-        FEffect effect = FEffect{};
-        OnApply effectCallback = [&effect](CAttributes& target, CAttributes& source) {
-            FAttribute& moveSpeed = *Util::GetAttribute(target, "moveSpeed");
-            AttrMod moveSpeedMod = AttrMod{
-                    effect.id,
-                    [&moveSpeed](float x) -> float {
-                        float newVal = std::clamp(x * 3.50f, moveSpeed.min, moveSpeed.max);
-                        return newVal;
-                    }
-            };
-            moveSpeed.mods.push_back(moveSpeedMod);
-        };
-        effect.type = EEffectType::Duration;
-        effect.duration = 4;
-        effect.rate = -1;
-        effect.callOnInit = true;
-        effect.target = GetEntity();
-        effect.source = GetEntity();
-        effect.callback = effectCallback;
-        Game::GetDispatcher().trigger(effect);
     }
     if(raylib::IsKeyPressed(raylib::KEY_R))
     {
-        GetComponent<CAnimation>().AnimsIndex++;
     }
 }
 

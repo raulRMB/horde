@@ -60,7 +60,7 @@ void Client::TriggerAbility(u32 networkId, int abilityId, v3 targeting)
 }
 
 void Client::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data) {
-    auto header = CreateHeader(builder, type, data);
+    auto header = CreateHeader(builder, Util::GenerateTimestamp(), type, data);
     builder.Finish(header);
     ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), ENET_PACKET_FLAG_RELIABLE);
     OutboundMessage msg = OutboundMessage{};
@@ -102,8 +102,24 @@ void Client::Loop() {
     }
 }
 
+bool Client::ExpiredMessage(Net::Events type, long timestamp) {
+    if (lastMessageTimestamp.find(type) != lastMessageTimestamp.end()) {
+        if(lastMessageTimestamp[type] < timestamp) {
+            lastMessageTimestamp[type] = timestamp;
+            return false;
+        }
+    } else {
+        lastMessageTimestamp[type] = timestamp;
+        return false;
+    }
+    return true;
+}
+
 int gotPackets = 0;
 void Client::OnInboundMessage(const Net::Header* header) {
+    if(ExpiredMessage(header->Event_type(), header->Timestamp())) {
+        return;
+    }
     gotPackets++;
     switch (header->Event_type()) {
         case Net::Events_OnConnectionResponse: {

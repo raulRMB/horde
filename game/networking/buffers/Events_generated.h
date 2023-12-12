@@ -1048,9 +1048,13 @@ inline ::flatbuffers::Offset<SpawnProjectile> CreateSpawnProjectile(
 struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef HeaderBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_EVENT_TYPE = 4,
-    VT_EVENT = 6
+    VT_TIMESTAMP = 4,
+    VT_EVENT_TYPE = 6,
+    VT_EVENT = 8
   };
+  int64_t Timestamp() const {
+    return GetField<int64_t>(VT_TIMESTAMP, 0);
+  }
   Net::Events Event_type() const {
     return static_cast<Net::Events>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
   }
@@ -1087,6 +1091,7 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<int64_t>(verifier, VT_TIMESTAMP, 8) &&
            VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
            VerifyOffset(verifier, VT_EVENT) &&
            VerifyEvents(verifier, Event(), Event_type()) &&
@@ -1134,6 +1139,9 @@ struct HeaderBuilder {
   typedef Header Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_Timestamp(int64_t Timestamp) {
+    fbb_.AddElement<int64_t>(Header::VT_TIMESTAMP, Timestamp, 0);
+  }
   void add_Event_type(Net::Events Event_type) {
     fbb_.AddElement<uint8_t>(Header::VT_EVENT_TYPE, static_cast<uint8_t>(Event_type), 0);
   }
@@ -1153,9 +1161,11 @@ struct HeaderBuilder {
 
 inline ::flatbuffers::Offset<Header> CreateHeader(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    int64_t Timestamp = 0,
     Net::Events Event_type = Net::Events_NONE,
     ::flatbuffers::Offset<void> Event = 0) {
   HeaderBuilder builder_(_fbb);
+  builder_.add_Timestamp(Timestamp);
   builder_.add_Event(Event);
   builder_.add_Event_type(Event_type);
   return builder_.Finish();
