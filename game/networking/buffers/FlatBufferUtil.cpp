@@ -26,6 +26,13 @@ CTransform FlatBufferUtil::NetTransformToTransform(const Net::Transform* t) {
     x.Position.x = t->translation()->x();
     x.Position.y = t->translation()->y();
     x.Position.z = t->translation()->z();
+    x.Scale.x = t->scale()->x();
+    x.Scale.y = t->scale()->y();
+    x.Scale.z = t->scale()->z();
+    x.Rotation.x = t->quaternion()->x();
+    x.Rotation.y = t->quaternion()->y();
+    x.Rotation.z = t->quaternion()->z();
+    x.Rotation.w = t->quaternion()->w();
     return x;
 }
 
@@ -37,7 +44,7 @@ flatbuffers::Offset<Net::Vector3> FlatBufferUtil::CreateVector3(flatbuffers::Fla
     return Net::CreateVector3(builder, v.x, v.y, v.z);
 }
 
-flatbuffers::Offset<Net::Vector4> FlatBufferUtil::CreateVector4(flatbuffers::FlatBufferBuilder &builder, v4 v) {
+flatbuffers::Offset<Net::Vector4> FlatBufferUtil::CreateVector4(flatbuffers::FlatBufferBuilder &builder, quat v) {
     return Net::CreateVector4(builder, v.x, v.y, v.z, v.w);
 }
 
@@ -59,7 +66,7 @@ flatbuffers::Offset<Net::Transform> FlatBufferUtil::CreateTransform(flatbuffers:
 {
     auto positiom = CreateVector3(builder, t.Position);
     auto scale = CreateVector3(builder, t.Scale);
-    auto rotation = CreateVector4(builder, t.VRotation);
+    auto rotation = CreateVector4(builder, t.Rotation);
     return Net::CreateTransform(builder, positiom, scale, rotation);
 }
 

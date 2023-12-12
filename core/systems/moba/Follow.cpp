@@ -8,7 +8,7 @@ namespace raylib
 
 #include "components/Follow.h"
 
-#include <glm/gtx/norm.inl>
+#include <glm/gtx/quaternion.hpp>
 
 #include "util/raymathEx.h"
 #include "components/Model.h"
@@ -21,24 +21,22 @@ namespace tZ
 void SFollow::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity : registry.view<CFollow, CTransform, CPhysics2D, CModel>())
-    {
-        CModel& modelComponent = GetComponent<CModel>(entity);
-        CPhysics2D& pc = GetComponent<CPhysics2D>(entity);
-        CTransform& t = GetComponent<CTransform>(entity);
-
-        raylib::Vector3 dir = {pc.Velocity.x, 0, pc.Velocity.y};
-        dir = Vector3Normalize(dir);
-        t.Rotation.z = atan2(dir.x, -dir.z) + PI;
-        modelComponent.model.transform = MatrixRotateXYZ(raylib::Vector3{PI/2, 0, t.Rotation.z});
-    }
     for(const entt::entity& entity : registry.view<CFollow, CTransform, CPhysics2D>())
     {
         CFollow& followComponent = registry.get<CFollow>(entity);
         EFollowState& followState = followComponent.FollowState;
+        CPhysics2D& pc = GetComponent<CPhysics2D>(entity);
+        CTransform& t = GetComponent<CTransform>(entity);
 
         if(followState != EFollowState::Following)
             continue;
+
+        if(pc.Velocity.x != 0 || pc.Velocity.y != 0) {
+            v3 dir = v3{pc.Velocity.x, 0, pc.Velocity.y};
+            dir = glm::normalize(dir);
+            glm::quat rotation = glm::rotation(v3{0.0f, 0.0f, 1.0f}, dir);
+            t.Rotation = rotation;
+        }
 
         std::vector<v2>& stringPath = followComponent.StringPath;
         v2& targetPos = followComponent.TargetPos;
@@ -72,6 +70,15 @@ void SFollow::Update(float deltaSeconds)
             }
         }
     }
+
+//    for(const entt::entity& entity : registry.view<CFollow, CTransform, CPhysics2D, CModel>())
+//    {
+//        CModel& modelComponent = GetComponent<CModel>(entity);
+//        CTransform& t = GetComponent<CTransform>(entity);
+//
+//
+//        modelComponent.model.transform = MatrixRotateXYZ(raylib::Vector3{0, 0, t.Rotation.z});
+//    }
 }
 
 }

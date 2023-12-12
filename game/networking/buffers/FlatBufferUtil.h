@@ -17,7 +17,7 @@ struct CAttributes;
 class FlatBufferUtil {
 public:
     static flatbuffers::Offset<Net::Vector3> CreateVector3(flatbuffers::FlatBufferBuilder &builder, v3 v);
-    static flatbuffers::Offset<Net::Vector4> CreateVector4(flatbuffers::FlatBufferBuilder &builder, v4 v);
+    static flatbuffers::Offset<Net::Vector4> CreateVector4(flatbuffers::FlatBufferBuilder &builder, quat v);
     static flatbuffers::Offset<Net::Transform> CreateTransform(flatbuffers::FlatBufferBuilder &builder, CTransform& t);
     static std::vector<ENetPeer*>& CreatePeerVector(ENetPeer* peer);
     static flatbuffers::Offset<Net::PlayerSpawn> CreatePlayerSpawn(flatbuffers::FlatBufferBuilder &builder, CTransform& t, uint32_t netId);

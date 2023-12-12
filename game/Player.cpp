@@ -33,6 +33,7 @@ Player::Player()
     }
 
     CTransform transform{};
+    transform.Scale = v3{0.055, 0.055, 0.055};
 
     std::list<FAttribute> attributes;
     FAttribute Health = {
