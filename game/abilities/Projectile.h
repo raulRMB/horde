@@ -79,7 +79,7 @@ inline void SpawnProjectile(entt::entity source, const v2 pos, const v2 dir)
     effect.callback = effectCallback;
 
     auto e = registry.create();
-    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
+    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.001, .MaxParticles=10000, .spawner=spawnParticle});
     CPhysics3D phc = {};
     phc.Velocity = glm::normalize(v3{dir.x, 0, dir.y}) * 50.0f;
     phc.MaxSpeed = 100;
