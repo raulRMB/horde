@@ -5,9 +5,15 @@
 #include "ui/elements/hotbar/Hotbar.h"
 #include "systems/moba/Navigation.h"
 #include "raylibEx.h"
+#include "abilities/Projectile.h"
+#include "components/Attribute.h"
+#include "components/Model.h"
+#include "components/Physics.h"
+#include "util/Util.h"
 
 namespace tZ
 {
+    struct CEmitter;
 
 MainScene::MainScene()
 {
@@ -19,10 +25,20 @@ MainScene::~MainScene() = default;
 void MainScene::Start()
 {
     Load();
-    Scene::Start();
-    if(!Game::IsServer()) {
+    if(!Game::IsServer())
+    {
         InitUI();
+
+        entt::entity e = CreateEntity();
+        CTransform t = {};
+        t.Rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0));
+        t.Scale = v3(250.f);
+        AddComponent(e, t);
+        raylib::Model m = raylib::LoadModelFromMesh(raylib::GenMeshPlane(1, 1, 1, 1));
+        m.materials[0].maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
+        AddComponent(e, CModel{m, 1.f, false});
     }
+    Scene::Start();
 }
 
 void MainScene::InitUI()

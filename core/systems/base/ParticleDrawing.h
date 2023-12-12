@@ -11,16 +11,23 @@ namespace raylib
 
 namespace tZ
 {
+
+struct ParticleInstanceData;
+
 class SParticleDrawing : public DrawingSystem
 {
-    raylib::Matrix* InstanceTransforms = (raylib::Matrix*)RL_CALLOC(MAX_INSTANCES, sizeof(raylib::Matrix));
+    ParticleInstanceData* InstanceData{};
+    i32 InstanceLocation{};
     raylib::Mesh ParticleMesh{};
     raylib::Material ParticleMaterial{};
     raylib::Shader ParticleShader{};
 
+
 public:
     void Init() override;
     void Draw() override;
+
+    SParticleDrawing();
 
     ~SParticleDrawing() override;
 };

@@ -27,11 +27,11 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<SFollow>());
     
     if(!Game::IsServer()) {
+        DrawingSystems.push_back(&System::Get<SModelDrawing>());
+        // DrawingSystems.push_back(&System::Get<SShapeDrawing>());
         UpdateSystems.push_back(&System::Get<SAnimation>());
         UpdateSystems.push_back(&System::Get<SParticle>());
         DrawingSystems.push_back(&System::Get<SParticleDrawing>());
-        DrawingSystems.push_back(&System::Get<SShapeDrawing>());
-        DrawingSystems.push_back(&System::Get<SModelDrawing>());
         DrawingSystems.push_back(&System::Get<SAttributeUI>());
     } else {
         UpdateSystems.push_back(&System::Get<SAttribute>());

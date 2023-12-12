@@ -20,7 +20,7 @@ void SParticle::Update(float deltaSeconds) {
                 emitter.ParticleCount++;
                 entt::entity e = registry.create();
                 CParticle pc = {};
-                pc.emitterId = entity;
+                pc.EmitterId = entity;
                 emitter.spawner(e, transform, registry, pc);
             }
             emitter.Time = 0;
@@ -31,12 +31,30 @@ void SParticle::Update(float deltaSeconds) {
     {
         CParticle& pc = registry.get<CParticle>(entity);
         pc.Lifetime += deltaSeconds;
+
         if(pc.Lifetime > pc.MaxLife) {
-            CEmitter* ec = registry.try_get<CEmitter>(pc.emitterId);
+            CEmitter* ec = registry.try_get<CEmitter>(pc.EmitterId);
             if(ec != nullptr) {
                 ec->ParticleCount--;
             }
             registry.destroy(entity);
+        }
+        else
+        {
+            if(pc.GradientColorIndex < pc.ColorsOverLife.size() - 1)
+            {
+                const f32 startTime = pc.ColorsOverLife[pc.GradientColorIndex].Time;
+                const f32 endTime = pc.ColorsOverLife[pc.GradientColorIndex + 1].Time;
+                const f32 time = (pc.Lifetime - startTime) / (endTime - startTime);
+
+                const FColor color = pc.ColorsOverLife[pc.GradientColorIndex].Color;
+                const FColor nextColor = pc.ColorsOverLife[pc.GradientColorIndex + 1].Color;
+                pc.Color = FColor::LerpRGBA(color, nextColor, time);
+                if(time >= 1.0f)
+                {
+                    pc.GradientColorIndex++;
+                }
+            }
         }
     }
 

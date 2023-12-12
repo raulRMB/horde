@@ -13,16 +13,21 @@ namespace tZ
 
 inline Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {
 
-    pc.MaxLife = 0.2;
+    pc.MaxLife = 1.0f;
 
     CPhysics3D phc = {};
-    phc.Velocity = Util::RandVec3(-2, 2);
+    phc.Velocity = Util::RandVec3(-5, 5);
     phc.MaxSpeed = 100;
-    phc.Acceleration = Util::RandVec3(-1, 1);
 
     CTransform t = {};
-    t.Position = Util::RandVec3(-1, 1);
+    t.Position = Util::RandVec3(-1, 1) * v3(1., 0., 1.) * 0.6f;
     t.Position += transform.Position;
+
+    pc.ColorsOverLife = {
+        {0.0f, FColor{0xFF0000FF}},
+        {0.2f, FColor{0xFFFF00C0}},
+        {1.0f, FColor{0x00FF0000}},
+    };
 
     registry.emplace<CParticle>(e, pc);
     registry.emplace<CPhysics3D>(e, phc);
@@ -44,7 +49,7 @@ inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation
     effect.callback = effectCallback;
 
     entt::entity e = registry.create();
-    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
+    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.001, .MaxParticles=1000, .spawner=spawnParticle});
     CPhysics3D phc = {};
     phc.Velocity = glm::normalize(cursorLocation - playerLocation) * 50.f;
     phc.MaxSpeed = 100;
@@ -74,7 +79,7 @@ inline void SpawnProjectile(entt::entity source, const v2 pos, const v2 dir)
     effect.callback = effectCallback;
 
     auto e = registry.create();
-    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.001, .MaxParticles=10000, .spawner=spawnParticle});
+    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.01, .MaxParticles=100, .spawner=spawnParticle});
     CPhysics3D phc = {};
     phc.Velocity = glm::normalize(v3{dir.x, 0, dir.y}) * 50.0f;
     phc.MaxSpeed = 100;
