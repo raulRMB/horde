@@ -101,6 +101,16 @@ void Player::Start()
 
 void Player::HandleInput(entt::registry* Registry)
 {
+    if(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_RIGHT)) {
+        v2 mousePos = Util::GetMouseWorldPosition2D();
+        if(System::Get<SNavigation>().IsValidPoint(mousePos))
+        {
+            if(!NetworkDriver::IsOfflineMode()) {
+                auto NetId = NetworkDriver::GetNetworkedEntities().Get(GetEntity());
+                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
+            }
+        }
+    }
     if(raylib::IsMouseButtonPressed(raylib::MOUSE_BUTTON_RIGHT))
     {
         auto e = Registry->create();
@@ -112,10 +122,6 @@ void Player::HandleInput(entt::registry* Registry)
         v2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {
-//             CFollow& followComponent = GetComponent<CFollow>();
-//             followComponent.FollowState = EFollowState::Dirty;
-//             followComponent.Index = 1;
-//             followComponent.Goal = mousePos;
             if(!NetworkDriver::IsOfflineMode()) {
                 auto NetId = NetworkDriver::GetNetworkedEntities().Get(GetEntity());
                 NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
