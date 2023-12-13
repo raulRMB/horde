@@ -37,6 +37,10 @@ void MainScene::Start()
         raylib::Model m = raylib::LoadModelFromMesh(raylib::GenMeshPlane(1, 1, 1, 1));
         m.materials[0].maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
         AddComponent(e, CModel{m, 1.f, false});
+        CCamera3D& cam = Game::Instance().GetActiveCamera();
+        const v3& pos = v3{0,0,0};
+        cam.Position = v3{pos.x - 40, cam.Position.y, pos.z - 40};
+        cam.Target = pos;
     }
     Scene::Start();
 }
@@ -56,6 +60,30 @@ void MainScene::InitUI()
 void MainScene::HandleInput()
 {
     Player* player = GetActivePlayer();
+    if(raylib::IsKeyPressed(raylib::KEY_Y)) {
+        cameraLock = !cameraLock;
+    }
+    if(!cameraLock) {
+        CCamera3D& cam = Game::Instance().GetActiveCamera();
+        v3 upDown = v3{0.1, 0, 0.1};
+        v3 leftRight = v3{0.1, 0, -0.1};
+        if (raylib::IsKeyDown(raylib::KEY_UP)) {
+            cam.Position += upDown;
+            cam.Target += upDown;
+        }
+        if (raylib::IsKeyDown(raylib::KEY_DOWN)) {
+            cam.Position -= upDown;
+            cam.Target -= upDown;
+        }
+        if (raylib::IsKeyDown(raylib::KEY_LEFT)) {
+            cam.Position += leftRight;
+            cam.Target += leftRight;
+        }
+        if (raylib::IsKeyDown(raylib::KEY_RIGHT)) {
+            cam.Position -= leftRight;
+            cam.Target -= leftRight;
+        }
+    }
     if(player != nullptr) {
         player->HandleInput(&Registry);
     }
@@ -73,7 +101,7 @@ void MainScene::Update(float deltaSeconds)
         mainCanvas->Update();
         CCamera3D& cam = Game::Instance().GetActiveCamera();
         Player* player = GetActivePlayer();
-        if(player != nullptr) {
+        if(player != nullptr && cameraLock) {
             const v3& playerPos = player->GetComponent<CTransform>().Position;
             cam.Position = glm::mix(cam.Position, v3{playerPos.x - 40, cam.Position.y, playerPos.z - 40}, 0.05);
             cam.Target = glm::mix(cam.Target, playerPos, 0.05);

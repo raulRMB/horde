@@ -12,6 +12,7 @@ class MainScene final : public Scene
 {
     std::vector<v2> Points;
     std::vector<Edge2D> Portals = {};
+    bool cameraLock = true;
 
     class Player* GetActivePlayer();
 
