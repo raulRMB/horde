@@ -3,9 +3,9 @@
 
 #include <enet/enet.h>
 #include "entt/entt.hpp"
-#include "NetMessage.h"
+#include "networking/base/NetMessage.h"
 #include "buffers/Events_generated.h"
-#include "defines.h"
+#include "util/defines.h"
 
 namespace tZ
 {

@@ -4,7 +4,7 @@
 #include <enet/enet.h>
 #include <entt/entt.hpp>
 #include <vector>
-#include "Player.h"
+#include "smartentity/Player.h"
 #include "Events_generated.h"
 
 namespace tZ

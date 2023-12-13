@@ -5,8 +5,8 @@ namespace raylib
 }
 #include "Server.h"
 #include "Game.h"
-#include "NetworkDriver.h"
-#include "NetMessage.h"
+#include "networking/base/NetworkDriver.h"
+#include "networking/base/NetMessage.h"
 #include "systems/System.h"
 #include "systems/moba/Navigation.h"
 #include "components/Follow.h"

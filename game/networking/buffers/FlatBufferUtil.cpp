@@ -9,7 +9,7 @@ namespace raylib
 #include "flatbuffers/flatbuffers.h"
 #include "networking/buffers/Events_generated.h"
 #include "components/Attribute.h"
-#include "networking/NetworkDriver.h"
+#include "networking/base/NetworkDriver.h"
 #include "components/Transform.h"
 
 namespace tZ

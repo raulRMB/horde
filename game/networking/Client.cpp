@@ -2,8 +2,8 @@
 #include <enet/enet.h>
 #include "Client.h"
 #include "Game.h"
-#include "NetworkDriver.h"
-#include "NetMessage.h"
+#include "networking/base/NetworkDriver.h"
+#include "networking/base/NetMessage.h"
 #include "abilities/Projectile.h"
 #include "networking/buffers/Events_generated.h"
 #include "networking/buffers/FlatBufferUtil.h"

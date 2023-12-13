@@ -4,7 +4,7 @@
 #include <chrono>
 #include <entt/entt.hpp>
 #include "components/Camera.h"
-#include "../core/primitives/Color.h"
+#include "primitives/Color.h"
 #include "components/Transform.h"
 
 namespace tZ

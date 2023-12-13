@@ -8,14 +8,12 @@ add_subdirectory(libs/entt)
 add_subdirectory(libs/glm)
 add_subdirectory(libs/raylib)
 
-file(GLOB_RECURSE CORE_SOURCES core/*.cpp)
-file(GLOB_RECURSE CORE_HEADERS core/*.h)
-
 file(GLOB_RECURSE GAME_SOURCES game/*.cpp)
 file(GLOB_RECURSE GAME_HEADERS game/*.h)
+file(GLOB_RECURSE FLATBUFFER libs/serialization/*.h)
 
-add_executable(horde main.cpp ${CORE_SOURCES} ${CORE_HEADERS} ${GAME_SOURCES} ${GAME_HEADERS})
+add_executable(horde main.cpp ${CORE_SOURCES} ${FLATBUFFER} ${GAME_SOURCES} ${GAME_HEADERS})
 
-target_include_directories(horde PUBLIC libs/enet/include glm raylib/src libs/entt/single_include core/ game/)
+target_include_directories(horde PUBLIC libs/enet/include glm raylib/src libs/entt/single_include game/ libs/serialization)
 target_link_libraries(horde enet glm raylib)
 

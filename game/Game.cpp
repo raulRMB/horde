@@ -1,11 +1,11 @@
 #include "Game.h"
 #include "scenes/MainScene.h"
 #include "scenes/TestScene.h"
-#include "Player.h"
+#include "smartentity/Player.h"
 #include <thread>
 #include <chrono>
-#include "networking/NetworkDriver.h"
-#include "raylibEx.h"
+#include "networking/base/NetworkDriver.h"
+#include "util/raylibEx.h"
 #include "components/Transform.h"
 
 namespace tZ

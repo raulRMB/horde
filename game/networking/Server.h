@@ -4,8 +4,8 @@
 #include <enet/enet.h>
 #include <entt/entt.hpp>
 #include <vector>
-#include "NetMessage.h"
-#include "Player.h"
+#include "networking/base/NetMessage.h"
+#include "smartentity/Player.h"
 #include "buffers/Events_generated.h"
 
 namespace tZ
