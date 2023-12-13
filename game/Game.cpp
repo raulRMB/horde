@@ -43,7 +43,6 @@ void Game::Spawn(uint32_t networkId, CTransform& t, bool owned) {
             Player* player = new Player();
             NetworkDriver::GetNetworkedEntities().Add(player->GetEntity(), networkId);
             player->SetTransform(t);
-            //delete player;
         }
     }
 }

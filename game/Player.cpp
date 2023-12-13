@@ -1,13 +1,13 @@
 #include "Player.h"
 #include "components/Follow.h"
 #include "util/Util.h"
-#include "Particles.h"
 #include "systems/moba/Navigation.h"
 #include "components/Model.h"
 #include "networking/NetworkDriver.h"
 #include "components/Network.h"
 #include "components/Physics.h"
 #include "components/Attribute.h"
+#include "components/Shapes.h"
 #include "components/RayCollision.h"
 #include "components/Animation.h"
 #include "components/CharacterAnimation.h"
@@ -153,7 +153,7 @@ void Player::Kill()
 }
 
 void Player::SetTransform(CTransform &t) {
-    CTransform& x = Game::GetRegistry().get<CTransform>(GetEntity());
+    CTransform& x = GetComponent<CTransform>();
     x.Position = t.Position;
     x.Scale = t.Scale;
     x.Rotation = t.Rotation;
