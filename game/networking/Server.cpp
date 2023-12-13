@@ -100,10 +100,12 @@ void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
     }
 }
 
-void Server::SendPlayerJoined(uint32_t netId) {
+void Server::SendPlayerJoined(uint32_t netId, CTransform& t) {
     flatbuffers::FlatBufferBuilder builder;
+    auto fbt = FlatBufferUtil::CreateTransform(builder, t);
     Net::OnPlayerJoinedBuilder pjb(builder);
     pjb.add_netId(netId);
+    pjb.add_transform(fbt);
     auto pj = pjb.Finish();
     Send(builder, Net::Events::Events_OnPlayerJoined, pj.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
 }
@@ -120,7 +122,7 @@ void Server::OnConnect(ENetPeer* peer) {
     players.push_back(p);
     auto netId = NetworkDriver::GetNetworkedEntities().Get(p->GetEntity());
     NetworkDriver::GetNetworkedEntities().SetOwner(netId, peer);
-    SendPlayerJoined(netId);
+    SendPlayerJoined(netId, p->GetComponent<CTransform>());
     NetworkDriver::GetConnections().push_back(peer);
     SendConnectResponse(peer, netId);
 }

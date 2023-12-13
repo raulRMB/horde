@@ -160,6 +160,8 @@ void Player::Kill()
 
 void Player::SetTransform(CTransform &t) {
     CTransform& x = GetComponent<CTransform>();
+    CNetwork& n = GetComponent<CNetwork>();
+    n.TargetTransform = t;
     x.Position = t.Position;
     x.Scale = t.Scale;
     x.Rotation = t.Rotation;

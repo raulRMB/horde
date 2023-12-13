@@ -153,7 +153,7 @@ void Client::OnInboundMessage(const Net::Header* header) {
         }
         case Net::Events_OnPlayerJoined: {
             const Net::OnPlayerJoined* res = header->Event_as_OnPlayerJoined();
-            CTransform t = CTransform{};
+            CTransform t = FlatBufferUtil::NetTransformToTransform(res->transform());
             Game::SpawnPlayer(res->netId(), t, false);
             break;
         }

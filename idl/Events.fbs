@@ -42,6 +42,7 @@ table SyncTransform {
 
 table OnPlayerJoined {
     netId: uint;
+    transform: Transform;
 }
 
 table PlayerSpawn {

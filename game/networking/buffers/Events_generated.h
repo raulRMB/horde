@@ -601,14 +601,20 @@ inline ::flatbuffers::Offset<SyncTransform> CreateSyncTransform(
 struct OnPlayerJoined FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef OnPlayerJoinedBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_NETID = 4
+    VT_NETID = 4,
+    VT_TRANSFORM = 6
   };
   uint32_t netId() const {
     return GetField<uint32_t>(VT_NETID, 0);
   }
+  const Net::Transform *transform() const {
+    return GetPointer<const Net::Transform *>(VT_TRANSFORM);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
+           VerifyOffset(verifier, VT_TRANSFORM) &&
+           verifier.VerifyTable(transform()) &&
            verifier.EndTable();
   }
 };
@@ -619,6 +625,9 @@ struct OnPlayerJoinedBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_netId(uint32_t netId) {
     fbb_.AddElement<uint32_t>(OnPlayerJoined::VT_NETID, netId, 0);
+  }
+  void add_transform(::flatbuffers::Offset<Net::Transform> transform) {
+    fbb_.AddOffset(OnPlayerJoined::VT_TRANSFORM, transform);
   }
   explicit OnPlayerJoinedBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -633,8 +642,10 @@ struct OnPlayerJoinedBuilder {
 
 inline ::flatbuffers::Offset<OnPlayerJoined> CreateOnPlayerJoined(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint32_t netId = 0) {
+    uint32_t netId = 0,
+    ::flatbuffers::Offset<Net::Transform> transform = 0) {
   OnPlayerJoinedBuilder builder_(_fbb);
+  builder_.add_transform(transform);
   builder_.add_netId(netId);
   return builder_.Finish();
 }
