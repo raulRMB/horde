@@ -26,7 +26,7 @@ public:
     void OnConnect(ENetPeer* peer);
     void SendOutboundMessage(OutboundMessage msg);
     void SendPlayerJoined(u32 netId);
-    void SendSpawnProjectile(u32 netId, v2 pos, v2 dir);
+    void SendSpawnProjectile(u32 netId, v2 pos, v2 dir, float speed, float lifetime);
     void flush() { enet_host_flush(server); }
     void Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c);
     void Sync(entt::entity e, struct CAttributes& ac, std::vector<ENetPeer*> c);

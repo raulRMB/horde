@@ -88,12 +88,12 @@ void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
             const v3 c = v3{res->targetVec()->x(), res->targetVec()->y(), res->targetVec()->z()};
             const CTransform clickPoint = CTransform{c};
             const CTransform& t = Game::GetRegistry().get<CTransform>(e);
-            Projectile(e, clickPoint.Position, t.Position);
+            Projectile(e, clickPoint.Position, t.Position, 50, 1.2);
 
             const v3 dir = c - t.Position;
             const v2 dir2d = v2{dir.x, dir.z};
 
-            SendSpawnProjectile(res->netId(), v2{t.Position.x, t.Position.z}, dir2d);
+            SendSpawnProjectile(res->netId(), v2{t.Position.x, t.Position.z}, dir2d, 50, 1.2);
 
             break;
         }
@@ -108,10 +108,10 @@ void Server::SendPlayerJoined(uint32_t netId) {
     Send(builder, Net::Events::Events_OnPlayerJoined, pj.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
 }
 
-void Server::SendSpawnProjectile(u32 netId, v2 pos, v2 dir)
+void Server::SendSpawnProjectile(u32 netId, v2 pos, v2 dir, float speed, float lifetime)
 {
     flatbuffers::FlatBufferBuilder builder;
-    flatbuffers::Offset<Net::SpawnProjectile> msg = FlatBufferUtil::CreateSpawnProjectile(builder, netId, pos, dir);
+    flatbuffers::Offset<Net::SpawnProjectile> msg = FlatBufferUtil::CreateSpawnProjectile(builder, netId, pos, dir, speed, lifetime);
     Send(builder, Net::Events::Events_SpawnProjectile, msg.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
 }
 

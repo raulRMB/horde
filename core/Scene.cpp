@@ -14,6 +14,7 @@
 #include "systems/moba/Spawn.h"
 #include "systems/moba/AttributeUI.h"
 #include "systems/base/ParticleDrawing.h"
+#include "systems/base/Lifetime.h"
 
 namespace tZ
 {
@@ -25,10 +26,11 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<SSpawn>());
     UpdateSystems.push_back(&System::Get<SNetworking>());
     UpdateSystems.push_back(&System::Get<SFollow>());
+    UpdateSystems.push_back(&System::Get<SLifetime>());
     
     if(!Game::IsServer()) {
         DrawingSystems.push_back(&System::Get<SModelDrawing>());
-        // DrawingSystems.push_back(&System::Get<SShapeDrawing>());
+        DrawingSystems.push_back(&System::Get<SShapeDrawing>());
         UpdateSystems.push_back(&System::Get<SAnimation>());
         UpdateSystems.push_back(&System::Get<SParticle>());
         DrawingSystems.push_back(&System::Get<SParticleDrawing>());

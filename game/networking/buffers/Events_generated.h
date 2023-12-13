@@ -978,7 +978,9 @@ struct SpawnProjectile FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_NETID = 4,
     VT_PORJECTILEID = 6,
     VT_POSITION = 8,
-    VT_DIRECTION = 10
+    VT_DIRECTION = 10,
+    VT_SPEED = 12,
+    VT_LIFETIME = 14
   };
   uint32_t netid() const {
     return GetField<uint32_t>(VT_NETID, 0);
@@ -992,6 +994,12 @@ struct SpawnProjectile FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const Net::Vector2 *direction() const {
     return GetPointer<const Net::Vector2 *>(VT_DIRECTION);
   }
+  float speed() const {
+    return GetField<float>(VT_SPEED, 0.0f);
+  }
+  float lifetime() const {
+    return GetField<float>(VT_LIFETIME, 0.0f);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
@@ -1000,6 +1008,8 @@ struct SpawnProjectile FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            verifier.VerifyTable(position()) &&
            VerifyOffset(verifier, VT_DIRECTION) &&
            verifier.VerifyTable(direction()) &&
+           VerifyField<float>(verifier, VT_SPEED, 4) &&
+           VerifyField<float>(verifier, VT_LIFETIME, 4) &&
            verifier.EndTable();
   }
 };
@@ -1020,6 +1030,12 @@ struct SpawnProjectileBuilder {
   void add_direction(::flatbuffers::Offset<Net::Vector2> direction) {
     fbb_.AddOffset(SpawnProjectile::VT_DIRECTION, direction);
   }
+  void add_speed(float speed) {
+    fbb_.AddElement<float>(SpawnProjectile::VT_SPEED, speed, 0.0f);
+  }
+  void add_lifetime(float lifetime) {
+    fbb_.AddElement<float>(SpawnProjectile::VT_LIFETIME, lifetime, 0.0f);
+  }
   explicit SpawnProjectileBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1036,8 +1052,12 @@ inline ::flatbuffers::Offset<SpawnProjectile> CreateSpawnProjectile(
     uint32_t netid = 0,
     uint32_t porjectileId = 0,
     ::flatbuffers::Offset<Net::Vector2> position = 0,
-    ::flatbuffers::Offset<Net::Vector2> direction = 0) {
+    ::flatbuffers::Offset<Net::Vector2> direction = 0,
+    float speed = 0.0f,
+    float lifetime = 0.0f) {
   SpawnProjectileBuilder builder_(_fbb);
+  builder_.add_lifetime(lifetime);
+  builder_.add_speed(speed);
   builder_.add_direction(direction);
   builder_.add_position(position);
   builder_.add_porjectileId(porjectileId);

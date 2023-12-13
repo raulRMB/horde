@@ -44,16 +44,16 @@ void SShapeDrawing::Draw()
     }
 
     // Draw Triangles
-    for(const entt::entity& entity : Game::GetRegistry().view<Triangle2D>())
-    {
-        const Triangle2D& triangleComponent = Game::GetRegistry().get<Triangle2D>(entity);
-        Triangle3D triangle3D{};
-        triangle3D.A = {triangleComponent.Vertices.A.x, 0.0f, triangleComponent.Vertices.A.y};
-        triangle3D.B = {triangleComponent.Vertices.B.x, 0.0f, triangleComponent.Vertices.B.y};
-        triangle3D.C = {triangleComponent.Vertices.C.x, 0.0f, triangleComponent.Vertices.C.y};
-
-        raylib::DrawTriangle3D(ToRaylibVector3(triangle3D.C), ToRaylibVector3(triangle3D.B), ToRaylibVector3(triangle3D.A), ToRaylibColor(triangleComponent.color));
-    }
+//    for(const entt::entity& entity : Game::GetRegistry().view<Triangle2D>())
+//    {
+//        const Triangle2D& triangleComponent = Game::GetRegistry().get<Triangle2D>(entity);
+//        Triangle3D triangle3D{};
+//        triangle3D.A = {triangleComponent.Vertices.A.x, 0.0f, triangleComponent.Vertices.A.y};
+//        triangle3D.B = {triangleComponent.Vertices.B.x, 0.0f, triangleComponent.Vertices.B.y};
+//        triangle3D.C = {triangleComponent.Vertices.C.x, 0.0f, triangleComponent.Vertices.C.y};
+//
+//        raylib::DrawTriangle3D(ToRaylibVector3(triangle3D.C), ToRaylibVector3(triangle3D.B), ToRaylibVector3(triangle3D.A), ToRaylibColor(triangleComponent.color));
+//    }
 
     // Draw Linestrip
     for(const entt::entity& entity : Game::GetRegistry().view<CLineStrip>())
@@ -69,7 +69,7 @@ void SShapeDrawing::Draw()
 
     for(const entt::entity& entity : Game::GetRegistry().view<CMoveCircle>()) {
         CMoveCircle& mc = Game::GetRegistry().get<CMoveCircle>(entity);
-        raylib::DrawCircle3D(ToRaylibVector3(mc.Position), mc.Radius, (raylib::Vector3){1.0f, 0.0f, 0.0f}, 90.0f, raylib::GREEN);
+        raylib::DrawCircle3D(ToRaylibVector3(mc.Position), mc.Radius, (raylib::Vector3){1.0f, 0.0f, 0.0f}, 90.0f, raylib::RED);
     }
 
     for(const entt::entity& entity : Game::GetRegistry().view<CSphere, CTransform>())

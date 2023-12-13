@@ -46,9 +46,12 @@ void SPhysics::Update(float deltaSeconds)
             if(Util::Check2DCollision(xP, xT, yP, yT)) {
                 auto ac = registry.try_get<CAttributes>(y);
                 auto eff = registry.try_get<FEffect>(x);
-                if(ac != nullptr && eff != nullptr) {
+                if(ac != nullptr && eff != nullptr && eff->source != y) {
                     eff->target = y;
                     Game::GetDispatcher().trigger(*eff);
+                    toDestroy.insert(x);
+                }
+                if(!Game::IsServer() && eff != nullptr && eff->source != y) {
                     toDestroy.insert(x);
                 }
             }

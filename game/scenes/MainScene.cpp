@@ -75,7 +75,7 @@ void MainScene::Update(float deltaSeconds)
         Player* player = GetActivePlayer();
         if(player != nullptr) {
             const v3& playerPos = player->GetComponent<CTransform>().Position;
-            cam.Position = glm::mix(cam.Position, v3{playerPos.x - 20, cam.Position.y, playerPos.z - 40}, 0.05);
+            cam.Position = glm::mix(cam.Position, v3{playerPos.x - 40, cam.Position.y, playerPos.z - 40}, 0.05);
             cam.Target = glm::mix(cam.Target, playerPos, 0.05);
         }
     }

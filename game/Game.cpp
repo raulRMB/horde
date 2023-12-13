@@ -14,12 +14,12 @@ namespace tZ
 constexpr double tickRate = 60.0;
 constexpr long long periodMicroseconds = static_cast<long long>(1e6 / tickRate);
 
-Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(0x00ff00FF), fpsString(std::string("FPS: 0"))
+Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(0x00000000), fpsString(std::string("FPS: 0"))
 {
-    Camera.Position = {50.0f, 50.0f, 50.0f};
+    Camera.Position = {50.0f, 60.0f, 50.0f};
     Camera.Target = {0.0f, 0.0f, 0.0f};
     Camera.Up = {0.0f, 1.0f, 0.0f};
-    Camera.Fovy = 45.0f;
+    Camera.Fovy = 55.0f;
     Camera.Projection = raylib::CAMERA_PERSPECTIVE;
 }
 

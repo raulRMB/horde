@@ -7,6 +7,7 @@
 #include "components/Particle.h"
 #include "components/Physics.h"
 #include "components/Shapes.h"
+#include "components/Lifetime.h"
 
 namespace tZ
 {
@@ -34,7 +35,7 @@ inline Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::r
     registry.emplace<CTransform>(e, t);
 };
 
-inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation)
+inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation, float speed, float lifetime)
 {
     entt::registry& registry = Game::GetRegistry();
 
@@ -50,8 +51,13 @@ inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation
 
     entt::entity e = registry.create();
     registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.0001, .MaxParticles=10000, .spawner=spawnParticle});
+
+    auto lt = CLifetime{};
+    lt.MaxLifetime = lifetime;
+    registry.emplace<CLifetime>(e, lt);
+
     CPhysics3D phc = {};
-    phc.Velocity = glm::normalize(cursorLocation - playerLocation) * 50.f;
+    phc.Velocity = glm::normalize(cursorLocation - playerLocation) * speed;
     phc.MaxSpeed = 100;
     phc.Acceleration = v3{1, 1, 1};
 
@@ -64,9 +70,15 @@ inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation
     registry.emplace<CTransform>(e, playerLocation + glm::normalize(cursorLocation - playerLocation) * 3.f);
 }
 
-inline void SpawnProjectile(entt::entity source, const v2 pos, const v2 dir)
+inline void SpawnProjectile(entt::entity source, const v2 pos, const v2 dir, const float speed, const float lifetime)
 {
     entt::registry& registry = Game::GetRegistry();
+
+    auto e = registry.create();
+    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.001, .MaxParticles=10000, .spawner=spawnParticle});
+    CPhysics3D phc = {};
+    phc.Velocity = glm::normalize(v3{dir.x, 0, dir.y}) * speed;
+    phc.MaxSpeed = 100;
 
     OnApply effectCallback = [](CAttributes &target, CAttributes &source) {
         FAttribute &health = *Util::GetAttribute(target, "health");
@@ -77,18 +89,16 @@ inline void SpawnProjectile(entt::entity source, const v2 pos, const v2 dir)
     effect.type = EEffectType::Instant;
     effect.source = source;
     effect.callback = effectCallback;
+    registry.emplace<FEffect>(e, effect);
 
-    auto e = registry.create();
-    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.001, .MaxParticles=10000, .spawner=spawnParticle});
-    CPhysics3D phc = {};
-    phc.Velocity = glm::normalize(v3{dir.x, 0, dir.y}) * 50.0f;
-    phc.MaxSpeed = 100;
+    auto lt = CLifetime{};
+    lt.MaxLifetime = lifetime;
+    registry.emplace<CLifetime>(e, lt);
 
     CPhysics2D p2d = {};
     p2d.CollisionType = ECollision2DType::Circle;
     p2d.CollisionRadius = 1.f;
     registry.emplace<CPhysics2D>(e, p2d);
-    registry.emplace<FEffect>(e, effect);
     registry.emplace<CPhysics3D>(e, phc);
     registry.emplace<CTransform>(e, v3(pos.x, 0, pos.y) + glm::normalize(v3{dir.x, 0, dir.y}) * 3.f);
 }

@@ -85,11 +85,11 @@ flatbuffers::Offset<Net::SyncAttributeComponent> FlatBufferUtil::CreateSyncAttri
 }
 
 flatbuffers::Offset<Net::SpawnProjectile> FlatBufferUtil::CreateSpawnProjectile(flatbuffers::FlatBufferBuilder &builder,
-    const u32 netId, const v2& pos, const v2& dir)
+    const u32 netId, const v2& pos, const v2& dir, const float speed, const float lifetime)
 {
     const flatbuffers::Offset<Net::Vector2> posOffset = Net::CreateVector2(builder, pos.x, pos.y);
     const flatbuffers::Offset<Net::Vector2> dirOffset = Net::CreateVector2(builder, dir.x, dir.y);
-    return Net::CreateSpawnProjectile(builder, netId, 0,posOffset, dirOffset);
+    return Net::CreateSpawnProjectile(builder, netId, 0,posOffset, dirOffset, speed, lifetime);
 }
 
 }

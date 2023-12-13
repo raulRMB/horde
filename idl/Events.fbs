@@ -82,6 +82,8 @@ table SpawnProjectile
     porjectileId: uint;
     position: Vector2;
     direction: Vector2;
+    speed: float;
+    lifetime: float;
 }
 
 union Events {

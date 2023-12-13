@@ -25,7 +25,8 @@ public:
     static CTransform NetTransformToTransform(const Net::Transform* t);
     static flatbuffers::Offset<Net::Attribute> CreateAttribute(flatbuffers::FlatBufferBuilder &builder, FAttribute& attr);
     static flatbuffers::Offset<Net::SyncAttributeComponent> CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, CAttributes& ac, uint32_t netId);
-    static flatbuffers::Offset<Net::SpawnProjectile> CreateSpawnProjectile(flatbuffers::FlatBufferBuilder &builder, u32 netId, const v2& pos, const v2& dir);
+    static flatbuffers::Offset<Net::SpawnProjectile> CreateSpawnProjectile(flatbuffers::FlatBufferBuilder &builder, u32 netId, const v2& pos, const v2& dir,
+                                                                           const float speed, const float lifetime);
 };
 
 }

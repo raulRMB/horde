@@ -169,7 +169,9 @@ void Client::OnInboundMessage(const Net::Header* header) {
             const Net::SpawnProjectile* res = header->Event_as_SpawnProjectile();
             const v2 pos(res->position()->x(), res->position()->y());
             const v2 dir(res->direction()->x(), res->direction()->y());
-            SpawnProjectile(NetworkDriver::GetNetworkedEntities().Get(res->netid()), pos, dir);
+            const float speed(res->speed());
+            const float lifetime(res->lifetime());
+            SpawnProjectile(NetworkDriver::GetNetworkedEntities().Get(res->netid()), pos, dir, speed, lifetime);
             break;
         }
     }
