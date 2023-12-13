@@ -68,7 +68,9 @@ void Game::Loop() {
         Draw();
         DrawUI();
         //CalculateFPS();
-        raylib::DrawFPS(5, 5);
+        if(showFPS) {
+            raylib::DrawFPS(5, 5);
+        }
         raylib::EndDrawing();
         bRunning = bRunning && !raylib::WindowShouldClose();
     }
@@ -93,6 +95,7 @@ bool Game::Run(bool bServer)
             }
         }
     } else {
+        //raylib::SetTargetFPS(245);
         while (bRunning) {
             Loop();
         }
@@ -161,11 +164,53 @@ void Game::Start() const
     ActiveScene->Start();
 }
 
+void Game::ExecuteCommand(std::string cmd) {
+    if(cmd == "toggle-fps") {
+        showFPS = !showFPS;
+    }
+}
+
+void Game::HandleCommandInput()
+{
+    int currKey = raylib::GetKeyPressed();
+    if(currKey == raylib::KEY_ENTER) {
+        ExecuteCommand(command);
+        command = "";
+        return;
+    }
+    bool shiftPressed = IsKeyDown(raylib::KEY_LEFT_SHIFT) || IsKeyDown(raylib::KEY_RIGHT_SHIFT);
+    if (currKey != 0)
+    {
+        if(!shiftPressed) {
+            if (currKey >= 'A' && currKey <= 'Z') {
+                currKey += 'a' - 'A';
+            }
+        }
+        if ((currKey >= 32) && (currKey <= 125)) {
+            command += static_cast<char>(currKey);
+        }
+    }
+    if(IsKeyPressed(raylib::KEY_BACKSPACE)) {
+        if(!command.empty()) {
+            command.pop_back();
+        }
+    }
+}
+
 void Game::HandleInput()
 {
     if(IsKeyDown(raylib::KEY_F12))
     {
         bRunning = false;
+    }
+
+    if(IsKeyDown(raylib::KEY_LEFT_SHIFT) && IsKeyPressed(raylib::KEY_C)) {
+        commandPromptOpen = !commandPromptOpen;
+        return;
+    }
+    if(commandPromptOpen) {
+        HandleCommandInput();
+        return;
     }
 
     ActiveScene->HandleInput();
@@ -179,8 +224,6 @@ void Game::Update(float deltaTime) const
 void Game::Draw() const
 {
     BeginMode3D(ToRaylibCamera(Camera));
-//    if(!Game::IsServer())
-//        raylib::DrawMesh(m, material, mat);
     ActiveScene->Draw();
     raylib::EndMode3D();
 }
@@ -188,7 +231,14 @@ void Game::Draw() const
 void Game::DrawUI() const
 {
     ActiveScene->DrawUI();
-//    raylib::DrawText("hello", 5, 5, 10, raylib::WHITE);
+    if(commandPromptOpen) {
+        int screenWidth = raylib::GetScreenWidth();
+        int screenHeight = raylib::GetScreenHeight();
+        raylib::DrawRectangle(0, screenHeight - 20, screenWidth, 20, raylib::BLACK);
+        std::string output = "> " + command;
+        raylib::DrawText(output.c_str(), 3, screenHeight - 20, 13, raylib::WHITE);
+    }
+
 }
 
 void Game::Clean() const

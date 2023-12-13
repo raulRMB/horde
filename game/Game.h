@@ -14,10 +14,16 @@ class Game
     class Player* ownedPlayer;
     int FrameCount = 0;
 
+    bool showFPS = true;
+    bool commandPromptOpen = false;
+    std::string command = "";
+
     std::chrono::high_resolution_clock::time_point LastFPSTime;
     std::chrono::high_resolution_clock::time_point CurrentTime;
     int FPS = 0;
     std::string fpsString;
+    void HandleCommandInput();
+    void ExecuteCommand(std::string cmd);
 
     class Scene* ActiveScene;
     bool bRunning;
