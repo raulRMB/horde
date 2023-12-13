@@ -47,7 +47,7 @@ void SNavigation::Update(float deltaSeconds)
 void SNavigation::LoadNavMesh()
 {
     std::ifstream file;
-    file.open("../assets/save.txt");
+    file.open("../assets/navmesh/test.navmesh");
     if(file.is_open())
     {
         std::string line;
@@ -91,7 +91,7 @@ void SNavigation::LoadNavMesh()
 void SNavigation::SaveNavMesh()
 {
     std::ofstream file;
-    file.open("../assets/save.txt");
+    file.open("../assets/navmesh/test.navmesh");
     for(const v2& point : Points)
     {
         file << point.x << " " << point.y << "\n";

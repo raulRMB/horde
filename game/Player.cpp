@@ -20,8 +20,8 @@ Player::Player()
 {
     if(!Game::IsServer()) {
         CAnimation animation{};
-        CModel mc = {raylib::LoadModel("../assets/playerCharacter.glb"), 0.05, false};
-        animation.Animations = raylib::LoadModelAnimations("../assets/playerCharacter.glb", &animation.AnimsCount);
+        CModel mc = {raylib::LoadModel("../assets/models/playerCharacter.glb"), 0.05, false};
+        animation.Animations = raylib::LoadModelAnimations("../assets/models/playerCharacter.glb", &animation.AnimsCount);
         animation.AnimsIndex = (i32)ECharacterAnimState::Idle;
         animation.bPlaying = true;
         AddComponent(animation);
