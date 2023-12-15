@@ -18,6 +18,8 @@ namespace raylib
 #include "raylib.h"
 }
 
+#include "factories/Factory.h"
+
 namespace tZ
 {
 
@@ -176,7 +178,7 @@ void Client::OnInboundMessage(const Net::Header* header) {
         case Net::Events_SpawnEntity:
         {
             const Net::SpawnEntity* res = header->Event_as_SpawnEntity();
-            // Spawn logic here
+            Factory::Build((EBuilderType)res->entityType(), FlatBufferUtil::NetTransformToTransform(res->location()), res->netid());
             break;
         }
         case Net::Events_SpawnProjectile:
