@@ -110,6 +110,17 @@ void Server::SendPlayerJoined(uint32_t netId, CTransform& t) {
     Send(builder, Net::Events::Events_OnPlayerJoined, pj.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
 }
 
+void Server::SendSpawnEntity(uint32_t netId, uint32_t entityType, CTransform& t) {
+    flatbuffers::FlatBufferBuilder builder;
+    auto fbt = FlatBufferUtil::CreateTransform(builder, t);
+    Net::SpawnEntityBuilder seb(builder);
+    seb.add_netid(netId);
+    seb.add_location(fbt);
+    seb.add_entityType(entityType);
+    auto pj = seb.Finish();
+    Send(builder, Net::Events::Events_SpawnEntity, pj.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
+}
+
 void Server::SendSpawnProjectile(u32 netId, v2 pos, v2 dir, float speed, float lifetime)
 {
     flatbuffers::FlatBufferBuilder builder;

@@ -173,6 +173,12 @@ void Client::OnInboundMessage(const Net::Header* header) {
             }
             break;
         }
+        case Net::Events_SpawnEntity:
+        {
+            const Net::SpawnEntity* res = header->Event_as_SpawnEntity();
+            // Spawn logic here
+            break;
+        }
         case Net::Events_SpawnProjectile:
         {
             const Net::SpawnProjectile* res = header->Event_as_SpawnProjectile();

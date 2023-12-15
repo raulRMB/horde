@@ -60,6 +60,9 @@ struct TriggerAbilityBuilder;
 struct SpawnProjectile;
 struct SpawnProjectileBuilder;
 
+struct SpawnEntity;
+struct SpawnEntityBuilder;
+
 struct Header;
 struct HeaderBuilder;
 
@@ -74,11 +77,12 @@ enum Events : uint8_t {
   Events_SyncCharacterAnimState = 7,
   Events_TriggerAbility = 8,
   Events_SpawnProjectile = 9,
+  Events_SpawnEntity = 10,
   Events_MIN = Events_NONE,
-  Events_MAX = Events_SpawnProjectile
+  Events_MAX = Events_SpawnEntity
 };
 
-inline const Events (&EnumValuesEvents())[10] {
+inline const Events (&EnumValuesEvents())[11] {
   static const Events values[] = {
     Events_NONE,
     Events_OnConnectionResponse,
@@ -89,13 +93,14 @@ inline const Events (&EnumValuesEvents())[10] {
     Events_SyncAttributeComponent,
     Events_SyncCharacterAnimState,
     Events_TriggerAbility,
-    Events_SpawnProjectile
+    Events_SpawnProjectile,
+    Events_SpawnEntity
   };
   return values;
 }
 
 inline const char * const *EnumNamesEvents() {
-  static const char * const names[11] = {
+  static const char * const names[12] = {
     "NONE",
     "OnConnectionResponse",
     "OnConnection",
@@ -106,13 +111,14 @@ inline const char * const *EnumNamesEvents() {
     "SyncCharacterAnimState",
     "TriggerAbility",
     "SpawnProjectile",
+    "SpawnEntity",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameEvents(Events e) {
-  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_SpawnProjectile)) return "";
+  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_SpawnEntity)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesEvents()[index];
 }
@@ -155,6 +161,10 @@ template<> struct EventsTraits<Net::TriggerAbility> {
 
 template<> struct EventsTraits<Net::SpawnProjectile> {
   static const Events enum_value = Events_SpawnProjectile;
+};
+
+template<> struct EventsTraits<Net::SpawnEntity> {
+  static const Events enum_value = Events_SpawnEntity;
 };
 
 bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Events type);
@@ -1076,6 +1086,68 @@ inline ::flatbuffers::Offset<SpawnProjectile> CreateSpawnProjectile(
   return builder_.Finish();
 }
 
+struct SpawnEntity FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef SpawnEntityBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NETID = 4,
+    VT_ENTITYTYPE = 6,
+    VT_LOCATION = 8
+  };
+  uint32_t netid() const {
+    return GetField<uint32_t>(VT_NETID, 0);
+  }
+  uint32_t entityType() const {
+    return GetField<uint32_t>(VT_ENTITYTYPE, 0);
+  }
+  const Net::Transform *location() const {
+    return GetPointer<const Net::Transform *>(VT_LOCATION);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
+           VerifyField<uint32_t>(verifier, VT_ENTITYTYPE, 4) &&
+           VerifyOffset(verifier, VT_LOCATION) &&
+           verifier.VerifyTable(location()) &&
+           verifier.EndTable();
+  }
+};
+
+struct SpawnEntityBuilder {
+  typedef SpawnEntity Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_netid(uint32_t netid) {
+    fbb_.AddElement<uint32_t>(SpawnEntity::VT_NETID, netid, 0);
+  }
+  void add_entityType(uint32_t entityType) {
+    fbb_.AddElement<uint32_t>(SpawnEntity::VT_ENTITYTYPE, entityType, 0);
+  }
+  void add_location(::flatbuffers::Offset<Net::Transform> location) {
+    fbb_.AddOffset(SpawnEntity::VT_LOCATION, location);
+  }
+  explicit SpawnEntityBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<SpawnEntity> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<SpawnEntity>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<SpawnEntity> CreateSpawnEntity(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t netid = 0,
+    uint32_t entityType = 0,
+    ::flatbuffers::Offset<Net::Transform> location = 0) {
+  SpawnEntityBuilder builder_(_fbb);
+  builder_.add_location(location);
+  builder_.add_entityType(entityType);
+  builder_.add_netid(netid);
+  return builder_.Finish();
+}
+
 struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef HeaderBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -1119,6 +1191,9 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const Net::SpawnProjectile *Event_as_SpawnProjectile() const {
     return Event_type() == Net::Events_SpawnProjectile ? static_cast<const Net::SpawnProjectile *>(Event()) : nullptr;
+  }
+  const Net::SpawnEntity *Event_as_SpawnEntity() const {
+    return Event_type() == Net::Events_SpawnEntity ? static_cast<const Net::SpawnEntity *>(Event()) : nullptr;
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1164,6 +1239,10 @@ template<> inline const Net::TriggerAbility *Header::Event_as<Net::TriggerAbilit
 
 template<> inline const Net::SpawnProjectile *Header::Event_as<Net::SpawnProjectile>() const {
   return Event_as_SpawnProjectile();
+}
+
+template<> inline const Net::SpawnEntity *Header::Event_as<Net::SpawnEntity>() const {
+  return Event_as_SpawnEntity();
 }
 
 struct HeaderBuilder {
@@ -1241,6 +1320,10 @@ inline bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Eve
     }
     case Events_SpawnProjectile: {
       auto ptr = reinterpret_cast<const Net::SpawnProjectile *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case Events_SpawnEntity: {
+      auto ptr = reinterpret_cast<const Net::SpawnEntity *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
