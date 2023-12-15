@@ -70,6 +70,16 @@ public:
         x.erase(tmp);
     }
 
+    bool Exists(entt::entity e) {
+        auto it = y.find(e);
+        return it == y.end();
+    }
+
+    bool Exists(uint32_t netId) {
+        auto it = x.find(netId);
+        return it == x.end();
+    }
+
     uint32_t Get(entt::entity e) {
         return y[e];
     }
