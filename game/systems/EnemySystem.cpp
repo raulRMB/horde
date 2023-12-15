@@ -1,4 +1,4 @@
-#include "EnemySystem.h"
+#include "SEnemy.h"
 #include "components/EnemyComponent.h"
 #include "components/Follow.h"
 #include "components/Transform.h"
@@ -6,7 +6,7 @@
 namespace tZ
 {
 
-void EnemySystem::Update(float deltaSeconds)
+void SEnemy::Update(float deltaSeconds)
 {
     for(const entt::entity& entity : GetView<CEnemy, CFollow>())
     {

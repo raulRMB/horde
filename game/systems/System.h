@@ -22,6 +22,7 @@ protected:
     virtual void Init() {};
     template <typename...C>
     static auto GetView() { return Game::GetRegistry().view<C...>(); }
+    static void DestroyEntity(const entt::entity entity) { Game::GetRegistry().destroy(entity); }
 };
 
 template <typename T>

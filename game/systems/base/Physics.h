@@ -12,6 +12,7 @@ namespace tZ
 
 class SPhysics : public UpdateSystem
 {
+    std::set<entt::entity> ToDestroy;
 public:
     void Update(float deltaSeconds) override;
 };

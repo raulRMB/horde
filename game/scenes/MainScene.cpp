@@ -10,6 +10,7 @@
 #include "components/Model.h"
 #include "components/Physics.h"
 #include "util/Util.h"
+#include "components/Spawner.h"
 
 namespace tZ
 {
@@ -25,11 +26,18 @@ MainScene::~MainScene() = default;
 void MainScene::Start()
 {
     Load();
+
+    entt::entity e = CreateEntity();
+    AddComponent(e, CTransform{v3{0,0,0}});
+    CSpawner spawner = {};
+    spawner.SpawnRate = 1.f;
+    AddComponent(e, spawner);
+
     if(!Game::IsServer())
     {
         InitUI();
 
-        entt::entity e = CreateEntity();
+        e = CreateEntity();
         CTransform t = {};
         t.Rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0));
         t.Scale = v3(250.f);

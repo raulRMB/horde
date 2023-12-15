@@ -11,6 +11,8 @@
 #include "components/RayCollision.h"
 #include "components/Animation.h"
 #include "components/CharacterAnimation.h"
+#include "components/Mortal.h"
+#include "systems/SEnemy.h"
 
 namespace tZ
 {
@@ -82,12 +84,13 @@ Player::Player()
 
     CCharacterAnimation characterAnim{};
     characterAnim.AnimState = ECharacterAnimState::Idle;
-
+    
     AddComponent(characterAnim);
     AddComponent(transform);
     AddComponent(ac);
     AddComponent(physics);
     AddComponent(follow);
+    AddComponent(CMortal{});
     if(Game::IsServer()) {
         Game::GetDispatcher().trigger(healthRegen);
     }
@@ -97,6 +100,7 @@ Player::~Player() = default;
 
 void Player::Start()
 {
+    System::Get<SEnemy>().SetPlayer(GetEntity());
 }
 
 void Player::HandleInput(entt::registry* Registry)

@@ -13,7 +13,6 @@
 
 namespace tZ
 {
-std::set<entt::entity> toDestroy;
 
 void SPhysics::Update(float deltaSeconds)
 {
@@ -44,27 +43,32 @@ void SPhysics::Update(float deltaSeconds)
             CPhysics2D &yP = entities.get<CPhysics2D>(y);
             CTransform &yT = entities.get<CTransform>(y);
             if(Util::Check2DCollision(xP, xT, yP, yT)) {
-                auto ac = registry.try_get<CAttributes>(y);
-                auto eff = registry.try_get<FEffect>(x);
+                CAttributes* ac = registry.try_get<CAttributes>(y);
+                FEffect* eff = registry.try_get<FEffect>(x);
                 if(ac != nullptr && eff != nullptr && eff->source != y) {
                     eff->target = y;
                     Game::GetDispatcher().trigger(*eff);
-                    toDestroy.insert(x);
+                    FAttribute* health = Util::GetAttribute(*ac, "health");
+                    if(health != nullptr && health->get() <= 0.f)
+                    {
+                        ToDestroy.insert(y);
+                    }
+                    ToDestroy.insert(x);
                 }
                 if(!Game::IsServer() && eff != nullptr && eff->source != y) {
-                    toDestroy.insert(x);
+                    ToDestroy.insert(x);
                 }
             }
         }
     }
 
-    for(entt::entity x : toDestroy) {
+    for(entt::entity x : ToDestroy) {
         auto found = registry.try_get<CTransform>(x);
         if(found != nullptr) {
             registry.destroy(x);
         }
     }
-    toDestroy.clear();
+    ToDestroy.clear();
 
     for(const entt::entity& entity : registry.view<CPhysics2D, CTransform>())
     {

@@ -6,7 +6,7 @@
 namespace tZ
 {
 
-class EnemySystem : public UpdateSystem
+class SEnemy : public UpdateSystem
 {
     entt::entity Player;
 public:

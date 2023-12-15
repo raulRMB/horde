@@ -3,7 +3,6 @@
 
 namespace tZ
 {
-
     void SLifetime::Update(float deltaSeconds) {
         entt::registry& registry = Game::GetRegistry();
         for(const entt::entity& entity : registry.view<CLifetime>())
@@ -15,5 +14,4 @@ namespace tZ
             }
         }
     }
-
 }
