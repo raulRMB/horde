@@ -136,8 +136,11 @@ void Client::OnInboundMessage(const Net::Header* header) {
         }
         case Net::Events_SyncTransform: {
             auto res = header->Event_as_SyncTransform();
-            CNetwork& t = Game::GetRegistry().get<CNetwork>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-            t.TargetTransform = FlatBufferUtil::NetTransformToTransform(res->transform());
+            if(NetworkDriver::GetNetworkedEntities().Exists(res->netId())) {
+                CNetwork &t = Game::GetRegistry().get<CNetwork>(
+                        NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+                t.TargetTransform = FlatBufferUtil::NetTransformToTransform(res->transform());
+            }
             break;
         }
         case Net::Events_SyncAttributeComponent: {
@@ -160,8 +163,11 @@ void Client::OnInboundMessage(const Net::Header* header) {
         case Net::Events_SyncCharacterAnimState :
         {
             const Net::SyncCharacterAnimState* res = header->Event_as_SyncCharacterAnimState();
-            CCharacterAnimation& ca = Game::GetRegistry().get<CCharacterAnimation>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-            ca.AnimState = static_cast<ECharacterAnimState>(res->state());
+            if(NetworkDriver::GetNetworkedEntities().Exists(res->netId())) {
+                CCharacterAnimation &ca = Game::GetRegistry().get<CCharacterAnimation>(
+                        NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+                ca.AnimState = static_cast<ECharacterAnimState>(res->state());
+            }
             break;
         }
         case Net::Events_SpawnProjectile:
