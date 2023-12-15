@@ -120,6 +120,7 @@ void Server::SendSpawnProjectile(u32 netId, v2 pos, v2 dir, float speed, float l
 void Server::OnConnect(ENetPeer* peer) {
     Player* p = new Player;
     players.push_back(p);
+    p->Start();
     auto netId = NetworkDriver::GetNetworkedEntities().Get(p->GetEntity());
     NetworkDriver::GetNetworkedEntities().SetOwner(netId, peer);
     SendPlayerJoined(netId, p->GetComponent<CTransform>());

@@ -2,6 +2,7 @@
 #include "components/Spawner.h"
 #include "components/Follow.h"
 #include "components/EnemyComponent.h"
+#include "components/Network.h"
 #include "components/Shapes.h"
 #include "components/Physics.h"
 #include "components/Transform.h"
@@ -37,6 +38,8 @@ void SSpawn::Update(float deltaSeconds)
             AddComponent(e, physics);
             CEnemy enemy{};
             AddComponent(e, enemy);
+            CNetwork network{};
+            AddComponent(e, network);
         }
     }
 }
