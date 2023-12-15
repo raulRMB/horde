@@ -16,6 +16,7 @@
 #include "systems/base/ParticleDrawing.h"
 #include "systems/base/Lifetime.h"
 #include "systems/SEnemy.h"
+#include "systems/base/GarbageManager.h"
 
 namespace tZ
 {
@@ -42,6 +43,7 @@ void Scene::Start()
         UpdateSystems.push_back(&System::Get<SCharacterAnimation>());
     }
 
+    UpdateSystems.push_back(&System::Get<SGarbageManager>());
 }
 
 void Scene::DrawUI()

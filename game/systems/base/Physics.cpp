@@ -5,6 +5,7 @@
 #include "Physics.h"
 #include "components/Physics.h"
 
+#include "GarbageManager.h"
 #include "entt/entt.hpp"
 #include "components/Attribute.h"
 #include "components/Transform.h"
@@ -43,34 +44,28 @@ void SPhysics::Update(float deltaSeconds)
             CPhysics2D &yP = entities.get<CPhysics2D>(y);
             CTransform &yT = entities.get<CTransform>(y);
             if(Util::Check2DCollision(xP, xT, yP, yT)) {
+                SGarbageManager& garbageMan = System::Get<SGarbageManager>();
                 CAttributes* ac = registry.try_get<CAttributes>(y);
                 FEffect* eff = registry.try_get<FEffect>(x);
                 if(ac != nullptr && eff != nullptr && eff->source != y) {
                     eff->target = y;
                     Game::GetDispatcher().trigger(*eff);
                     FAttribute* health = Util::GetAttribute(*ac, "health");
+
                     if(health != nullptr && health->get() <= 0.f)
                     {
-                        ToDestroy.insert(y);
+                        garbageMan.Add(y);
                     }
-                    ToDestroy.insert(x);
+                    garbageMan.Add(x);
+
                 }
                 if(!Game::IsServer() && eff != nullptr && eff->source != y) {
-                    ToDestroy.insert(x);
+                    garbageMan.Add(x);
                 }
             }
         }
     }
-
-    for(entt::entity x : ToDestroy) {
-        auto found = registry.try_get<CTransform>(x);
-        if(found != nullptr) {
-            registry.destroy(x);
-        }
-    }
-    ToDestroy.clear();
-
-    for(const entt::entity& entity : registry.view<CPhysics2D, CTransform>())
+    for(entt::entity entity : registry.view<CPhysics2D, CTransform>())
     {
         CTransform& transform = registry.get<CTransform>(entity);
         CPhysics2D& physics = registry.get<CPhysics2D>(entity);
@@ -79,7 +74,7 @@ void SPhysics::Update(float deltaSeconds)
         v3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
         transform.Position += velocity * deltaSeconds;
     }
-    for(const entt::entity& entity : registry.view<CTransform, CPhysics3D>())
+    for(entt::entity entity : registry.view<CTransform, CPhysics3D>())
     {
         CTransform& transform = registry.get<CTransform>(entity);
         CPhysics3D& physics = registry.get<CPhysics3D>(entity);
