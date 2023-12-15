@@ -87,6 +87,13 @@ table SpawnProjectile
     lifetime: float;
 }
 
+table SpawnEntity
+{
+    netid: uint;
+    entityType: uint;
+    location: Transform;
+}
+
 union Events {
     OnConnectionResponse,
     OnConnection,
@@ -96,7 +103,8 @@ union Events {
     SyncAttributeComponent,
     SyncCharacterAnimState,
     TriggerAbility,
-    SpawnProjectile
+    SpawnProjectile,
+    SpawnEntity
 }
 
 table Header {
