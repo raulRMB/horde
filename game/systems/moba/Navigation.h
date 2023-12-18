@@ -19,7 +19,8 @@ private:
 public:
     const std::vector<Navigation::TriangleNode>& GetMapTriangles() { return NavMesh; }
     void Update(float deltaSeconds) override;
-    void LoadNavMesh();
+    void Process(entt::entity e, entt::registry& r, float deltaSeconds);
+    void LoadNavMesh(entt::registry& r);
     void SaveNavMesh();
     bool IsValidPoint(const v2& point);
 };

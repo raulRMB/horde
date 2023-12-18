@@ -14,6 +14,7 @@ class SPhysics : public UpdateSystem
 {
 public:
     void Update(float deltaSeconds) override;
+    void Process2D(entt::entity e, entt::registry& r, float deltaSeconds);
 };
 
 }
