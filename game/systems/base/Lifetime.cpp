@@ -8,11 +8,15 @@ namespace tZ
         entt::registry& registry = Game::GetRegistry();
         for(const entt::entity& entity : registry.view<CLifetime>())
         {
-            CLifetime& lt = registry.get<CLifetime>(entity);
-            lt.CurrentLifetime += deltaSeconds;
-            if(lt.CurrentLifetime >= lt.MaxLifetime) {
-                registry.destroy(entity);
-            }
+            Process(entity, deltaSeconds, registry);
+        }
+    }
+
+    void SLifetime::Process(const entt::entity& entity, float deltaSeconds, entt::registry& r) {
+        CLifetime& lt = r.get<CLifetime>(entity);
+        lt.CurrentLifetime += deltaSeconds;
+        if(lt.CurrentLifetime >= lt.MaxLifetime) {
+            r.destroy(entity);
         }
     }
 
