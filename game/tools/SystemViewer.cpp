@@ -32,8 +32,6 @@ void SystemViewer::Draw()
     static bool show = true;
     ImGui::Begin("Systems", &show, ImGuiWindowFlags_MenuBar);
 
-    ImGui::ShowDemoWindow();
-
     entt::registry& registry = Game::GetRegistry();
 
     for (entt::entity entity : System::Get<SPhysics>().GetAffectedEntities()) {
