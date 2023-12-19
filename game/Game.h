@@ -15,21 +15,15 @@ class Game
     int FrameCount = 0;
 
     bool showFPS = true;
-    bool commandPromptOpen = false;
-    std::string command = "";
 
     std::chrono::high_resolution_clock::time_point LastFPSTime;
     std::chrono::high_resolution_clock::time_point CurrentTime;
     int FPS = 0;
-    std::string fpsString;
-    void HandleCommandInput();
-    void ExecuteCommand(std::string cmd);
 
     class Scene* ActiveScene;
     bool bRunning;
 
     FColor BackgroundColor;
-
     CCamera3D Camera{};
 
 public:
@@ -51,7 +45,6 @@ public:
     void Update(float deltaTime) const;
     void Draw() const;
     void DrawUI() const;
-    void CalculateFPS();
     void Fullscreen();
 
     void Clean() const;
@@ -61,12 +54,10 @@ public:
 
     [[nodiscard]] CCamera3D& GetActiveCamera() { return Camera; }
 
-
     static entt::registry& GetRegistry();
     static entt::dispatcher& GetDispatcher();
 
     static void SpawnPlayer(uint32_t networkId, CTransform& t, bool owned);
-    void Spawn(uint32_t networkId, CTransform& t, bool owned);
 
     static bool IsServer();
     static bool IsOfflineMode();

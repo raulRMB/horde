@@ -1,7 +1,3 @@
-//
-// Created by Raul on 11/17/2023.
-//
-
 #ifndef PHYSICSSYSTEM_H
 #define PHYSICSSYSTEM_H
 

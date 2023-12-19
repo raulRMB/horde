@@ -1,7 +1,3 @@
-//
-// Created by raul on 28/11/23.
-//
-
 #ifndef HORDE_SHAPES_H
 #define HORDE_SHAPES_H
 

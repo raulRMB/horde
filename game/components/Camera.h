@@ -1,7 +1,3 @@
-//
-// Created by Raul on 12/4/2023.
-//
-
 #ifndef C_CAMERA_H
 #define C_CAMERA_H
 

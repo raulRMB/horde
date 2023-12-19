@@ -1,7 +1,3 @@
-//
-// Created by raul on 21/11/23.
-//
-
 #include "TestScene.h"
 #include "primitives/Triangles.h"
 #include "util/Util.h"

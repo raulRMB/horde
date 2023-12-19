@@ -1,7 +1,3 @@
-//
-// Created by Raul on 12/7/2023.
-//
-
 #include "Projectile.h"
 
 tZ::CProjectile::CProjectile(tZ::f32 range, bool isHoming, bool isPiercing, bool isBouncing, bool shouldSpawnOnHit,

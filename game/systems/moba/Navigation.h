@@ -1,7 +1,3 @@
-//
-// Created by Raul on 11/17/2023.
-//
-
 #ifndef NAVIGATIONSYSTEM_H
 #define NAVIGATIONSYSTEM_H
 

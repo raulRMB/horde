@@ -1,8 +1,3 @@
-//
-// Created by Raul on 12/4/2023.
-//
-
-
 #include "raylibEx.h"
 #include "config.h"
 namespace raylib

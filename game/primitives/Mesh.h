@@ -1,7 +1,3 @@
-//
-// Created by Raul on 12/4/2023.
-//
-
 #ifndef MESH_H
 #define MESH_H
 

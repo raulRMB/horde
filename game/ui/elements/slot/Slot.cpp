@@ -12,7 +12,7 @@ bool Slot::isHovered() {
 }
 
 void Slot::OnHover() {
-    raylib::TraceLog(raylib::LOG_INFO, "Hovered slot");
+    //raylib::TraceLog(raylib::LOG_INFO, "Hovered slot");
 }
 
 void Slot::SetImage(raylib::Texture2D img) {
@@ -20,7 +20,7 @@ void Slot::SetImage(raylib::Texture2D img) {
 }
 
 void Slot::OnHoverExit() {
-    raylib::TraceLog(raylib::LOG_INFO, "Exit hover slot");
+    //raylib::TraceLog(raylib::LOG_INFO, "Exit hover slot");
 }
 
 void Slot::SetBox(raylib::Rectangle box) {
@@ -63,7 +63,7 @@ void Slot::OnWindowResize(v2 screenSize) {
 }
 
 void Slot::OnDragCancelled() {
-    raylib::TraceLog(raylib::LOG_INFO, "Drag Cancelled");
+    //raylib::TraceLog(raylib::LOG_INFO, "Drag Cancelled");
 }
 
 void Slot::OnDrop(Element* source, std::any payload) {

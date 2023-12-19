@@ -1,7 +1,3 @@
-//
-// Created by raul on 22/11/23.
-//
-
 #ifndef HORDE_POLYGON_H
 #define HORDE_POLYGON_H
 

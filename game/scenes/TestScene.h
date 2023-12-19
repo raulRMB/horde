@@ -1,7 +1,3 @@
-//
-// Created by raul on 21/11/23.
-//
-
 #ifndef HORDE_TESTSCENE_H
 #define HORDE_TESTSCENE_H
 
