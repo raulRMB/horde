@@ -11,7 +11,7 @@ namespace tZ
 {
 class Game
 {
-    class Player* ownedPlayer;
+    entt::entity ownedPlayer;
     int FrameCount = 0;
 
     bool showFPS = true;
@@ -34,7 +34,7 @@ public:
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
 
-    static class Player* GetPlayer();
+    static entt::entity GetPlayer();
 
     bool Run(bool bServer);
 

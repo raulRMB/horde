@@ -14,7 +14,7 @@ class MainScene final : public Scene
     std::vector<Edge2D> Portals = {};
     bool cameraLock = true;
 
-    class Player* GetActivePlayer();
+    entt::entity GetActivePlayer();
 
 public:
     MainScene();

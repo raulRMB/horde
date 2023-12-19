@@ -1,5 +1,4 @@
 #include "MainScene.h"
-#include "smartentity/Player.h"
 #include "components/Transform.h"
 #include "ui/elements/slot/Slot.h"
 #include "ui/elements/hotbar/Hotbar.h"
@@ -11,6 +10,8 @@
 #include "components/Physics.h"
 #include "util/Util.h"
 #include "components/Spawner.h"
+#include "networking/base/NetworkDriver.h"
+#include "primitives/RayCollision.h"
 
 namespace tZ
 {
@@ -67,7 +68,7 @@ void MainScene::InitUI()
 
 void MainScene::HandleInput()
 {
-    Player* player = GetActivePlayer();
+    entt::entity player = GetActivePlayer();
     if(raylib::IsKeyPressed(raylib::KEY_Y)) {
         cameraLock = !cameraLock;
     }
@@ -92,25 +93,60 @@ void MainScene::HandleInput()
             cam.Target -= leftRight;
         }
     }
-    if(player != nullptr) {
-        player->HandleInput(&Registry);
+    if(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_RIGHT)) {
+        v2 mousePos = Util::GetMouseWorldPosition2D();
+        if(System::Get<SNavigation>().IsValidPoint(mousePos))
+        {
+            if(!NetworkDriver::IsOfflineMode()) {
+                auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
+                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
+            }
+        }
+    }
+    if(raylib::IsMouseButtonPressed(raylib::MOUSE_BUTTON_RIGHT))
+    {
+        auto e = Game::GetRegistry().create();
+        CMoveCircle mc = CMoveCircle {};
+        mc.Position = Util::GetMouseWorldPosition();
+        mc.Radius = 2.2;
+
+        Game::GetRegistry().emplace<CMoveCircle>(e, mc);
+        v2 mousePos = Util::GetMouseWorldPosition2D();
+        if(System::Get<SNavigation>().IsValidPoint(mousePos))
+        {
+            if(!NetworkDriver::IsOfflineMode()) {
+                auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
+                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
+            }
+        }
+    }
+    if(raylib::IsKeyPressed(raylib::KEY_Q))
+    {
+        if(!Game::IsServer()) {
+            FRayCollision Collision = Util::GetMouseCollision();
+            auto vec = v3(Collision.point.x, 0.0f, Collision.point.z);
+            auto netId = NetworkDriver::GetNetworkedEntities().Get(Game::GetPlayer());
+            NetworkDriver::GetClient()->TriggerAbility(netId, 0, vec);
+//            CTransform clickPoint = CTransform{vec};
+//            CTransform t = GetComponent<CTransform>();
+//            Projectile(GetEntity(), clickPoint.Position, t.Position);
+        }
     }
 }
 
-Player* MainScene::GetActivePlayer() {
+entt::entity MainScene::GetActivePlayer() {
     return Game::GetPlayer();
 }
 
 void MainScene::Update(float deltaSeconds)
 {
-
     Scene::Update(deltaSeconds);
     if(!Game::IsServer()) {
         mainCanvas->Update();
         CCamera3D& cam = Game::Instance().GetActiveCamera();
-        Player* player = GetActivePlayer();
-        if(player != nullptr && cameraLock) {
-            const v3& playerPos = player->GetComponent<CTransform>().Position;
+        entt::entity player = GetActivePlayer();
+        if(cameraLock) {
+            const v3& playerPos = GetRegistry().get<CTransform>(player).Position;
             cam.Position = glm::mix(cam.Position, v3{playerPos.x - 40, cam.Position.y, playerPos.z - 40}, 0.05);
             cam.Target = glm::mix(cam.Target, playerPos, 0.05);
         }
@@ -131,10 +167,6 @@ void MainScene::Draw()
 void MainScene::DrawUI()
 {
     Scene::DrawUI();
-    Player* player = Game::GetPlayer();
-    if(player != nullptr) {
-        player->DrawUI();
-    }
     mainCanvas->Draw();
 }
 

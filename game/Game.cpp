@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "scenes/MainScene.h"
 #include "scenes/TestScene.h"
-#include "smartentity/Player.h"
 #include <thread>
 #include <chrono>
 #include "networking/base/NetworkDriver.h"
@@ -9,6 +8,8 @@
 #include "components/Transform.h"
 #include "imgui.h"
 #include "tools/SystemViewer.h"
+#include "util/Builder.h"
+
 namespace raylib
 {
 #include "rlImGui.h"
@@ -38,18 +39,16 @@ Game& Game::Instance()
 void Game::SpawnPlayer(uint32_t networkId, CTransform& t, bool owned) {
     if(!IsServer()) {
         if(owned) {
-            Instance().ownedPlayer = new Player();
-            NetworkDriver::GetNetworkedEntities().Add(Instance().ownedPlayer->GetEntity(), networkId);
-            Instance().ownedPlayer->SetTransform(t);
+            Instance().ownedPlayer = Builder::Player(t);
+            NetworkDriver::GetNetworkedEntities().Add(Instance().ownedPlayer, networkId);
         } else {
-            Player* player = new Player();
-            NetworkDriver::GetNetworkedEntities().Add(player->GetEntity(), networkId);
-            player->SetTransform(t);
+            entt::entity e = Builder::Player(t);
+            NetworkDriver::GetNetworkedEntities().Add(e, networkId);
         }
     }
 }
 
-Player* Game::GetPlayer() {
+entt::entity Game::GetPlayer() {
     return Instance().ownedPlayer;
 }
 
@@ -168,7 +167,6 @@ void Game::Clean() const
     raylib::rlImGuiShutdown();
     ActiveScene->Clean();
     delete ActiveScene;
-    delete ownedPlayer;
 }
 
 void Game::SetActiveScene(Scene* scene)

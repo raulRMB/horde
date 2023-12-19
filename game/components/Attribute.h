@@ -6,6 +6,7 @@
 #include <string>
 #include <limits>
 #include "entt/entt.hpp"
+#include "Game.h"
 
 namespace tZ
 {

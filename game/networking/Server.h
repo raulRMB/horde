@@ -4,8 +4,8 @@
 #include <enet/enet.h>
 #include <entt/entt.hpp>
 #include <vector>
+#include "util/defines.h"
 #include "networking/base/NetMessage.h"
-#include "smartentity/Player.h"
 #include "buffers/Events_generated.h"
 
 namespace tZ
@@ -16,7 +16,7 @@ struct CTransform;
 class Server {
 public:
     ENetHost* server;
-    std::vector<Player*> players;
+    std::vector<entt::entity> players;
     Server();
     void Loop();
     void Close();

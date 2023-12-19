@@ -16,6 +16,7 @@ namespace raylib
 #include "networking/buffers/Events_generated.h"
 #include "components/CharacterAnimation.h"
 #include "abilities/Projectile.h"
+#include "util/Builder.h"
 
 namespace tZ
 {
@@ -129,11 +130,13 @@ void Server::SendSpawnProjectile(u32 netId, v2 pos, v2 dir, float speed, float l
 }
 
 void Server::OnConnect(ENetPeer* peer) {
-    Player* p = new Player;
-    players.push_back(p);
-    auto netId = NetworkDriver::GetNetworkedEntities().Get(p->GetEntity());
+    CTransform t = CTransform{};
+    t.Scale = v3{0.055, 0.055, 0.055};
+    entt::entity e = Builder::Player(t);
+    players.push_back(e);
+    auto netId = NetworkDriver::GetNetworkedEntities().Get(e);
     NetworkDriver::GetNetworkedEntities().SetOwner(netId, peer);
-    SendPlayerJoined(netId, p->GetComponent<CTransform>());
+    SendPlayerJoined(netId, Game::GetRegistry().get<CTransform>(e));
     NetworkDriver::GetConnections().push_back(peer);
     SendConnectResponse(peer, netId);
 }

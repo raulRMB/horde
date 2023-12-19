@@ -11,6 +11,7 @@ namespace raylib
 #include "components/Attribute.h"
 #include "networking/base/NetworkDriver.h"
 #include "components/Transform.h"
+#include "Game.h"
 
 namespace tZ
 {
