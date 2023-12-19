@@ -23,6 +23,7 @@ public:
 private:
     Canvas* mainCanvas;
     void Start() override;
+    void LoadSystems();
     void InitUI();
     void HandleInput() override;
     void Update(float deltaSeconds) override;

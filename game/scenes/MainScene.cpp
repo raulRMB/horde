@@ -11,6 +11,21 @@
 #include "primitives/RayCollision.h"
 #include "util/Builder.h"
 #include "components/CFollow.h"
+#include "systems/base/SAnimation.h"
+#include "systems/base/SCharacterAnimation.h"
+#include "systems/moba/SFollow.h"
+#include "systems/base/SPhysics.h"
+#include "systems/base/SShapeDrawing.h"
+#include "systems/base/SParticle.h"
+#include "systems/base/SNetworking.h"
+#include "systems/moba/SNavigation.h"
+#include "systems/base/SModelDrawing.h"
+#include "systems/moba/SAttribute.h"
+#include "systems/moba/Spawn.h"
+#include "systems/moba/SAttributeUI.h"
+#include "systems/base/SParticleDrawing.h"
+#include "systems/base/SLifetime.h"
+#include "systems/SEnemy.h"
 
 namespace tX
 {
@@ -19,13 +34,45 @@ MainScene::MainScene(){}
 
 MainScene::~MainScene() = default;
 
+void MainScene::LoadSystems()
+{
+    UpdateSystems.push_back(&System::Get<SNavigation>());
+    UpdateSystems.push_back(&System::Get<SPhysics>());
+    UpdateSystems.push_back(&System::Get<SSpawn>());
+    UpdateSystems.push_back(&System::Get<SFollow>());
+    UpdateSystems.push_back(&System::Get<SLifetime>());
+    UpdateSystems.push_back(&System::Get<SEnemy>());
+
+    if(!Game::IsStandalone()) {
+        UpdateSystems.push_back(&System::Get<SNetworking>());
+    }
+
+    if(!Game::IsServer()) {
+        DrawingSystems.push_back(&System::Get<SModelDrawing>());
+        DrawingSystems.push_back(&System::Get<SShapeDrawing>());
+        UpdateSystems.push_back(&System::Get<SAnimation>());
+        UpdateSystems.push_back(&System::Get<SParticle>());
+        DrawingSystems.push_back(&System::Get<SParticleDrawing>());
+        DrawingSystems.push_back(&System::Get<SAttributeUI>());
+    }
+
+    if(!Game::IsClient()) {
+        UpdateSystems.push_back(&System::Get<SAttribute>());
+        UpdateSystems.push_back(&System::Get<SCharacterAnimation>());
+    }
+}
+
 void MainScene::Start()
 {
+    LoadSystems();
     Load();
+
+    if(!Game::IsClient()) {
+        Builder::Spawner();
+    }
 
     if(!Game::IsServer())
     {
-        Builder::Spawner();
         InitUI();
         Builder::Map();
 
