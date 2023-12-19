@@ -120,11 +120,19 @@ static void ImGuiNewFrame(float deltaTime)
 #endif
     if (width > 0 && height > 0) 
     {
-        io.DisplayFramebufferScale = ImVec2(width / io.DisplaySize.x, height / io.DisplaySize.y);
+        #if __APPLE__
+            io.DisplayFramebufferScale = ImVec2(width / (io.DisplaySize.x / 2), height / (io.DisplaySize.y / 2));
+        #else
+            io.DisplayFramebufferScale = ImVec2(width / io.DisplaySize.x, height / io.DisplaySize.y);
+        #endif
     }
     else 
     {
-        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+        #if __APPLE__
+                io.DisplayFramebufferScale = ImVec2(2.0f, 2.0f);
+        #else
+                io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+        #endif
     }
 
     io.DeltaTime = deltaTime;
