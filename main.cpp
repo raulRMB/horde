@@ -4,9 +4,12 @@
 int main(int argc, char* argv[])
 {
     if(argc <= 1) {
-        return tX::Game::Instance().Run(false);
+        return tX::Game::Instance().Run(tX::EngineMode::Standalone);
     }
-    else {
-       return tX::Game::Instance().Run(std::strcmp(argv[1], "-s") == 0);
+    else if(std::strcmp(argv[1], "-s") == 0) {
+       return tX::Game::Instance().Run(tX::EngineMode::Server);
+    }
+    else if(std::strcmp(argv[1], "-c") == 0) {
+        return tX::Game::Instance().Run(tX::EngineMode::Client);
     }
 }

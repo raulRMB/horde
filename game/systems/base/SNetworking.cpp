@@ -11,7 +11,7 @@ namespace tX
 
 void SNetworking::Update(float deltaSeconds)
 {
-    if(NetworkDriver::IsServer()) {
+    if(Game::IsServer()) {
         for (const entt::entity &entity: Game::GetRegistry().view<CTransform, CNetwork>()) {
             CTransform& t = Game::GetRegistry().get<CTransform>(entity);
             CNetwork& cn = Game::GetRegistry().get<CNetwork>(entity);

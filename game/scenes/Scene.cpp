@@ -25,10 +25,13 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<SNavigation>());
     UpdateSystems.push_back(&System::Get<SPhysics>());
     UpdateSystems.push_back(&System::Get<SSpawn>());
-    UpdateSystems.push_back(&System::Get<SNetworking>());
     UpdateSystems.push_back(&System::Get<SFollow>());
     UpdateSystems.push_back(&System::Get<SLifetime>());
     UpdateSystems.push_back(&System::Get<SEnemy>());
+
+    if(!Game::IsStandalone()) {
+        UpdateSystems.push_back(&System::Get<SNetworking>());
+    }
     
     if(!Game::IsServer()) {
         DrawingSystems.push_back(&System::Get<SModelDrawing>());
@@ -37,7 +40,9 @@ void Scene::Start()
         UpdateSystems.push_back(&System::Get<SParticle>());
         DrawingSystems.push_back(&System::Get<SParticleDrawing>());
         DrawingSystems.push_back(&System::Get<SAttributeUI>());
-    } else {
+    }
+
+    if(!Game::IsClient()) {
         UpdateSystems.push_back(&System::Get<SAttribute>());
         UpdateSystems.push_back(&System::Get<SCharacterAnimation>());
     }

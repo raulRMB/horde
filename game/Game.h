@@ -28,6 +28,7 @@ class Game
 
 public:
     Game();
+    EngineMode mode;
 
     static Game& Instance();
 
@@ -36,7 +37,7 @@ public:
 
     static entt::entity GetPlayer();
 
-    bool Run(bool bServer);
+    bool Run(EngineMode mode);
 
     bool Init();
 
@@ -60,7 +61,8 @@ public:
     static void SpawnPlayer(uint32_t networkId, CTransform& t, bool owned);
 
     static bool IsServer();
-    static bool IsOfflineMode();
+    static bool IsClient();
+    static bool IsStandalone();
 
     void Loop();
 

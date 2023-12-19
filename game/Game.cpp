@@ -37,14 +37,12 @@ Game& Game::Instance()
 }
 
 void Game::SpawnPlayer(uint32_t networkId, CTransform& t, bool owned) {
-    if(!IsServer()) {
-        if(owned) {
-            Instance().OwnedPlayer = Builder::Player(t);
-            NetworkDriver::GetNetworkedEntities().Add(Instance().OwnedPlayer, networkId);
-        } else {
-            entt::entity e = Builder::Player(t);
-            NetworkDriver::GetNetworkedEntities().Add(e, networkId);
-        }
+    if(owned) {
+        Instance().OwnedPlayer = Builder::Player(t);
+        NetworkDriver::GetNetworkedEntities().Add(Instance().OwnedPlayer, networkId);
+    } else {
+        entt::entity e = Builder::Player(t);
+        NetworkDriver::GetNetworkedEntities().Add(e, networkId);
     }
 }
 
@@ -60,7 +58,9 @@ void Game::Loop() {
     else {
         Update(1.0f / tickRate);
     }
-    NetworkDriver::ProcessQueues();
+    if(!Game::IsStandalone()) {
+        NetworkDriver::ProcessQueues();
+    }
     if(!Game::IsServer()) {
         raylib::BeginDrawing();
         ClearBackground(ToRaylibColor(BackgroundColor));
@@ -74,9 +74,9 @@ void Game::Loop() {
     }
 }
 
-bool Game::Run(bool bServer)
+bool Game::Run(EngineMode mode)
 {
-    NetworkDriver::SetIsServer(bServer);
+    Instance().mode = mode;
     Init();
     if(IsServer()) {
         while (bRunning) {
@@ -95,10 +95,6 @@ bool Game::Run(bool bServer)
         }
     }
     return EXIT_SUCCESS;
-}
-
-bool Game::IsOfflineMode() {
-    return NetworkDriver::IsOfflineMode();
 }
 
 void Game::Fullscreen() {
@@ -120,20 +116,26 @@ bool Game::Init()
     bRunning = true;
     SetActiveScene(new MainScene());
     Start();
-    NetworkDriver::Start(periodMicroseconds);
+    if(!Game::IsStandalone()) {
+        NetworkDriver::Start(periodMicroseconds);
+    }
     return true;
 }
 
 bool Game::IsServer() {
-    return NetworkDriver::IsServer();
+    return Instance().mode == EngineMode::Server;
+}
+
+bool Game::IsClient() {
+    return Instance().mode == EngineMode::Client;
+}
+
+bool Game::IsStandalone() {
+    return Instance().mode == EngineMode::Standalone;
 }
 
 void Game::Start() const
 {
-    if(NetworkDriver::IsOfflineMode()) {
-        CTransform t = CTransform{};
-        SpawnPlayer(1, t, true);
-    }
     ActiveScene->Start();
 }
 

@@ -10,6 +10,7 @@
 #include "networking/base/NetworkDriver.h"
 #include "primitives/RayCollision.h"
 #include "util/Builder.h"
+#include "components/CFollow.h"
 
 namespace tX
 {
@@ -32,6 +33,11 @@ void MainScene::Start()
         const v3& pos = v3{0,0,0};
         cam.Position = v3{pos.x - 40, cam.Position.y, pos.z - 40};
         cam.Target = pos;
+    }
+    if(Game::IsStandalone()) {
+        CTransform t = CTransform{};
+        t.Scale = v3{0.055};
+        Game::SpawnPlayer(1, t, true);
     }
     Scene::Start();
 }
@@ -78,9 +84,14 @@ void MainScene::HandleInput()
         v2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {
-            if(!NetworkDriver::IsOfflineMode()) {
+            if(Game::IsClient()) {
                 auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
                 NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
+            } else {
+                CFollow &followComponent = Game::GetRegistry().get<CFollow>(GetActivePlayer());
+                followComponent.FollowState = EFollowState::Dirty;
+                followComponent.Index = 1;
+                followComponent.Goal = mousePos;
             }
         }
     }
@@ -95,21 +106,31 @@ void MainScene::HandleInput()
         v2 mousePos = Util::GetMouseWorldPosition2D();
         if(System::Get<SNavigation>().IsValidPoint(mousePos))
         {
-            if(!NetworkDriver::IsOfflineMode()) {
+            if(Game::IsClient()) {
                 auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
                 NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
+            } else {
+                CFollow &followComponent = Game::GetRegistry().get<CFollow>(GetActivePlayer());
+                followComponent.FollowState = EFollowState::Dirty;
+                followComponent.Index = 1;
+                followComponent.Goal = mousePos;
             }
         }
     }
     if(raylib::IsKeyPressed(raylib::KEY_Q))
     {
-            FRayCollision Collision = Util::GetMouseCollision();
-            auto vec = v3(Collision.point.x, 0.0f, Collision.point.z);
+        FRayCollision Collision = Util::GetMouseCollision();
+        auto vec = v3(Collision.point.x, 0.0f, Collision.point.z);
+        if(Game::IsClient()) {
             auto netId = NetworkDriver::GetNetworkedEntities().Get(Game::GetPlayer());
             NetworkDriver::GetClient()->TriggerAbility(netId, 0, vec);
-//            CTransform clickPoint = CTransform{vec};
-//            CTransform t = GetComponent<CTransform>();
-//            Projectile(GetEntity(), clickPoint.Position, t.Position);
+        } else {
+            entt::entity player = Game::GetPlayer();
+            entt::registry& registry = Game::GetRegistry();
+            CTransform clickPoint = CTransform{vec};
+            CTransform t = registry.get<CTransform>(player);
+            Projectile(player, clickPoint.Position, t.Position, 50, 1.2);
+        }
     }
 }
 

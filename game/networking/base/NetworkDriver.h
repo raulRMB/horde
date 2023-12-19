@@ -22,11 +22,8 @@ class NetworkDriver {
     NetworkDriver(const NetworkDriver&) = delete;
     NetworkDriver& operator=(const NetworkDriver&) = delete;
 
-    bool isServer;
-    bool offlineMode = false;
-
-    Client* client;
-    Server* server;
+    class Client* client;
+    class Server* server;
     NetworkedEntities networkedEntities;
     std::vector<ENetPeer*> connections;
     std::queue<IncomingMessage> inboundQueue;
@@ -35,16 +32,13 @@ class NetworkDriver {
 public:
     void Init(long long periodMicroseconds);
     static void Start(long long periodMicroseconds) { Instance().Init(periodMicroseconds); };
-    static bool IsServer();
-    static bool IsOfflineMode();
-    static Server* GetServer();
-    static Client* GetClient();
+    static class Server* GetServer();
+    static class Client* GetClient();
     static std::queue<IncomingMessage>& GetInboundQueue() { return Instance().inboundQueue; };
     static std::queue<OutboundMessage>& GetOutboundQueue() { return Instance().outboundQueue; };
     static std::vector<ENetPeer*>& GetConnections() { return Instance().connections; };
     static void ProcessQueues();
     static NetworkedEntities& GetNetworkedEntities();
-    static void SetIsServer(bool isServer);
 };
 
 }

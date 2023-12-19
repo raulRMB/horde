@@ -30,12 +30,15 @@ namespace tX
             animation.bPlaying = true;
             Game::GetRegistry().emplace<CAnimation>(e, animation);
             Game::GetRegistry().emplace<CModel>(e, mc);
+        }
+
+        if(!Game::IsStandalone()) {
             CNetwork n = CNetwork{};
+            n.TargetTransform = t;
             Game::GetRegistry().emplace<CNetwork>(e, n);
-        } else {
-            CNetwork n = CNetwork{};
-            Game::GetRegistry().emplace<CNetwork>(e, n);
-            NetworkDriver::GetNetworkedEntities().Add(e);
+            if(Game::IsServer()) {
+                NetworkDriver::GetNetworkedEntities().Add(e);
+            }
         }
 
         std::list<FAttribute> attributes;

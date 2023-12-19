@@ -7,6 +7,12 @@
 namespace tX
 {
 
+enum EngineMode {
+    Server = 0,
+    Client,
+    Standalone
+};
+
 using i8 = int8_t;
 using i16 = int16_t;
 using i32 = int32_t;

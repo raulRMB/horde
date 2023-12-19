@@ -4,6 +4,7 @@
 
 #include "components/CFollow.h"
 #include "networking/buffers/Events_generated.h"
+#include "Game.h"
 
 namespace tX
 {
@@ -16,13 +17,9 @@ NetworkDriver& NetworkDriver::Instance()
     return instance;
 }
 
-void NetworkDriver::SetIsServer(bool isServer) {
-    Instance().isServer = isServer;
-}
-
 void NetworkDriver::Init(long long periodMicroseconds) {
-    if(NetworkDriver::IsServer()) {
-        server = new Server();
+    if(Game::IsServer()) {
+        server = new class Server();
         std::thread networkThread([]()
         {
             while(1)
@@ -32,7 +29,7 @@ void NetworkDriver::Init(long long periodMicroseconds) {
         });
         networkThread.detach();
     } else {
-        client = new Client();
+        client = new class Client();
         std::thread networkThread([periodMicroseconds]()
         {
             while(1)
@@ -51,7 +48,7 @@ void NetworkDriver::ProcessQueues() {
         inboundProcessed += 1;
         auto msg = GetInboundQueue().front();
         auto header = Net::GetHeader(msg.data);
-        if(IsServer()) {
+        if(Game::IsServer()) {
             Instance().server->OnInboundMessage(header, msg.peer);
         } else {
             Instance().client->OnInboundMessage(header);
@@ -61,7 +58,7 @@ void NetworkDriver::ProcessQueues() {
     while(!GetOutboundQueue().empty()) {
         outboundProcessed += 1;
         OutboundMessage som = GetOutboundQueue().front();
-        if(IsServer()) {
+        if(Game::IsServer()) {
             Instance().server->SendOutboundMessage(som);
         } else {
             Instance().client->SendOutboundMessage(som.Packet);
@@ -69,7 +66,7 @@ void NetworkDriver::ProcessQueues() {
         GetOutboundQueue().pop();
     }
     if(inboundProcessed > 0 || outboundProcessed > 0) {
-        if (IsServer()) {
+        if (Game::IsServer()) {
             Instance().server->flush();
         } else {
             Instance().client->flush();
@@ -81,19 +78,12 @@ NetworkedEntities& NetworkDriver::GetNetworkedEntities() {
     return Instance().networkedEntities;
 }
 
-Server* NetworkDriver::GetServer() {
+class Server* NetworkDriver::GetServer() {
     return Instance().server;
 }
 
-Client* NetworkDriver::GetClient() {
+class Client* NetworkDriver::GetClient() {
     return Instance().client;
 }
 
-bool NetworkDriver::IsServer() {
-    return Instance().isServer;
-}
-
-bool NetworkDriver::IsOfflineMode() {
-    return Instance().offlineMode;
-}
 }
