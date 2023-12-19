@@ -7,6 +7,7 @@ namespace tZ
 struct CEnemy
 {
     bool bAlive;
+    v3 lastTarget;
 };
 
 }

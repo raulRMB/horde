@@ -12,7 +12,8 @@ class EnemySystem : public UpdateSystem
 public:
     void SetPlayer(entt::entity player) { Player = player; }
     void Update(float deltaSeconds) override;
-}; 
+    void Process(entt::entity e, entt::registry& r, float deltaSeconds);
+};
 
 }
 

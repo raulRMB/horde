@@ -1,7 +1,7 @@
 #include "Spawn.h"
 #include "components/Spawner.h"
 #include "components/Follow.h"
-#include "components/EnemyComponent.h"
+#include "components/Enemy.h"
 #include "components/Shapes.h"
 #include "components/Physics.h"
 #include "components/Transform.h"
