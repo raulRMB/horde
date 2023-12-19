@@ -5,6 +5,7 @@
 #include "components/Shapes.h"
 #include "components/Physics.h"
 #include "components/Transform.h"
+#include "components/Attribute.h"
 
 namespace tZ
 {
@@ -37,6 +38,16 @@ void SSpawn::Update(float deltaSeconds)
             AddComponent(e, physics);
             CEnemy enemy{};
             AddComponent(e, enemy);
+            std::list<FAttribute> attributes;
+            FAttribute Health = {
+                    .id="health",
+                    .base=500,
+                    .max=1000,
+                    .min=0,
+            };
+            attributes.push_back(Health);
+            CAttributeSet ac{attributes};
+            AddComponent(e, ac);
         }
     }
 }
