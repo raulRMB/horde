@@ -11,12 +11,15 @@
 #include "components/Animation.h"
 #include "components/CharacterAnimation.h"
 #include "systems/EnemySystem.h"
+#include "components/Spawner.h"
+#include "glm/ext/quaternion_trigonometric.hpp"
 
 namespace tZ
 {
 
     entt::entity Builder::Player(CTransform& t) {
         entt::entity e = Game::GetRegistry().create();
+        Game::GetRegistry().emplace<CTransform>(e, t);
         System::Get<EnemySystem>().SetPlayer(e);
 
         if(!Game::IsServer()) {
@@ -82,13 +85,33 @@ namespace tZ
         characterAnim.AnimState = ECharacterAnimState::Idle;
 
         Game::GetRegistry().emplace<CCharacterAnimation>(e, characterAnim);
-        Game::GetRegistry().emplace<CTransform>(e, t);
         Game::GetRegistry().emplace<CAttributeSet>(e, ac);
         Game::GetRegistry().emplace<CPhysics2D>(e, physics);
         Game::GetRegistry().emplace<CFollow>(e, follow);
         if(Game::IsServer()) {
             Game::GetDispatcher().trigger(healthRegen);
         }
+        return e;
+    }
+
+    entt::entity Builder::Spawner() {
+        entt::entity spawner = Game::GetRegistry().create();
+        CTransform d = CTransform {};
+        CSpawner s = CSpawner{2};
+        Game::GetRegistry().emplace<CTransform>(spawner, d);
+        Game::GetRegistry().emplace<CSpawner>(spawner, s);
+        return spawner;
+    }
+
+    entt::entity Builder::Map() {
+        entt::entity e = Game::GetRegistry().create();
+        CTransform t = {};
+        t.Rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0));
+        t.Scale = v3(250.f);
+        Game::GetRegistry().emplace<CTransform>(e, t);
+        raylib::Model m = raylib::LoadModelFromMesh(raylib::GenMeshPlane(1, 1, 1, 1));
+        m.materials[0].maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
+        Game::GetRegistry().emplace<CModel>(e, CModel(m, 1.0f, false));
         return e;
     }
 

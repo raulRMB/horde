@@ -8,6 +8,8 @@ namespace tZ {
     class Builder {
         public:
             static entt::entity Player(CTransform& t);
+            static entt::entity Spawner();
+            static entt::entity Map();
     };
 }
 

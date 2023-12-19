@@ -5,47 +5,29 @@
 #include "systems/moba/Navigation.h"
 #include "util/raylibEx.h"
 #include "abilities/Projectile.h"
-#include "components/Attribute.h"
 #include "components/Model.h"
-#include "components/Physics.h"
 #include "util/Util.h"
-#include "components/Spawner.h"
 #include "networking/base/NetworkDriver.h"
 #include "primitives/RayCollision.h"
+#include "util/Builder.h"
 
 namespace tZ
 {
-    struct CEmitter;
 
-MainScene::MainScene()
-{
-
-}
+MainScene::MainScene(){}
 
 MainScene::~MainScene() = default;
 
 void MainScene::Start()
 {
     Load();
-
-    entt::entity spawner = CreateEntity();
-    CTransform d = CTransform {};
-    CSpawner s = CSpawner{2};
-    GetRegistry().emplace<CTransform>(spawner, d);
-    GetRegistry().emplace<CSpawner>(spawner, s);
+    //Builder::Spawner();
 
     if(!Game::IsServer())
     {
         InitUI();
+        Builder::Map();
 
-        entt::entity e = CreateEntity();
-        CTransform t = {};
-        t.Rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0));
-        t.Scale = v3(250.f);
-        AddComponent(e, t);
-        raylib::Model m = raylib::LoadModelFromMesh(raylib::GenMeshPlane(1, 1, 1, 1));
-        m.materials[0].maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
-        AddComponent(e, CModel(m, 1.0f, false));
         CCamera3D& cam = Game::Instance().GetActiveCamera();
         const v3& pos = v3{0,0,0};
         cam.Position = v3{pos.x - 40, cam.Position.y, pos.z - 40};
@@ -57,7 +39,6 @@ void MainScene::Start()
 void MainScene::InitUI()
 {
     mainCanvas = new Canvas();
-
     Hotbar* hotbar = new Hotbar();
     hotbar->AddSlot("../assets/ui/images/concept.png");
     hotbar->AddSlot("../assets/ui/images/map.png");
@@ -122,7 +103,6 @@ void MainScene::HandleInput()
     }
     if(raylib::IsKeyPressed(raylib::KEY_Q))
     {
-        if(!Game::IsServer()) {
             FRayCollision Collision = Util::GetMouseCollision();
             auto vec = v3(Collision.point.x, 0.0f, Collision.point.z);
             auto netId = NetworkDriver::GetNetworkedEntities().Get(Game::GetPlayer());
@@ -130,7 +110,6 @@ void MainScene::HandleInput()
 //            CTransform clickPoint = CTransform{vec};
 //            CTransform t = GetComponent<CTransform>();
 //            Projectile(GetEntity(), clickPoint.Position, t.Position);
-        }
     }
 }
 
