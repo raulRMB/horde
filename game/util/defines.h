@@ -4,7 +4,7 @@
 #include "glm/glm.hpp"
 #include "glm/detail/type_quat.hpp"
 
-namespace tZ
+namespace tX
 {
 
 using i8 = int8_t;

@@ -3,15 +3,15 @@
 
 #include <chrono>
 #include <entt/entt.hpp>
-#include "components/Camera.h"
+#include "components/CCamera.h"
 #include "primitives/Color.h"
-#include "components/Transform.h"
+#include "components/CTransform.h"
 
-namespace tZ
+namespace tX
 {
 class Game
 {
-    entt::entity ownedPlayer;
+    entt::entity OwnedPlayer;
     int FrameCount = 0;
 
     bool showFPS = true;
@@ -64,8 +64,8 @@ public:
 
     void Loop();
 
-    void Save();
-    void Load();
+    void Save() {}
+    void Load() {}
 
 };
 

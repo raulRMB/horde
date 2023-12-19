@@ -5,7 +5,7 @@
 #include "ui/Canvas.h"
 #include "primitives/Triangles.h"
 
-namespace tZ
+namespace tX
 {
 
 class MainScene final : public Scene

@@ -2,14 +2,14 @@
 #define PROJECTILE_H
 
 #include "util/Util.h"
-#include "components/Attribute.h"
+#include "components/CAttribute.h"
 #include <entt/entt.hpp>
-#include "components/Particle.h"
-#include "components/Physics.h"
-#include "components/Shapes.h"
-#include "components/Lifetime.h"
+#include "components/CParticle.h"
+#include "components/CPhysics.h"
+#include "components/CShapes.h"
+#include "components/CLifetime.h"
 
-namespace tZ
+namespace tX
 {
 
 inline FSpawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {

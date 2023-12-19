@@ -1,16 +1,16 @@
 #include "TestScene.h"
 #include "primitives/Triangles.h"
 #include "util/Util.h"
-#include "components/Shapes.h"
+#include "components/CShapes.h"
 #include "primitives/Polygon.h"
-#include "components/Transform.h"
+#include "components/CTransform.h"
 
 namespace raylib
 {
 #include <raylib.h>
 }
 
-namespace tZ
+namespace tX
 {
 
 std::vector<Triangle2D> triangles{};

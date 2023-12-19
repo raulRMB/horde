@@ -1,26 +1,26 @@
 #include "Builder.h"
 
 #include "util/defines.h"
-#include "components/Follow.h"
+#include "components/CFollow.h"
 #include "util/Util.h"
-#include "components/Model.h"
+#include "components/CModel.h"
 #include "networking/base/NetworkDriver.h"
-#include "components/Network.h"
-#include "components/Physics.h"
-#include "components/Attribute.h"
-#include "components/Animation.h"
-#include "components/CharacterAnimation.h"
-#include "systems/EnemySystem.h"
-#include "components/Spawner.h"
+#include "components/CNetwork.h"
+#include "components/CPhysics.h"
+#include "components/CAttribute.h"
+#include "components/CAnimation.h"
+#include "components/CCharacterAnimation.h"
+#include "systems/SEnemy.h"
+#include "components/CSpawner.h"
 #include "glm/ext/quaternion_trigonometric.hpp"
 
-namespace tZ
+namespace tX
 {
 
     entt::entity Builder::Player(CTransform& t) {
         entt::entity e = Game::GetRegistry().create();
         Game::GetRegistry().emplace<CTransform>(e, t);
-        System::Get<EnemySystem>().SetPlayer(e);
+        System::Get<SEnemy>().SetPlayer(e);
 
         if(!Game::IsServer()) {
             CAnimation animation{};

@@ -3,10 +3,10 @@
 
 #include "ui/Element.h"
 #include "primitives/Color.h"
-#include "components/Rectangle.h"
+#include "components/CRectangle.h"
 #include "util/defines.h"
 
-namespace tZ
+namespace tX
 {
 
 class Button : public Element

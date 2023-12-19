@@ -2,10 +2,10 @@
 
 #include <thread>
 
-#include "components/Follow.h"
+#include "components/CFollow.h"
 #include "networking/buffers/Events_generated.h"
 
-namespace tZ
+namespace tX
 {
 
 NetworkDriver::NetworkDriver(){}

@@ -3,7 +3,7 @@
 
 #include "systems/System.h"
 
-namespace tZ
+namespace tX
 {
 
 class SSpawn : public UpdateSystem

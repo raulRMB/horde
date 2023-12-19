@@ -6,7 +6,7 @@ namespace raylib
 #include "raylib.h"
 }
 
-namespace tZ
+namespace tX
 {
 
 typedef struct FMaterial

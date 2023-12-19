@@ -2,7 +2,7 @@
 #include "ui/Element.h"
 #include "ui/elements/slot/Slot.h"
 
-namespace tZ
+namespace tX
 {
 
 class Hotbar : public Element {

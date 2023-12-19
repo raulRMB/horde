@@ -3,14 +3,14 @@
 
 #include "defines.h"
 #include "primitives/Color.h"
-#include "components/Rectangle.h"
-#include "components/Transform.h"
+#include "components/CRectangle.h"
+#include "components/CTransform.h"
 namespace raylib
 {
     #include "raylib.h"
 }
 
-namespace tZ
+namespace tX
 {
 
 struct ParticleInstanceData

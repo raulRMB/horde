@@ -1,6 +1,6 @@
 #include "Slot.h"
 
-namespace tZ
+namespace tX
 {
 
 Slot::Slot(raylib::Rectangle box) {

@@ -7,7 +7,7 @@
 #include "buffers/Events_generated.h"
 #include "util/defines.h"
 
-namespace tZ
+namespace tX
 {
 
 class Client

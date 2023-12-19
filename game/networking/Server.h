@@ -8,7 +8,7 @@
 #include "networking/base/NetMessage.h"
 #include "buffers/Events_generated.h"
 
-namespace tZ
+namespace tX
 {
 
 struct CTransform;

@@ -5,7 +5,7 @@
 #include <chrono>
 #include "networking/base/NetworkDriver.h"
 #include "util/raylibEx.h"
-#include "components/Transform.h"
+#include "components/CTransform.h"
 #include "imgui.h"
 #include "tools/SystemViewer.h"
 #include "util/Builder.h"
@@ -15,7 +15,7 @@ namespace raylib
 #include "rlImGui.h"
 }
 
-namespace tZ
+namespace tX
 {
 
 constexpr double tickRate = 60.0;
@@ -39,8 +39,8 @@ Game& Game::Instance()
 void Game::SpawnPlayer(uint32_t networkId, CTransform& t, bool owned) {
     if(!IsServer()) {
         if(owned) {
-            Instance().ownedPlayer = Builder::Player(t);
-            NetworkDriver::GetNetworkedEntities().Add(Instance().ownedPlayer, networkId);
+            Instance().OwnedPlayer = Builder::Player(t);
+            NetworkDriver::GetNetworkedEntities().Add(Instance().OwnedPlayer, networkId);
         } else {
             entt::entity e = Builder::Player(t);
             NetworkDriver::GetNetworkedEntities().Add(e, networkId);
@@ -49,7 +49,7 @@ void Game::SpawnPlayer(uint32_t networkId, CTransform& t, bool owned) {
 }
 
 entt::entity Game::GetPlayer() {
-    return Instance().ownedPlayer;
+    return Instance().OwnedPlayer;
 }
 
 void Game::Loop() {

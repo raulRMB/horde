@@ -1,8 +1,8 @@
 #include "Button.h"
-#include "components/Rectangle.h"
+#include "components/CRectangle.h"
 #include "util/raylibEx.h"
 
-namespace tZ
+namespace tX
 {
 
 Button::Button(CRectangle box, char* text)
@@ -19,7 +19,7 @@ bool Button::isHovered()
 void Button::Draw(DrawData data)
 {
     DrawRectangleRounded(ToRaylibRect(Box), 0.2, 10, ToRaylibColor(GetBgColor()));
-    rlDrawText(Text, static_cast<int>(Box.X), static_cast<int>(Box.Y), 28, ToRaylibColor(GetTextColor()));
+    raylib::rlDrawText(Text, static_cast<int>(Box.X), static_cast<int>(Box.Y), 28, ToRaylibColor(GetTextColor()));
 }
 
 void Button::OnAdded()

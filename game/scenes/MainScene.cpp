@@ -1,17 +1,17 @@
 #include "MainScene.h"
-#include "components/Transform.h"
+#include "components/CTransform.h"
 #include "ui/elements/slot/Slot.h"
 #include "ui/elements/hotbar/Hotbar.h"
-#include "systems/moba/Navigation.h"
+#include "systems/moba/SNavigation.h"
 #include "util/raylibEx.h"
 #include "abilities/Projectile.h"
-#include "components/Model.h"
+#include "components/CModel.h"
 #include "util/Util.h"
 #include "networking/base/NetworkDriver.h"
 #include "primitives/RayCollision.h"
 #include "util/Builder.h"
 
-namespace tZ
+namespace tX
 {
 
 MainScene::MainScene(){}
@@ -113,7 +113,8 @@ void MainScene::HandleInput()
     }
 }
 
-entt::entity MainScene::GetActivePlayer() {
+entt::entity MainScene::GetActivePlayer()
+{
     return Game::GetPlayer();
 }
 

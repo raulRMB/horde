@@ -4,7 +4,7 @@
 #include "entt/entt.hpp"
 #include "systems/System.h"
 
-namespace tZ
+namespace tX
 {
 
 class Scene

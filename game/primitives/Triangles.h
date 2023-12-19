@@ -4,7 +4,7 @@
 #include "util/defines.h"
 #include "Color.h"
 
-namespace tZ
+namespace tX
 {
 
 struct Edge2D

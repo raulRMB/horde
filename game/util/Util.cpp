@@ -1,20 +1,20 @@
 #include "Util.h"
-#include "components/Physics.h"
+#include "components/CPhysics.h"
 
 namespace raylib
 {
 #include "raylib.h"
 }
 
-#include "components/Attribute.h"
+#include "components/CAttribute.h"
 #include "primitives/RayCollision.h"
-#include "components/Physics.h"
-#include "components/Transform.h"
+#include "components/CPhysics.h"
+#include "components/CTransform.h"
 #include "primitives/Polygon.h"
 #include "primitives/Triangles.h"
 #include <chrono>
 
-namespace tZ
+namespace tX
 {
 
 v3 Util::RandVec3(int min, int max) {
@@ -33,7 +33,7 @@ long Util::GenerateTimestamp() {
     return timestamp;
 }
 
-tZ::FAttribute* Util::GetAttribute(tZ::CAttributeSet& ac, const std::string& attr)
+tX::FAttribute* Util::GetAttribute(tX::CAttributeSet& ac, const std::string& attr)
 {
     auto it = std::find_if(ac.Attributes.begin(), ac.Attributes.end(),
                                                           [&attr](const FAttribute& a)

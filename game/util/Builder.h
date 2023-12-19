@@ -2,9 +2,9 @@
 #define HORDE_BUILDER_H
 
 #include <entt/entt.hpp>
-#include "components/Transform.h"
+#include "components/CTransform.h"
 
-namespace tZ {
+namespace tX {
     class Builder {
         public:
             static entt::entity Player(CTransform& t);

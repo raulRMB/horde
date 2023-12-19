@@ -4,7 +4,7 @@
 #include "../util/raymathEx.h"
 #include <set>
 
-namespace tZ::Navigation
+namespace tX::Navigation
 {
 
 bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge)

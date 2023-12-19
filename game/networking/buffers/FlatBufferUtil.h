@@ -7,7 +7,7 @@
 #include "util/defines.h"
 #include "Events_generated.h"
 
-namespace tZ
+namespace tX
 {
 
 struct CTransform;

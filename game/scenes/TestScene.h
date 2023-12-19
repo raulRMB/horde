@@ -3,7 +3,7 @@
 
 #include "Scene.h"
 
-namespace tZ
+namespace tX
 {
 
 class TestScene : public Scene

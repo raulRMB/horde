@@ -6,7 +6,7 @@ namespace raylib
 #include "rlgl.h"
 }
 
-namespace tZ
+namespace tX
 {
 void DrawMeshInstancedWithColor(raylib::Mesh mesh, raylib::Material material, const ParticleInstanceData* instanceData,  int instances)
 {

@@ -5,15 +5,15 @@ namespace raylib
 #include "raylib.h"
 }
 #include "../Server.h"
-#include "components/Follow.h"
+#include "components/CFollow.h"
 #include "flatbuffers/flatbuffers.h"
 #include "networking/buffers/Events_generated.h"
-#include "components/Attribute.h"
+#include "components/CAttribute.h"
 #include "networking/base/NetworkDriver.h"
-#include "components/Transform.h"
+#include "components/CTransform.h"
 #include "Game.h"
 
-namespace tZ
+namespace tX
 {
 
 std::vector<ENetPeer*>& FlatBufferUtil::CreatePeerVector(ENetPeer* peer) {

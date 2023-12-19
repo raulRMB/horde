@@ -2,7 +2,7 @@
 #include "ui/Canvas.h"
 #include "Hotbar.h"
 
-namespace tZ
+namespace tX
 {
 
 bool Hotbar::isHovered()  {

@@ -1,13 +1,13 @@
 #include "Spawn.h"
-#include "components/Spawner.h"
-#include "components/Follow.h"
-#include "components/Enemy.h"
-#include "components/Shapes.h"
-#include "components/Physics.h"
-#include "components/Transform.h"
-#include "components/Attribute.h"
+#include "components/CSpawner.h"
+#include "components/CFollow.h"
+#include "components/CEnemy.h"
+#include "components/CShapes.h"
+#include "components/CPhysics.h"
+#include "components/CTransform.h"
+#include "components/CAttribute.h"
 
-namespace tZ
+namespace tX
 {
 
 void SSpawn::Update(float deltaSeconds)

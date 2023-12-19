@@ -1,9 +1,9 @@
 #include "SystemViewer.h"
 #include "Game.h"
 #include "imgui.h"
-#include "systems/base/Physics.h"
+#include "systems/base/SPhysics.h"
 
-namespace tZ
+namespace tX
 {
 
 SystemViewer::SystemViewer()

@@ -3,7 +3,7 @@
 
 #include "util/defines.h"
 
-namespace tZ
+namespace tX
 {
 
 typedef struct FRayCollision

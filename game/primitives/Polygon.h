@@ -4,7 +4,7 @@
 #include <vector>
 #include "util/defines.h"
 
-namespace tZ
+namespace tX
 {
 
 struct Polygon2D

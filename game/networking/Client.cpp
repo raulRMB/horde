@@ -7,18 +7,18 @@
 #include "abilities/Projectile.h"
 #include "networking/buffers/Events_generated.h"
 #include "networking/buffers/FlatBufferUtil.h"
-#include "components/Attribute.h"
-#include "components/CharacterAnimation.h"
+#include "components/CAttribute.h"
+#include "components/CCharacterAnimation.h"
 #include "util/Util.h"
-#include "components/Transform.h"
-#include "components/Network.h"
+#include "components/CTransform.h"
+#include "components/CNetwork.h"
 
 namespace raylib
 {
 #include "raylib.h"
 }
 
-namespace tZ
+namespace tX
 {
 
 Client::Client() {

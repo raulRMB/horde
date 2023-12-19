@@ -1,16 +1,16 @@
 #include "doctest.h"
-#include "systems/base/Lifetime.h"
-#include "components/Lifetime.h"
-#include "components/Physics.h"
-#include "components/Follow.h"
-#include "systems/moba/Navigation.h"
-#include "systems/moba/Follow.h"
-#include "systems/base/Physics.h"
-#include "components/Enemy.h"
-#include "systems/EnemySystem.h"
+#include "systems/base/SLifetime.h"
+#include "components/CLifetime.h"
+#include "components/CPhysics.h"
+#include "components/CFollow.h"
+#include "systems/moba/SNavigation.h"
+#include "systems/moba/SFollow.h"
+#include "systems/base/SPhysics.h"
+#include "components/CEnemy.h"
+#include "systems/SEnemy.h"
 #include <entt/entt.hpp>
 
-namespace tZ {
+namespace tX {
 
     TEST_CASE("LifeTime_System_Test1") {
         entt::registry r;
@@ -70,7 +70,7 @@ namespace tZ {
 
             auto followSystem = System::Get<SFollow>();
             auto physicsSystem = System::Get<SPhysics>();
-            auto enemySystem = System::Get<EnemySystem>();
+            auto enemySystem = System::Get<SEnemy>();
 
             auto player = r.create();
 
