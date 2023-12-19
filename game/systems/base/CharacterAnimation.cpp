@@ -8,21 +8,18 @@ namespace tZ
 
 void SCharacterAnimation::Update(float deltaSeconds)
 {
-    if(Game::IsServer())
+    for(const entt::entity& entity : GetView<CPhysics2D, CCharacterAnimation>())
     {
-        for(const entt::entity& entity : GetView<CPhysics2D, CCharacterAnimation>())
-        {
-            CPhysics2D& physics = GetComponent<CPhysics2D>(entity);
-            CCharacterAnimation& characterAnim = GetComponent<CCharacterAnimation>(entity);
+        CPhysics2D& physics = GetComponent<CPhysics2D>(entity);
+        CCharacterAnimation& characterAnim = GetComponent<CCharacterAnimation>(entity);
 
-            if(characterAnim.bOverrideAnim)
-            {
-                DecideOverrideAnimation(deltaSeconds, characterAnim);
-            }
-            else
-            {
-                DecideBaseAnimation(characterAnim, physics);
-            }
+        if(characterAnim.bOverrideAnim)
+        {
+            DecideOverrideAnimation(deltaSeconds, characterAnim);
+        }
+        else
+        {
+            DecideBaseAnimation(characterAnim, physics);
         }
     }
 }

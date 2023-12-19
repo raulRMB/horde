@@ -21,10 +21,10 @@ MainScene::~MainScene() = default;
 void MainScene::Start()
 {
     Load();
-    //Builder::Spawner();
 
     if(!Game::IsServer())
     {
+        Builder::Spawner();
         InitUI();
         Builder::Map();
 

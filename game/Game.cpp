@@ -111,7 +111,7 @@ void Game::Fullscreen() {
 
 bool Game::Init()
 {
-    if(!Game::IsServer() || serverDraw) {
+    if(!Game::IsServer()) {
         SetConfigFlags(raylib::FLAG_WINDOW_RESIZABLE);
         raylib::InitWindow(800, 600, "Horde");
         // Fullscreen();

@@ -61,7 +61,6 @@ public:
 
     static bool IsServer();
     static bool IsOfflineMode();
-    bool serverDraw = false;
 
     void Loop();
 

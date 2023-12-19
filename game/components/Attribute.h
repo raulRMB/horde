@@ -41,14 +41,11 @@ struct FAttribute
     float min;
     std::list<AttrMod> mods;
     float get() {
-        if(Game::IsServer()) {
-            float x = base;
-            for (const AttrMod& mod: mods) {
-                x = mod.callback(x);
-            }
-            return x;
+        float x = base;
+        for (const AttrMod& mod: mods) {
+            x = mod.callback(x);
         }
-        return base;
+        return x;
     }
 };
 

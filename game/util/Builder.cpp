@@ -97,6 +97,7 @@ namespace tZ
     entt::entity Builder::Spawner() {
         entt::entity spawner = Game::GetRegistry().create();
         CTransform d = CTransform {};
+        d.Position = v3{15, 0, 15};
         CSpawner s = CSpawner{2};
         Game::GetRegistry().emplace<CTransform>(spawner, d);
         Game::GetRegistry().emplace<CSpawner>(spawner, s);
