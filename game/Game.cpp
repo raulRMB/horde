@@ -245,7 +245,7 @@ void Game::DrawUI() const
         int screenHeight = raylib::GetScreenHeight();
         raylib::DrawRectangle(0, screenHeight - 20, screenWidth, 20, raylib::BLACK);
         std::string output = "> " + command;
-        raylib::DrawText(output.c_str(), 3, screenHeight - 20, 13, raylib::WHITE);
+        raylib::rlDrawText(output.c_str(), 3, screenHeight - 20, 13, raylib::WHITE);
     }
 
     raylib::rlImGuiBegin();

@@ -19,7 +19,7 @@ bool Button::isHovered()
 void Button::Draw(DrawData data)
 {
     DrawRectangleRounded(ToRaylibRect(Box), 0.2, 10, ToRaylibColor(GetBgColor()));
-    DrawText(Text, static_cast<int>(Box.X), static_cast<int>(Box.Y), 28, ToRaylibColor(GetTextColor()));
+    rlDrawText(Text, static_cast<int>(Box.X), static_cast<int>(Box.Y), 28, ToRaylibColor(GetTextColor()));
 }
 
 void Button::OnAdded()
