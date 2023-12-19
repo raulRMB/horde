@@ -29,14 +29,18 @@ void SystemViewer::Update(float deltaSeconds)
 
 void SystemViewer::Draw()
 {
-    ImGui::Begin("Systems");
+    static bool show = true;
+    ImGui::Begin("Systems", &show, ImGuiWindowFlags_MenuBar);
 
+    ImGui::ShowDemoWindow();
 
     entt::registry& registry = Game::GetRegistry();
 
     for (entt::entity entity : System::Get<SPhysics>().GetAffectedEntities()) {
-        const CTransform& transform = registry.get<CTransform>(entity);
-        ImGui::Text("Transform: %f, %f, %f", transform.Position.x, transform.Position.y, transform.Position.z);
+       auto transform = registry.try_get<CTransform>(entity);
+       if(transform != nullptr) {
+           ImGui::Text("Transform: %f, %f, %f", transform->Position.x, transform->Position.y, transform->Position.z);
+       }
     }
 
     ImGui::End();
