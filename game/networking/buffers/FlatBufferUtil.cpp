@@ -75,9 +75,9 @@ flatbuffers::Offset<Net::Attribute> FlatBufferUtil::CreateAttribute(flatbuffers:
     return Net::CreateAttribute(builder, name, attr.get(), attr.max);
 }
 
-flatbuffers::Offset<Net::SyncAttributeComponent> FlatBufferUtil::CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, CAttributes& ac, uint32_t netId) {
+flatbuffers::Offset<Net::SyncAttributeComponent> FlatBufferUtil::CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, CAttributeSet& ac, uint32_t netId) {
     std::vector<flatbuffers::Offset<Net::Attribute>> vec = std::vector<flatbuffers::Offset<Net::Attribute>>();
-    for(auto attr : ac.attributes) {
+    for(auto attr : ac.Attributes) {
         vec.push_back(CreateAttribute(builder, attr));
     }
     const flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Net::Attribute>>> v = builder.CreateVector(vec);

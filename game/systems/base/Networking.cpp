@@ -21,11 +21,11 @@ void SNetworking::Update(float deltaSeconds)
                 NetworkDriver::GetServer()->Sync(entity, t, NetworkDriver::GetConnections());
             }
         }
-        for (const entt::entity &entity: Game::GetRegistry().view<CAttributes, CNetwork>()) {
-            CAttributes& ac = Game::GetRegistry().get<CAttributes>(entity);
-            if(ac.needsSync) {
+        for (const entt::entity &entity: Game::GetRegistry().view<CAttributeSet, CNetwork>()) {
+            CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(entity);
+            if(ac.bNeedsNetSync) {
                 NetworkDriver::GetServer()->Sync(entity, ac, NetworkDriver::GetConnections());
-                ac.needsSync = false;
+                ac.bNeedsNetSync = false;
             }
         }
         for(const entt::entity& entity : GetView<CCharacterAnimation, CNetwork>())

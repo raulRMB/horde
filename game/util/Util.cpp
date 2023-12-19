@@ -7,7 +7,7 @@ namespace raylib
 }
 
 #include "components/Attribute.h"
-#include "components/RayCollision.h"
+#include "primitives/RayCollision.h"
 #include "components/Physics.h"
 #include "components/Transform.h"
 #include "primitives/Polygon.h"
@@ -33,14 +33,14 @@ long Util::GenerateTimestamp() {
     return timestamp;
 }
 
-tZ::FAttribute* Util::GetAttribute(tZ::CAttributes& ac, const std::string& attr)
+tZ::FAttribute* Util::GetAttribute(tZ::CAttributeSet& ac, const std::string& attr)
 {
-    auto it = std::find_if(ac.attributes.begin(), ac.attributes.end(),
+    auto it = std::find_if(ac.Attributes.begin(), ac.Attributes.end(),
                                                           [&attr](const FAttribute& a)
                                                           {
                                                               return a.id == attr;
                                                           });
-    if(it != ac.attributes.end())
+    if(it != ac.Attributes.end())
     {
         return &(*it);
     }

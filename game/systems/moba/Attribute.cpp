@@ -11,8 +11,8 @@ void SAttribute::Init()
 }
 
 auto removeEffect = [](FEffect& effect) {
-    CAttributes& ac = Game::GetRegistry().get<CAttributes>(effect.target);
-    for(FAttribute& attr : ac.attributes) {
+    CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(effect.target);
+    for(FAttribute& attr : ac.Attributes) {
         for (auto it = attr.mods.begin(); it != attr.mods.end();) {
             const AttrMod& mod = *it;
             if (mod.effectId == effect.id) {
@@ -27,21 +27,21 @@ auto removeEffect = [](FEffect& effect) {
 void SAttribute::Update(float deltaSeconds)
 {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity :registry.view<CAttributes>())
+    for(const entt::entity& entity :registry.view<CAttributeSet>())
     {
-        CAttributes& ac = registry.get<CAttributes>(entity);
-        for (auto it = ac.effects.begin(); it != ac.effects.end();) {
+        CAttributeSet& ac = registry.get<CAttributeSet>(entity);
+        for (auto it = ac.Effects.begin(); it != ac.Effects.end();) {
             FEffect& effect = *it;
             if(effect.isExpired() && effect.type == EEffectType::Duration) {
                 removeEffect(effect);
-                it = ac.effects.erase(it);
+                it = ac.Effects.erase(it);
             } else {
                 if(effect.isReady()) {
-                    CAttributes& target = Game::GetRegistry().get<CAttributes>(effect.target);
-                    CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
+                    CAttributeSet& target = Game::GetRegistry().get<CAttributeSet>(effect.target);
+                    CAttributeSet& source = Game::GetRegistry().get<CAttributeSet>(effect.source);
                     effect.callback(target, source);
                     effect.reset();
-                    ac.needsSync = true;
+                    ac.bNeedsNetSync = true;
                 }
                 effect.addElapsed(deltaSeconds);
                 ++it;
@@ -51,16 +51,16 @@ void SAttribute::Update(float deltaSeconds)
 }
 
 void SAttribute::OnEffect(const FEffect &effect) {
-    CAttributes& target = Game::GetRegistry().get<CAttributes>(effect.target);
-    CAttributes& source = Game::GetRegistry().get<CAttributes>(effect.source);
+    CAttributeSet& target = Game::GetRegistry().get<CAttributeSet>(effect.target);
+    CAttributeSet& source = Game::GetRegistry().get<CAttributeSet>(effect.source);
     if(effect.type == EEffectType::Instant) {
         effect.callback(target, source);
-        target.needsSync = true;
+        target.bNeedsNetSync = true;
     } else if(effect.type == EEffectType::Duration || effect.type == EEffectType::Infinite) {
         if(effect.callOnInit) {
             effect.callback(target, source);
         }
-        target.effects.push_back(effect);
+        target.Effects.push_back(effect);
     }
 }
 

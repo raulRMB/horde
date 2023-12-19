@@ -7,6 +7,13 @@
 #include "networking/base/NetworkDriver.h"
 #include "util/raylibEx.h"
 #include "components/Transform.h"
+#include "imgui.h"
+namespace raylib
+{
+#include "rlImGui.h"
+}
+
+#include "tools/SystemViewer.h"
 
 namespace tZ
 {
@@ -142,10 +149,12 @@ bool Game::Init()
         SetConfigFlags(raylib::FLAG_WINDOW_RESIZABLE);
         raylib::InitWindow(800, 600, "Horde");
         // Fullscreen();
+        raylib::rlImGuiSetup(true);
     }
     bRunning = true;
     SetActiveScene(new MainScene());
     Start();
+
 
     NetworkDriver::Start(periodMicroseconds);
     return true;
@@ -239,10 +248,16 @@ void Game::DrawUI() const
         raylib::DrawText(output.c_str(), 3, screenHeight - 20, 13, raylib::WHITE);
     }
 
+    raylib::rlImGuiBegin();
+
+    SystemViewer::Instance().Draw();
+
+    raylib::rlImGuiEnd();
 }
 
 void Game::Clean() const
 {
+    raylib::rlImGuiShutdown();
     ActiveScene->Clean();
     delete ActiveScene;
     delete ownedPlayer;

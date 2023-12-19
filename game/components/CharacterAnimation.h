@@ -27,6 +27,8 @@ struct CCharacterAnimation : CComponent
     bool bOverrideAnim;
     f32 CurrentAnimTime;
     f32 EndAnimTime;
+
+    CCharacterAnimation() : AnimState(ECharacterAnimState::Idle), bOverrideAnim(false), CurrentAnimTime(0.f), EndAnimTime(0.f), CComponent("CharacterAnimation") {}
 };
 
 }

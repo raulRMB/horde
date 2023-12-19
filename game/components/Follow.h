@@ -2,6 +2,7 @@
 #define HORDE_FOLLOW_COMPONENT_H
 
 #include <vector>
+#include "components/TechXComponent.h"
 
 namespace tZ
 {
@@ -13,18 +14,23 @@ enum class EFollowState : unsigned int
     Dirty,
 };
 
-struct CFollow
+struct CFollow : CComponent
 {
     std::vector<v2> StringPath;
     v2 TargetPos;
     unsigned int Index;
     v2 Goal;
     EFollowState FollowState;
+
+    CFollow() : StringPath({}), TargetPos({0.0f, 0.0f}), Index(0), Goal({0.0f, 0.0f}),
+    FollowState(EFollowState::Idle), CComponent("Follow") {}
 };
 
-struct CTarget
+struct CTarget : CComponent
 {
     v3 Position;
+
+    CTarget() : Position({0.0f, 0.0f, 0.0f}), CComponent("Target") {}
 };
 
 }

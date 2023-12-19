@@ -10,7 +10,7 @@ namespace tZ
 
 struct CPhysics2D;
 struct FAttribute;
-struct CAttributes;
+struct CAttributeSet;
 struct FRayCollision;
 struct CTransform;
 struct Polygon2D;
@@ -23,7 +23,7 @@ namespace Util
     v3 RandVec3(int min, int max);
     FColor RandColor();
     FRayCollision GetMouseCollision();
-    FAttribute* GetAttribute(CAttributes& ac, const std::string& attr);
+    FAttribute* GetAttribute(CAttributeSet& ac, const std::string& attr);
     v2 GetClosetPointOusideTriangle(v2 p, const Triangle2D& t);
     bool IsPointInsideTriangle(const Triangle2D& triangle, const v2& point);
     v2 ClosestPointOnLine(const v2& start, const v2& end, v2 P);

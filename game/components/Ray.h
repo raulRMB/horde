@@ -7,14 +7,17 @@
 
 #include "primitives/Color.h"
 #include "primitives/Ray.h"
+#include "components/TechXComponent.h"
 
 namespace tZ
 {
 
-struct CRay
+struct CRay : CComponent
 {
     FRay Ray;
     FColor Color;
+
+    CRay(const FRay& ray = FRay(), FColor color = FColor(0x000000ff));
 };
 
 }

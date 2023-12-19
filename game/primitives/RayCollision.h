@@ -10,7 +10,8 @@
 namespace tZ
 {
 
-typedef struct FRayCollision {
+typedef struct FRayCollision
+{
     bool hit;               // Did the ray hit something?
     float distance;         // Distance to the nearest hit
     v3 point;          // Point of the nearest hit

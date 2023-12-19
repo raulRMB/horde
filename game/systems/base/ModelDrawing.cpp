@@ -14,13 +14,13 @@ void SModelDrawing::Draw()
     {
         const CModel& modelComponent = Game::GetRegistry().get<CModel>(entity);
         const CTransform& t = Game::GetRegistry().get<CTransform>(entity);
-        if(!modelComponent.hidden)
+        if(!modelComponent.bHidden)
         {
             glm::quat rotate = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
             auto fq = t.Rotation * rotate;
             float angle = glm::degrees(glm::angle(fq));
             glm::vec3 axis = glm::axis(fq);
-            raylib::DrawModelEx(modelComponent.model, ToRaylibVector3(t.Position), ToRaylibVector3(axis), angle, ToRaylibVector3(t.Scale), raylib::WHITE);
+            raylib::DrawModelEx(modelComponent.Model, ToRaylibVector3(t.Position), ToRaylibVector3(axis), angle, ToRaylibVector3(t.Scale), raylib::WHITE);
         }
     }
 }

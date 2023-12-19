@@ -12,7 +12,7 @@
 namespace tZ
 {
 
-inline Spawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {
+inline FSpawner spawnParticle = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {
 
     pc.MaxLife = 1.0f;
 
@@ -39,7 +39,7 @@ inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation
 {
     entt::registry& registry = Game::GetRegistry();
 
-    OnApply effectCallback = [](CAttributes &target, CAttributes &source) {
+    OnApply effectCallback = [](CAttributeSet &target, CAttributeSet &source) {
         FAttribute &health = *Util::GetAttribute(target, "health");
         float newHealth = health.base - 150;
         health.base = std::clamp(newHealth, health.min, health.max);
@@ -50,7 +50,7 @@ inline void Projectile(entt::entity source, v3 cursorLocation, v3 playerLocation
     effect.callback = effectCallback;
 
     entt::entity e = registry.create();
-    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.0001, .MaxParticles=10000, .spawner=spawnParticle});
+    registry.emplace<CEmitter>(e, CEmitter(0.0001f, 10000, spawnParticle));
 
     auto lt = CLifetime{};
     lt.MaxLifetime = lifetime;
@@ -75,12 +75,12 @@ inline void SpawnProjectile(entt::entity source, const v2 pos, const v2 dir, con
     entt::registry& registry = Game::GetRegistry();
 
     auto e = registry.create();
-    registry.emplace<CEmitter>(e, CEmitter{.Frequency=0.001, .MaxParticles=10000, .spawner=spawnParticle});
+    registry.emplace<CEmitter>(e, CEmitter(0.001, 10000, spawnParticle));
     CPhysics3D phc = {};
     phc.Velocity = glm::normalize(v3{dir.x, 0, dir.y}) * speed;
     phc.MaxSpeed = 100;
 
-    OnApply effectCallback = [](CAttributes &target, CAttributes &source) {
+    OnApply effectCallback = [](CAttributeSet &target, CAttributeSet &source) {
         FAttribute &health = *Util::GetAttribute(target, "health");
         float newHealth = health.base - 150;
         health.base = std::clamp(newHealth, health.min, health.max);

@@ -8,11 +8,15 @@ namespace tZ
 
 class System
 {
+    std::set<entt::entity> AffectedEntities;
 public:
     virtual ~System() = default;
 
     template <typename T>
     static T& Get();
+
+    [[nodiscard]] u32 GetAffectedEntityCount() const { return AffectedEntities.size(); }
+    [[nodiscard]] const std::set<entt::entity>& GetAffectedEntities() const { return AffectedEntities; }
 protected:
     static entt::entity CreateEntity() { return Game::GetRegistry().create(); }
     template <typename C>
@@ -22,6 +26,9 @@ protected:
     virtual void Init() {};
     template <typename...C>
     static auto GetView() { return Game::GetRegistry().view<C...>(); }
+    void RemoveAffectedEntity(const entt::entity entity) { AffectedEntities.erase(entity); }
+    void AddAffectedEntity(const entt::entity entity) { AffectedEntities.insert(entity); }
+    void ClearAffectedEntities() { AffectedEntities.clear(); }
 };
 
 template <typename T>

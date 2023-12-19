@@ -12,7 +12,7 @@ namespace tZ
 
 struct CTransform;
 struct FAttribute;
-struct CAttributes;
+struct CAttributeSet;
 
 class FlatBufferUtil {
 public:
@@ -24,7 +24,7 @@ public:
     static std::vector<flatbuffers::Offset<Net::PlayerSpawn>> GetOtherPlayers(flatbuffers::FlatBufferBuilder &builder, ENetPeer* peer);
     static CTransform NetTransformToTransform(const Net::Transform* t);
     static flatbuffers::Offset<Net::Attribute> CreateAttribute(flatbuffers::FlatBufferBuilder &builder, FAttribute& attr);
-    static flatbuffers::Offset<Net::SyncAttributeComponent> CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, CAttributes& ac, uint32_t netId);
+    static flatbuffers::Offset<Net::SyncAttributeComponent> CreateSyncAttributes(flatbuffers::FlatBufferBuilder &builder, CAttributeSet& ac, uint32_t netId);
     static flatbuffers::Offset<Net::SpawnProjectile> CreateSpawnProjectile(flatbuffers::FlatBufferBuilder &builder, u32 netId, const v2& pos, const v2& dir,
                                                                            const float speed, const float lifetime);
 };

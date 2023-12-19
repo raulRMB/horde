@@ -20,13 +20,13 @@ SAttributeUI::SAttributeUI() {
 void SAttributeUI::Draw2D()
 {
     entt::registry& registry = Game::GetRegistry();
-    for(const entt::entity& entity : Game::GetRegistry().view<CAttributes, CTransform>())
+    for(const entt::entity& entity : Game::GetRegistry().view<CAttributeSet, CTransform>())
     {
         CTransform& t = registry.get<CTransform>(entity);
         raylib::Vector2 healthBarPos = GetWorldToScreen(
                 (raylib::Vector3){ t.Position.x, t.Position.y + 14.0f, t.Position.z },
                 ToRaylibCamera(Game::Instance().GetActiveCamera()));
-        CAttributes& ac = registry.get<CAttributes>(entity);
+        CAttributeSet& ac = registry.get<CAttributeSet>(entity);
         FAttribute& health = *Util::GetAttribute(ac, "health");
         if (health.id != "empty") {
             int sizeX = 80;

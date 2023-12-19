@@ -18,7 +18,7 @@ void SAnimation::Update(float deltaSeconds)
     for(const entt::entity& entity : Game::GetRegistry().view<CAnimation, CModel>())
     {
         CAnimation& animationComponent = Game::GetRegistry().get<CAnimation>(entity);
-        const raylib::Model& model = Game::GetRegistry().get<CModel>(entity).model;
+        const raylib::Model& model = Game::GetRegistry().get<CModel>(entity).Model;
 
         raylib::ModelAnimation animation = animationComponent.Animations[animationComponent.AnimsIndex];
 

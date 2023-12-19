@@ -3,6 +3,8 @@
 
 int main(int argc, char* argv[])
 {
+    tZ::Game::Instance();
+
     if(argc <= 1) {
         return tZ::Game::Instance().Run(false);
     }

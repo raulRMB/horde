@@ -21,7 +21,7 @@ void SParticle::Update(float deltaSeconds) {
                 entt::entity e = registry.create();
                 CParticle pc = {};
                 pc.EmitterId = entity;
-                emitter.spawner(e, transform, registry, pc);
+                emitter.Spawner(e, transform, registry, pc);
             }
             emitter.Time = 0;
         }

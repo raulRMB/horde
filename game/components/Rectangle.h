@@ -1,12 +1,13 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
+#include "components/TechXComponent.h"
 #include "util/defines.h"
 
 namespace tZ
 {
 
-struct CRectangle
+struct CRectangle : CComponent
 {
     union
     {
@@ -22,8 +23,7 @@ struct CRectangle
         float Height;
     };
 
-    CRectangle() = default;
-    CRectangle(v2 position, v2 dimensions);
+    CRectangle(v2 position = v2(0.f), v2 dimensions = v2(1.f));
 };
 
 }

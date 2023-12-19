@@ -142,7 +142,7 @@ void Client::OnInboundMessage(const Net::Header* header) {
         }
         case Net::Events_SyncAttributeComponent: {
             const Net::SyncAttributeComponent* res = header->Event_as_SyncAttributeComponent();
-            CAttributes& ac = Game::GetRegistry().get<CAttributes>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
+            CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
             std::vector stdVector(res->attributes()->begin(), res->attributes()->end());
             for(auto a : stdVector) {
                 FAttribute* attr = Util::GetAttribute(ac, a->name()->str());

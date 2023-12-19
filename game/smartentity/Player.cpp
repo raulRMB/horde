@@ -8,7 +8,7 @@
 #include "components/Physics.h"
 #include "components/Attribute.h"
 #include "components/Shapes.h"
-#include "components/RayCollision.h"
+#include "primitives/RayCollision.h"
 #include "components/Animation.h"
 #include "components/CharacterAnimation.h"
 
@@ -52,9 +52,9 @@ Player::Player()
             .min=0,
     };
     attributes.push_back(MoveSpeed);
-    CAttributes ac{attributes};
+    CAttributeSet ac{attributes};
 
-    OnApply healthRegenCallback = [](CAttributes& target, CAttributes& source){
+    OnApply healthRegenCallback = [](CAttributeSet& target, CAttributeSet& source){
 
         if(FAttribute* health = Util::GetAttribute(target, "health"); health)
         {

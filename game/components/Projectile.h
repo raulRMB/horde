@@ -10,12 +10,15 @@ namespace tZ
 
 struct CProjectile : CComponent
 {
-    f32 Range = 0.0f;
-    bool bIsHoming = false;
-    bool bIsPiercing = false;
-    bool bIsBouncing = false;
-    bool bShouldSpawnOnHit = false;
-    entt::entity* Target = nullptr;
+    f32 Range;
+    bool bIsHoming;
+    bool bIsPiercing;
+    bool bIsBouncing;
+    bool bShouldSpawnOnHit;
+    entt::entity* Target;
+
+    CProjectile(f32 range = 0.0f, bool isHoming = false, bool isPiercing = false, bool isBouncing = false,
+                bool shouldSpawnOnHit = false, entt::entity* target = nullptr);
 };
 
 }

@@ -5,15 +5,21 @@ namespace raylib
 {
 #include "raylib.h"
 }
+#include "TechXComponent.h"
+#include "util/defines.h"
 
 namespace tZ
 {
 
-struct CModel
+struct CModel : CComponent
 {
-    raylib::Model model;
-    float scale;
-    bool hidden;
+    raylib::Model Model;
+    f32 Scale;
+    bool bHidden;
+    CModel(raylib::Model model = raylib::LoadModelFromMesh(raylib::GenMeshCube(1.0f, 1.0f, 1.0f)),
+           f32 scale = 1.f, bool hidden = false)
+           :
+           Model(model), Scale(scale), bHidden(hidden), CComponent("Model") {}
 };
 
 }

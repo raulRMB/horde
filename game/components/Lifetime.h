@@ -9,8 +9,10 @@ namespace tZ
 
 struct CLifetime : CComponent
 {
-    f32 MaxLifetime = 0.0f;
-    f32 CurrentLifetime = 0.0f;
+    f32 MaxLifetime;
+    f32 CurrentLifetime;
+
+    CLifetime(f32 maxLifetime = -1.f) : MaxLifetime(maxLifetime), CurrentLifetime(0.0f), CComponent("Lifetime") {}
 };
 
 }

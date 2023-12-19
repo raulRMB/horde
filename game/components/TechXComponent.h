@@ -1,13 +1,17 @@
-#ifndef HORDE_CTECHCOMPONENT_H
-#define HORDE_CTECHCOMPONENT_H
+#ifndef HORDE_C_TECHCOMPONENT_H
+#define HORDE_C_TECHCOMPONENT_H
 
+#include <utility>
 
 namespace tZ
 {
 
 struct CComponent
 {
-    bool bNeedsNetSync = false;
+    bool bNeedsNetSync;
+    const char* TypeId;
+
+    CComponent(const char* typeId) : bNeedsNetSync(false), TypeId(typeId) {}
 };
 
 

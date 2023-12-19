@@ -36,7 +36,7 @@ void MainScene::Start()
         AddComponent(e, t);
         raylib::Model m = raylib::LoadModelFromMesh(raylib::GenMeshPlane(1, 1, 1, 1));
         m.materials[0].maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
-        AddComponent(e, CModel{m, 1.f, false});
+        AddComponent(e, CModel(m, 1.0f, false));
         CCamera3D& cam = Game::Instance().GetActiveCamera();
         const v3& pos = v3{0,0,0};
         cam.Position = v3{pos.x - 40, cam.Position.y, pos.z - 40};

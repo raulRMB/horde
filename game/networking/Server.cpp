@@ -170,7 +170,7 @@ void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
     Send(builder, Net::Events::Events_SyncTransform, payload.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
 }
 
-void Server::Sync(entt::entity e, CAttributes& ac, std::vector<ENetPeer*> c) {
+void Server::Sync(entt::entity e, CAttributeSet& ac, std::vector<ENetPeer*> c) {
     flatbuffers::FlatBufferBuilder builder;
     auto x = FlatBufferUtil::CreateSyncAttributes(builder, ac, NetworkDriver::GetNetworkedEntities().Get(e));
     Send(builder, Net::Events::Events_SyncAttributeComponent, x.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);

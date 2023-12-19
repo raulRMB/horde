@@ -11,7 +11,7 @@ namespace tZ
 {
     
 class FEffect;
-struct CAttributes;
+struct CAttributeSet;
 
 enum class EEffectType {
     Instant  = 0,
@@ -42,7 +42,7 @@ struct FAttribute
     float get() {
         if(Game::IsServer()) {
             float x = base;
-            for (AttrMod mod: mods) {
+            for (const AttrMod& mod: mods) {
                 x = mod.callback(x);
             }
             return x;
@@ -51,7 +51,7 @@ struct FAttribute
     }
 };
 
-using OnApply = std::function<void(CAttributes&, CAttributes&)>;
+using OnApply = std::function<void(CAttributeSet&, CAttributeSet&)>;
 class FEffect
 {
 public:
@@ -92,11 +92,13 @@ inline bool operator==(const FEffect& x, const FEffect& y)
     return x.id == y.id;
 }
 
-struct CAttributes
+struct CAttributeSet : CComponent
 {
-    std::list<FAttribute> attributes;
-    std::list<FEffect> effects;
-    bool needsSync = false;
+    std::list<FAttribute> Attributes;
+    std::list<FEffect> Effects;
+
+    CAttributeSet(const std::list<FAttribute>& attributes = {}, const std::list<FEffect>& effects = {}) :
+        Attributes(attributes), Effects(effects), CComponent("AttributeSet") {}
 };
 
 }

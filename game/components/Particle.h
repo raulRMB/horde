@@ -3,6 +3,7 @@
 
 #include "entt/entt.hpp"
 #include "components/Transform.h"
+#include "components/TechXComponent.h"
 
 namespace tZ
 {
@@ -13,7 +14,7 @@ struct FGradientColor
     FColor Color{};
 };
 
-struct CParticle
+struct CParticle : CComponent
 {
     f32 MaxLife;
     f32 Lifetime;
@@ -23,18 +24,22 @@ struct CParticle
     u8 GradientColorIndex;
 
     CParticle() : MaxLife(1.0f), Lifetime(0.0f), Color(0xFFFFFFFF),
-        EmitterId(entt::null), ColorsOverLife({}), GradientColorIndex(0) {}
+        EmitterId(entt::null), ColorsOverLife({}), GradientColorIndex(0),
+        CComponent("Particle") {}
 };
 
-typedef void (*Spawner)(entt::entity, CTransform&, entt::registry&, CParticle);
+typedef void (*FSpawner)(entt::entity, CTransform&, entt::registry&, CParticle);
 
-struct CEmitter
+struct CEmitter : CComponent
 {
     f32 Frequency;
     f32 Time;
     i32 MaxParticles;
     i32 ParticleCount;
-    Spawner spawner;
+    FSpawner Spawner;
+
+    CEmitter(f32 frequency = 1.f, i32 maxParticles = 100, FSpawner spawner = nullptr) : Frequency(frequency), Time(0.0f), MaxParticles(maxParticles), ParticleCount(0), Spawner(spawner),
+        CComponent("Emitter") {}
 };
 
 }

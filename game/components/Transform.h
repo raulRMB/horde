@@ -2,11 +2,12 @@
 #define C_TRANSFORM_H
 
 #include "util/defines.h"
+#include "components/TechXComponent.h"
 
 namespace tZ
 {
 
-typedef struct CTransform
+typedef struct CTransform : CComponent
 {
     v3 Position;
     v3 Scale;

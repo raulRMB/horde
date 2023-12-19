@@ -29,7 +29,7 @@ public:
     void SendSpawnProjectile(u32 netId, v2 pos, v2 dir, float speed, float lifetime);
     void flush() { enet_host_flush(server); }
     void Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c);
-    void Sync(entt::entity e, struct CAttributes& ac, std::vector<ENetPeer*> c);
+    void Sync(entt::entity e, struct CAttributeSet& ac, std::vector<ENetPeer*> c);
     void Sync(entt::entity e, struct CCharacterAnimation& ca, std::vector<ENetPeer*> c);
 private:
     void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c,

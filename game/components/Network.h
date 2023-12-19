@@ -3,15 +3,18 @@
 
 #include <set>
 #include <string>
-#include "components/Transform.h"
+#include "components/TechXComponent.h"
 
 namespace tZ
 {
 
-struct CNetwork {
+struct CNetwork : CComponent
+{
     std::set<std::string> Tags;
-    CTransform PrevTransform = CTransform{};
-    CTransform TargetTransform = CTransform{};
+    CTransform PrevTransform;
+    CTransform TargetTransform;
+
+    CNetwork() : Tags({}), PrevTransform(CTransform()), TargetTransform(CTransform()), CComponent("Network") {}
 };
 
 }
