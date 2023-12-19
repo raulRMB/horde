@@ -20,21 +20,6 @@ void SPhysics::Update(float deltaSeconds)
     ClearAffectedEntities();
 
     entt::registry& registry = Game::GetRegistry();
-    // for(const entt::entity& entity : registry.view<Transform, CPhysics2D, CAttributes>())
-    // {
-    //     Transform& transform = registry.get<Transform>(entity);
-    //     CAttributes& ac = registry.get<CAttributes>(entity);
-    //     FAttribute* moveSpeed = Util::GetAttribute(ac, "moveSpeed");
-
-    //     if(moveSpeed->id != "empty") {
-    //         CPhysics2D &physics = registry.get<CPhysics2D>(entity);
-    //         physics.Velocity += physics.Acceleration * deltaSeconds;
-    //         physics.Velocity = Vector2ClampValue(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
-    //         Vector3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
-    //         velocity *= moveSpeed->get();
-    //         transform.translation += velocity * deltaSeconds;
-    //     }
-    // }
 
     auto entities = registry.view<CPhysics2D, CTransform>();
     for (auto it = entities.begin(); it != entities.end(); ++it) {
@@ -73,14 +58,9 @@ void SPhysics::Update(float deltaSeconds)
 
     for(const entt::entity& entity : registry.view<CPhysics2D, CTransform>())
     {
-        AddAffectedEntity(entity);
-        CTransform& transform = registry.get<CTransform>(entity);
-        CPhysics2D& physics = registry.get<CPhysics2D>(entity);
-        physics.Velocity += physics.Acceleration * deltaSeconds;
-        physics.Velocity = glm::clamp(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
-        v3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
-        transform.Position += velocity * deltaSeconds;
+        Process2D(entity, registry, deltaSeconds);
     }
+    
     for(const entt::entity& entity : registry.view<CTransform, CPhysics3D>())
     {
         AddAffectedEntity(entity);
@@ -92,5 +72,15 @@ void SPhysics::Update(float deltaSeconds)
     }
 }
 
+void SPhysics::Process2D(entt::entity e, entt::registry& r, float deltaSeconds)
+{
+    AddAffectedEntity(entity);
+    CTransform& transform = r.get<CTransform>(e);
+    CPhysics2D& physics = r.get<CPhysics2D>(e);
+    physics.Velocity += physics.Acceleration * deltaSeconds;
+    physics.Velocity = glm::clamp(physics.Velocity, -physics.MaxSpeed, physics.MaxSpeed);
+    v3 velocity = {physics.Velocity.x, 0.f, physics.Velocity.y};
+    transform.Position += velocity * deltaSeconds;
+}
 
 }
