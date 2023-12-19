@@ -151,7 +151,7 @@ void MainScene::Save()
 
 void MainScene::Load()
 {
-    System::Get<SNavigation>().LoadNavMesh();
+    System::Get<SNavigation>().LoadNavMesh(Game::GetRegistry());
 }
 
 }

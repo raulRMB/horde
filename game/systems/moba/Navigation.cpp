@@ -1,7 +1,3 @@
-//
-// Created by Raul on 11/17/2023.
-//
-
 #include "Navigation.h"
 
 #include <fstream>
@@ -20,31 +16,34 @@ void SNavigation::Update(float deltaSeconds)
     const auto followEntities = registry.view<CFollow, CTransform>();
     for(const entt::entity& followEntity : followEntities)
     {
-        CFollow& followComponent = GetComponent<CFollow>(followEntity);
-        EFollowState& bFollowing = followComponent.FollowState;
-        if(bFollowing != EFollowState::Dirty)
-            continue;
-
-        std::vector<v2>& stringPath = followComponent.StringPath;
-        stringPath.clear();
-        v2& goal = followComponent.Goal;
-
-        v2& targetPos = followComponent.TargetPos;
-        unsigned int& followIndex = followComponent.Index;
-        v2 startPoint = {GetComponent<CTransform>(followEntity).Position.x, GetComponent<CTransform>(followEntity).Position.z};
-
-        std::vector<Edge2D> portals;
-        std::vector<Navigation::TriangleNode*> path;
-        Navigation::AStar(startPoint, goal, path, portals, NavMesh);
-        stringPath = Navigation::StringPull(portals, startPoint, goal);
-
-        targetPos = stringPath[followIndex];
-        followIndex = 1;
-        bFollowing = EFollowState::Following;
+        Process(followEntity, registry, deltaSeconds);
     }
 }
 
-void SNavigation::LoadNavMesh()
+void SNavigation::Process(entt::entity e, entt::registry& r, float deltaSeconds) {
+    CFollow& followComponent = r.get<CFollow>(e);
+    EFollowState& bFollowing = followComponent.FollowState;
+    if(bFollowing != EFollowState::Dirty)
+        return;
+    std::vector<v2>& stringPath = followComponent.StringPath;
+    stringPath.clear();
+    v2& goal = followComponent.Goal;
+
+    v2& targetPos = followComponent.TargetPos;
+    unsigned int& followIndex = followComponent.Index;
+    v2 startPoint = {r.get<CTransform>(e).Position.x, r.get<CTransform>(e).Position.z};
+
+    std::vector<Edge2D> portals;
+    std::vector<Navigation::TriangleNode*> path;
+    Navigation::AStar(startPoint, goal, path, portals, NavMesh);
+    stringPath = Navigation::StringPull(portals, startPoint, goal);
+
+    targetPos = stringPath[followIndex];
+    followIndex = 1;
+    bFollowing = EFollowState::Following;
+}
+
+void SNavigation::LoadNavMesh(entt::registry& r)
 {
     std::ifstream file;
     file.open("../assets/navmesh/test.navmesh");
@@ -74,15 +73,15 @@ void SNavigation::LoadNavMesh()
 
         for(const Navigation::TriangleNode& graphTriangle : NavMesh)
         {
-            auto e = CreateEntity();
+            auto e = r.create();
             CTransform transform;
             transform.Position = v3{graphTriangle.GetCircumCenter().x, 0.f, graphTriangle.GetCircumCenter().y};
-            AddComponent(e, transform);
+            r.emplace<CTransform>(e, transform);
             if(graphTriangle.IsBlocked())
             {
                 Triangle2D triangle = graphTriangle.GetTriangle();
                 triangle.color = FColor(0xFF0000FF);
-                AddComponent(e, triangle);
+                r.emplace<Triangle2D>(e, triangle);
             }
         }
     }
