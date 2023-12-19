@@ -10,6 +10,7 @@
 #include "components/Model.h"
 #include "components/Physics.h"
 #include "util/Util.h"
+#include "components/Spawner.h"
 
 namespace tZ
 {
@@ -25,6 +26,13 @@ MainScene::~MainScene() = default;
 void MainScene::Start()
 {
     Load();
+
+    entt::entity spawner = CreateEntity();
+    CTransform d = CTransform {};
+    CSpawner s = CSpawner{2};
+    GetRegistry().emplace<CTransform>(spawner, d);
+    GetRegistry().emplace<CSpawner>(spawner, s);
+
     if(!Game::IsServer())
     {
         InitUI();

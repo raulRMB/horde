@@ -15,6 +15,7 @@
 #include "systems/moba/AttributeUI.h"
 #include "systems/base/ParticleDrawing.h"
 #include "systems/base/Lifetime.h"
+#include "systems/EnemySystem.h"
 
 namespace tZ
 {
@@ -27,6 +28,7 @@ void Scene::Start()
     UpdateSystems.push_back(&System::Get<SNetworking>());
     UpdateSystems.push_back(&System::Get<SFollow>());
     UpdateSystems.push_back(&System::Get<SLifetime>());
+    UpdateSystems.push_back(&System::Get<EnemySystem>());
     
     if(!Game::IsServer()) {
         DrawingSystems.push_back(&System::Get<SModelDrawing>());

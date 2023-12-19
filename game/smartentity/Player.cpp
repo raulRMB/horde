@@ -11,6 +11,7 @@
 #include "primitives/RayCollision.h"
 #include "components/Animation.h"
 #include "components/CharacterAnimation.h"
+#include "systems/EnemySystem.h"
 
 namespace tZ
 {
@@ -18,6 +19,8 @@ static raylib::Font font;
 
 Player::Player()
 {
+    System::Get<EnemySystem>().SetPlayer(GetEntity());
+
     if(!Game::IsServer()) {
         CAnimation animation{};
         CModel mc = {raylib::LoadModel("../assets/models/playerCharacter.glb"), 0.05, false};
