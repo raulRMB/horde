@@ -74,7 +74,7 @@ void SPhysics::Update(float deltaSeconds)
 
 void SPhysics::Process2D(entt::entity e, entt::registry& r, float deltaSeconds)
 {
-    AddAffectedEntity(entity);
+    AddAffectedEntity(e);
     CTransform& transform = r.get<CTransform>(e);
     CPhysics2D& physics = r.get<CPhysics2D>(e);
     physics.Velocity += physics.Acceleration * deltaSeconds;
