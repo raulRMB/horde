@@ -14,7 +14,7 @@ struct CAttributeSet;
 struct FRayCollision;
 struct CTransform;
 struct Polygon2D;
-struct Triangle2D;
+struct CTriangle2D;
 
 namespace Util
 {
@@ -24,8 +24,8 @@ namespace Util
     FColor RandColor();
     FRayCollision GetMouseCollision();
     FAttribute* GetAttribute(CAttributeSet& ac, const std::string& attr);
-    v2 GetClosetPointOusideTriangle(v2 p, const Triangle2D& t);
-    bool IsPointInsideTriangle(const Triangle2D& triangle, const v2& point);
+    v2 GetClosetPointOusideTriangle(v2 p, const CTriangle2D& t);
+    bool IsPointInsideTriangle(const CTriangle2D& triangle, const v2& point);
     v2 ClosestPointOnLine(const v2& start, const v2& end, v2 P);
     v2 MinimumTranslationVector(const Polygon2D& polygon, const v2& point);
     long GenerateTimestamp();

@@ -10,7 +10,7 @@ namespace tX
 struct Edge2D
 {
     v2 vertices[2]{};
-    struct Triangle2D* triangle{};
+    struct CTriangle2D* triangle{};
 };
 
 struct ABC
@@ -21,7 +21,7 @@ struct ABC
     ABC() = delete;
 };
 
-struct Triangle2D
+struct CTriangle2D
 {
     union
     {
@@ -29,11 +29,11 @@ struct Triangle2D
         v2 Indecies[3]{};
     };
 
-    FColor color;
+    FColor Color;
     Edge2D Edges[3]{};
 
-    Triangle2D();
-    explicit Triangle2D(const ABC& vertices)
+    CTriangle2D();
+    explicit CTriangle2D(const ABC& vertices)
     {
         Vertices = vertices;
 
@@ -44,7 +44,7 @@ struct Triangle2D
         Edges[2].vertices[0] = Vertices.C;
         Edges[2].vertices[1] = Vertices.A;
     }
-    explicit Triangle2D(const v2& A, const v2& B, const v2& C)
+    explicit CTriangle2D(const v2& A, const v2& B, const v2& C)
     {
         Vertices.A = A;
         Vertices.B = B;
@@ -58,18 +58,18 @@ struct Triangle2D
         Edges[2].vertices[1] = A;
     }
 
-    bool operator ==(const Triangle2D& other) const
+    bool operator ==(const CTriangle2D& other) const
     {
         return Vertices.A == other.Vertices.A && Vertices.B == other.Vertices.B && Vertices.C == other.Vertices.C;
     }
 
-    bool operator !=(const Triangle2D& other) const
+    bool operator !=(const CTriangle2D& other) const
     {
         return !(*this == other);
     }
 };
 
-inline Triangle2D::Triangle2D()
+inline CTriangle2D::CTriangle2D()
 {
     Vertices.A = {};
     Vertices.B = {};

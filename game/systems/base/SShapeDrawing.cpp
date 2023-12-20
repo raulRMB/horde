@@ -43,17 +43,27 @@ void SShapeDrawing::Draw()
         raylib::DrawRay(ray, ToRaylibColor(rayComponent.Color));
     }
 
-    // Draw Triangles
-//    for(const entt::entity& entity : Game::GetRegistry().view<Triangle2D>())
-//    {
-//        const Triangle2D& triangleComponent = Game::GetRegistry().get<Triangle2D>(entity);
-//        Triangle3D triangle3D{};
-//        triangle3D.A = {triangleComponent.Vertices.A.x, 0.0f, triangleComponent.Vertices.A.y};
-//        triangle3D.B = {triangleComponent.Vertices.B.x, 0.0f, triangleComponent.Vertices.B.y};
-//        triangle3D.C = {triangleComponent.Vertices.C.x, 0.0f, triangleComponent.Vertices.C.y};
-//
-//        raylib::DrawTriangle3D(ToRaylibVector3(triangle3D.C), ToRaylibVector3(triangle3D.B), ToRaylibVector3(triangle3D.A), ToRaylibColor(triangleComponent.color));
-//    }
+    // Draw Triangles2D
+    for(const entt::entity& entity : Game::GetRegistry().view<CTriangle2D>())
+    {
+        const CTriangle2D& triangleComponent = Game::GetRegistry().get<CTriangle2D>(entity);
+        Triangle3D triangle3D{};
+        triangle3D.A = {triangleComponent.Vertices.A.x, 0.0f, triangleComponent.Vertices.A.y};
+        triangle3D.B = {triangleComponent.Vertices.B.x, 0.0f, triangleComponent.Vertices.B.y};
+        triangle3D.C = {triangleComponent.Vertices.C.x, 0.0f, triangleComponent.Vertices.C.y};
+
+        raylib::DrawTriangle3D(ToRaylibVector3(triangle3D.C), ToRaylibVector3(triangle3D.B), ToRaylibVector3(triangle3D.A), ToRaylibColor(triangleComponent.Color));
+    }
+
+    // Draw Triangles2D
+    for(const entt::entity& entity : Game::GetRegistry().view<CTriangle>())
+    {
+        const CTriangle& triangleComponent = GetComponent<CTriangle>(entity);
+        raylib::Vector3 v1 = {triangleComponent.V1.x, 0.0f, triangleComponent.V1.y};
+        raylib::Vector3 v2 = {triangleComponent.V2.x, 0.0f, triangleComponent.V2.y};
+        raylib::Vector3 v3 = {triangleComponent.V3.x, 0.0f, triangleComponent.V3.y};
+        raylib::DrawTriangle3D(v1, v2, v3, ToRaylibColor(triangleComponent.Color));
+    }
 
     // Draw Linestrip
     for(const entt::entity& entity : Game::GetRegistry().view<CLineStrip>())
@@ -61,13 +71,12 @@ void SShapeDrawing::Draw()
         const CLineStrip& lineStripComponent = Game::GetRegistry().get<CLineStrip>(entity);
         for(int i = 0; i < lineStripComponent.Points.size() - 1; i++)
         {
-            raylib::Vector3 v1 = {lineStripComponent.Points[i].x, 0.0f, lineStripComponent.Points[i].y};
-            raylib::Vector3 v2 = {lineStripComponent.Points[i + 1].x, 0.0f, lineStripComponent.Points[i + 1].y};
-            raylib::DrawLine3D(v1, v2, ToRaylibColor(lineStripComponent.Color));
+            raylib::DrawLine3D(ToRaylibVector3(lineStripComponent.Points[i]), ToRaylibVector3(lineStripComponent.Points[i + 1]), ToRaylibColor(lineStripComponent.Color));
         }
     }
 
-    for(const entt::entity& entity : Game::GetRegistry().view<CMoveCircle>()) {
+    for(const entt::entity& entity : Game::GetRegistry().view<CMoveCircle>())
+    {
         CMoveCircle& mc = Game::GetRegistry().get<CMoveCircle>(entity);
         raylib::DrawCircle3D(ToRaylibVector3(mc.Position), mc.Radius, (raylib::Vector3){1.0f, 0.0f, 0.0f}, 90.0f, raylib::RED);
     }

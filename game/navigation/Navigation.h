@@ -8,50 +8,50 @@
 namespace tX::Navigation
 {
 
-bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge);
+bool ContainsEdge(const CTriangle2D& triangle, const Edge2D& edge);
 v3 Intersect(v3 planeP, v3 planeN, v3 rayP, v3 rayD);
 
 class TriangleNode
 {
-    Triangle2D Triangle;
+    CTriangle2D Triangle;
     unsigned int Index;
-    std::vector<TriangleNode*> neighbors;
-    float gCost = 0.f;
-    float hCost = 0.f;
-    v2 circumcenter;
-    float circumradius;
-    v2 incenter;
-    TriangleNode* parent = nullptr;
+    std::vector<TriangleNode*> Neighbors;
+    float GCost = 0.f;
+    float HCost = 0.f;
+    v2 Circumcenter;
+    float Circumradius;
+    v2 Incenter;
+    TriangleNode* Parent = nullptr;
     bool bBlocked = false;
 
 public:
 
-    TriangleNode(const Triangle2D& triangle, unsigned int index = 0);
+    TriangleNode(const CTriangle2D& triangle, unsigned int index = 0);
     ~TriangleNode() = default;
 
     void AddNeighbor(TriangleNode* neighbor);
     void RemoveNeighbor(TriangleNode* neighbor);
-    [[nodiscard]] inline const std::vector<TriangleNode*>& GetNeighbors() const { return neighbors; }
-    [[nodiscard]] inline const Triangle2D& GetTriangle() const { return Triangle; }
+    [[nodiscard]] inline const std::vector<TriangleNode*>& GetNeighbors() const { return Neighbors; }
+    [[nodiscard]] inline const CTriangle2D& GetTriangle() const { return Triangle; }
     [[nodiscard]] inline const unsigned int GetIndex() const { return Index; }
 
-    [[nodiscard]] inline const float GetFCost() const { return gCost + hCost; }
-    [[nodiscard]] inline const float GetGCost() const { return gCost; }
-    [[nodiscard]] inline const float GetHCost() const { return hCost; }
+    [[nodiscard]] inline const float GetFCost() const { return GCost + HCost; }
+    [[nodiscard]] inline const float GetGCost() const { return GCost; }
+    [[nodiscard]] inline const float GetHCost() const { return HCost; }
 
-    [[nodiscard]] inline const v2& GetCircumCenter() const { return circumcenter; }
-    [[nodiscard]] inline const v2& GetInCenter() const { return incenter; }
-    [[nodiscard]] inline const float GetRadius() const { return circumradius; }
+    [[nodiscard]] inline const v2& GetCircumCenter() const { return Circumcenter; }
+    [[nodiscard]] inline const v2& GetInCenter() const { return Incenter; }
+    [[nodiscard]] inline const float GetRadius() const { return Circumradius; }
 
-    [[nodiscard]] inline TriangleNode* GetParent() const { return parent; }
+    [[nodiscard]] inline TriangleNode* GetParent() const { return Parent; }
 
     [[nodiscard]] inline bool IsBlocked() const { return bBlocked; }
     inline void SetBlocked(bool blocked) { bBlocked = blocked; }
 
-    inline void SetGCost(float cost) { gCost = cost; }
-    inline void SetHCost(float cost) { hCost = cost; }
+    inline void SetGCost(float cost) { GCost = cost; }
+    inline void SetHCost(float cost) { HCost = cost; }
 
-    void SetParent(TriangleNode *pNode) { parent = pNode; }
+    void SetParent(TriangleNode *pNode) { Parent = pNode; }
 
     bool operator==(const TriangleNode& other) const;
 
@@ -59,15 +59,15 @@ public:
     void SetIndex(unsigned int i);
 };
 
-void FindIncenter(const Triangle2D& triangle, v2& incenter);
-void FindCircumcircle(const Triangle2D& triangle, glm::vec2& circumcenter, float& circumradius);
+void FindIncenter(const CTriangle2D& triangle, v2& incenter);
+void FindCircumcircle(const CTriangle2D& triangle, glm::vec2& circumcenter, float& circumradius);
 std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points);
-bool PointInTriangle(const v2& p, const Triangle2D& t);
+bool PointInTriangle(const v2& p, const CTriangle2D& t);
 void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<v2>& points);
 void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<TriangleNode>& triangles);
 float TriangleArea2(const v2& A, const v2& B, const v2& C);
 std::vector<v2> StringPull(std::vector<Edge2D>& portals, const v2& start, const v2& end);
-const Edge2D* GetSharedEdge(const Triangle2D& t1, const Triangle2D& t2);
+const Edge2D* GetSharedEdge(const CTriangle2D& t1, const CTriangle2D& t2);
 
 bool IsOnRight(const v2& O, const v2& A, const v2& B);
 

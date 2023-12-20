@@ -7,7 +7,7 @@
 namespace tX::Navigation
 {
 
-bool ContainsEdge(const Triangle2D& triangle, const Edge2D& edge)
+bool ContainsEdge(const CTriangle2D& triangle, const Edge2D& edge)
 {
     int sharedVerts = 0;
     for (const v2 &vertex : triangle.Indecies)
@@ -27,7 +27,7 @@ v3 Intersect(v3 planeP, v3 planeN, v3 rayP, v3 rayD)
     return rayP + rayD * t;
 }
 
-void FindIncenter(const Triangle2D& triangle, v2& incenter)
+void FindIncenter(const CTriangle2D& triangle, v2& incenter)
 {
     float a = glm::distance(triangle.Vertices.B, triangle.Vertices.C);
     float b = glm::distance(triangle.Vertices.A, triangle.Vertices.C);
@@ -36,7 +36,7 @@ void FindIncenter(const Triangle2D& triangle, v2& incenter)
     incenter = (a * triangle.Vertices.A + b * triangle.Vertices.B + c * triangle.Vertices.C) / (a + b + c);
 }
 
-void FindCircumcircle(const Triangle2D &triangle, v2 &circumcenter, float &circumradius)
+void FindCircumcircle(const CTriangle2D &triangle, v2 &circumcenter, float &circumradius)
 {
     v2 A = triangle.Vertices.A;
     v2 B = triangle.Vertices.B;
@@ -61,7 +61,7 @@ void FindCircumcircle(const Triangle2D &triangle, v2 &circumcenter, float &circu
 
 std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points)
 {
-    TriangleNode supraTriangle = TriangleNode(Triangle2D({-1000.0f, -1000.0f}, {1000.0f, -1000.0f}, {0.0f, 1000.0f}));
+    TriangleNode supraTriangle = TriangleNode(CTriangle2D({-1000.0f, -1000.0f}, {1000.0f, -1000.0f}, {0.0f, 1000.0f}));
 
     std::vector<TriangleNode> graphTriangles = {supraTriangle};
     for (v2& point : points)
@@ -81,7 +81,7 @@ std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points)
         std::vector<Edge2D> polygon = {};
         for (int i = 0; i < badTriangles.size(); i++)
         {
-            const Triangle2D& triangle = badTriangles[i].GetTriangle();
+            const CTriangle2D& triangle = badTriangles[i].GetTriangle();
             for (const Edge2D& edge : triangle.Edges)
             {
                 bool rejectEdge = false;
@@ -105,7 +105,7 @@ std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points)
 
         for(const Edge2D& edge : polygon)
         {
-            Navigation::TriangleNode graphTriangle = Navigation::TriangleNode(Triangle2D(edge.vertices[0], edge.vertices[1], point));
+            Navigation::TriangleNode graphTriangle = Navigation::TriangleNode(CTriangle2D(edge.vertices[0], edge.vertices[1], point));
             graphTriangles.emplace_back(graphTriangle);
         }
     }
@@ -127,7 +127,7 @@ std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points)
     for(Navigation::TriangleNode& graphTriangle : graphTriangles)
     {
         graphTriangle.SetIndex(idx++);
-        const Triangle2D& t = graphTriangle.GetTriangle();
+        const CTriangle2D& t = graphTriangle.GetTriangle();
         for(Navigation::TriangleNode& neighbor : graphTriangles)
         {
             for(const Edge2D& edge : t.Edges)
@@ -145,7 +145,7 @@ std::vector<TriangleNode> BowyerWatson(std::vector<v2>& points)
     return graphTriangles;
 }
 
-bool PointInTriangle(const v2 &p, const Triangle2D &triangle)
+bool PointInTriangle(const v2 &p, const CTriangle2D &triangle)
 {
     const v2* v = triangle.Indecies;
 
@@ -466,7 +466,7 @@ std::vector<v2> StringPull(std::vector<Edge2D> &portals, const v2 &start, const 
 }
 
 
-const Edge2D* GetSharedEdge(const Triangle2D &t1, const Triangle2D &t2)
+const Edge2D* GetSharedEdge(const CTriangle2D &t1, const CTriangle2D &t2)
 {
     for(const Edge2D& edge : t1.Edges)
     {
@@ -488,18 +488,18 @@ bool IsOnRight(const v2 &O, const v2 &A, const v2 &B)
 
 void TriangleNode::AddNeighbor(TriangleNode *neighbor)
 {
-    if(std::find(neighbors.begin(), neighbors.end(), neighbor) != neighbors.end() && *neighbors.end() == neighbor)
+    if(std::find(Neighbors.begin(), Neighbors.end(), neighbor) != Neighbors.end() && *Neighbors.end() == neighbor)
         return;
 
-    if(std::find(neighbor->neighbors.begin(), neighbor->neighbors.end(), this) != neighbor->neighbors.end() && *neighbor->neighbors.end() == this)
+    if(std::find(neighbor->Neighbors.begin(), neighbor->Neighbors.end(), this) != neighbor->Neighbors.end() && *neighbor->Neighbors.end() == this)
         return;
 
-    neighbors.push_back(neighbor);
+    Neighbors.push_back(neighbor);
 }
 
 void TriangleNode::RemoveNeighbor(TriangleNode *neighbor)
 {
-    neighbors.erase(std::remove(neighbors.begin(), neighbors.end(), neighbor), neighbors.end());
+    Neighbors.erase(std::remove(Neighbors.begin(), Neighbors.end(), neighbor), Neighbors.end());
 }
 
 bool TriangleNode::operator==(const TriangleNode &other) const
@@ -517,12 +517,12 @@ void TriangleNode::SetIndex(unsigned int i)
     Index = i;
 }
 
-TriangleNode::TriangleNode(const Triangle2D &triangle, unsigned int index) :
-    Triangle(triangle), Index(index),
-    circumcenter({}) , circumradius(0.f),
-    incenter({}), parent(nullptr), bBlocked(false)
+TriangleNode::TriangleNode(const CTriangle2D &triangle, unsigned int index) :
+        Triangle(triangle), Index(index),
+        Circumcenter({}) , Circumradius(0.f),
+        Incenter({}), Parent(nullptr), bBlocked(false)
 {
-    FindCircumcircle(triangle, circumcenter, circumradius);
-    FindIncenter(triangle, incenter);
+    FindCircumcircle(triangle, Circumcenter, Circumradius);
+    FindIncenter(triangle, Incenter);
 }
 }

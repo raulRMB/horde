@@ -19,6 +19,13 @@ public:
     void LoadNavMesh(entt::registry& r);
     void SaveNavMesh();
     bool IsValidPoint(const v2& point);
+
+    void ClearNavMesh();
+    void AddPoint(const v2& point);
+
+    void GenerateNavMesh();
+
+    void ToggleTriangle(const v2& point);
 };
 
 }

@@ -30,4 +30,9 @@ CLineStrip::CLineStrip(const std::vector<v3> &points, const FColor &color)
 {
 }
 
+CTriangle::CTriangle(const v3 &vec1, const v3 &vec2, const v3 &vec3, const FColor &color)
+    : V1(vec1), V2(vec2), V3(vec3), Color(color), CComponent("Triangle")
+{
+}
+
 } // namespace tX

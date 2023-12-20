@@ -1,6 +1,7 @@
 #include "Util.h"
 #include "components/CPhysics.h"
 
+#include "raymathEx.h"
 namespace raylib
 {
 #include "raylib.h"
@@ -51,6 +52,9 @@ tX::FAttribute* Util::GetAttribute(tX::CAttributeSet& ac, const std::string& att
 FRayCollision Util::GetMouseCollision()
 {
     raylib::Ray ray = raylib::GetMouseRay(raylib::GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
+    ray.direction.x = ray.direction.x * 1000.f;
+    ray.direction.y = ray.direction.y * 1000.f;
+    ray.direction.z = ray.direction.z * 1000.f;
     raylib::Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
     raylib::Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
     raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
@@ -101,7 +105,7 @@ v2 Util::GetMouseWorldPosition2D()
     return {mousePos3d.x, mousePos3d.z};
 }
 
-v2 Util::GetClosetPointOusideTriangle(v2 p, const Triangle2D &t)
+v2 Util::GetClosetPointOusideTriangle(v2 p, const CTriangle2D &t)
 {
     v2 a = t.Vertices.A;
     v2 b = t.Vertices.B;
@@ -166,7 +170,7 @@ v2 Util::ClosestPointOnLine(const v2& start, const v2& end, v2 point)
     return start + t * lineVector;
 }
 
-bool Util::IsPointInsideTriangle(const Triangle2D &triangle, const v2 &point)
+bool Util::IsPointInsideTriangle(const CTriangle2D &triangle, const v2 &point)
 {
     const v2& v0 = triangle.Vertices.A;
     const v2& v1 = triangle.Vertices.B;

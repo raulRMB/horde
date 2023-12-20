@@ -172,7 +172,7 @@ void MainScene::HandleInput()
             auto netId = NetworkDriver::GetNetworkedEntities().Get(Game::GetPlayer());
             NetworkDriver::GetClient()->TriggerAbility(netId, 0, vec);
         } else {
-            entt::entity player = Game::GetPlayer();
+            player = Game::GetPlayer();
             entt::registry& registry = Game::GetRegistry();
             CTransform clickPoint = CTransform{vec};
             CTransform t = registry.get<CTransform>(player);

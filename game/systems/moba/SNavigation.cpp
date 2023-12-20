@@ -6,6 +6,7 @@
 #include "components/CFollow.h"
 #include "components/CTransform.h"
 #include "util/Util.h"
+#include "components/CShapes.h"
 
 namespace tX
 {
@@ -71,19 +72,19 @@ void SNavigation::LoadNavMesh(entt::registry& r)
 
         file.close();
 
-        for(const Navigation::TriangleNode& graphTriangle : NavMesh)
-        {
-            auto e = r.create();
-            CTransform transform;
-            transform.Position = v3{graphTriangle.GetCircumCenter().x, 0.f, graphTriangle.GetCircumCenter().y};
-            r.emplace<CTransform>(e, transform);
-            if(graphTriangle.IsBlocked())
-            {
-                Triangle2D triangle = graphTriangle.GetTriangle();
-                triangle.color = FColor(0xFF0000FF);
-                r.emplace<Triangle2D>(e, triangle);
-            }
-        }
+//        for(const Navigation::TriangleNode& graphTriangle : NavMesh)
+//        {
+//            auto e = r.create();
+//            CTransform transform;
+//            transform.Position = v3{graphTriangle.GetCircumCenter().x, 0.f, graphTriangle.GetCircumCenter().y};
+//            r.emplace<CTransform>(e, transform);
+//            if(graphTriangle.IsBlocked())
+//            {
+//                CTriangle2D triangle = graphTriangle.GetTriangle();
+//                triangle.Color = FColor(0xFF0000FF);
+//                r.emplace<CTriangle2D>(e, triangle);
+//            }
+//        }
     }
 }
 
@@ -117,6 +118,64 @@ bool SNavigation::IsValidPoint(const v2 &point)
         }
     }
     return false;
+}
+
+void SNavigation::ClearNavMesh()
+{
+    NavMesh.clear();
+    Points.clear();
+}
+
+void SNavigation::AddPoint(const v2 &point)
+{
+    Points.push_back(point);
+}
+
+void SNavigation::GenerateNavMesh()
+{
+    NavMesh = Navigation::BowyerWatson(Points);
+    for(const Navigation::TriangleNode& graphTriangle : NavMesh)
+    {
+        entt::entity e = CreateEntity();
+        CLineStrip lineStrip{};
+        lineStrip.Color = FColor(0xFFFFFFFF);
+        const CTriangle2D& triangle = graphTriangle.GetTriangle();
+        lineStrip.Points.emplace_back(triangle.Vertices.A.x, 0.f, triangle.Vertices.A.y);
+        lineStrip.Points.emplace_back(triangle.Vertices.B.x, 0.f, triangle.Vertices.B.y);
+        lineStrip.Points.emplace_back(triangle.Vertices.C.x, 0.f, triangle.Vertices.C.y);
+        AddComponent(e, lineStrip);
+    }
+}
+
+void SNavigation::ToggleTriangle(const v2& point)
+{
+    for(Navigation::TriangleNode& graphTriangle : NavMesh)
+    {
+        if (Util::IsPointInsideTriangle(graphTriangle.GetTriangle(), point))
+        {
+            entt::entity e = CreateEntity();
+            if(graphTriangle.IsBlocked())
+            {
+                graphTriangle.SetBlocked(false);
+                CTriangle triangle;
+                triangle.V3 = {graphTriangle.GetTriangle().Vertices.A.x, 0.f, graphTriangle.GetTriangle().Vertices.A.y};
+                triangle.V2 = {graphTriangle.GetTriangle().Vertices.B.x, 0.f, graphTriangle.GetTriangle().Vertices.B.y};
+                triangle.V1 = {graphTriangle.GetTriangle().Vertices.C.x, 0.f, graphTriangle.GetTriangle().Vertices.C.y};
+                triangle.Color = FColor(0xFFFFFFFF);
+                AddComponent(e, triangle);
+            }
+            else
+            {
+                graphTriangle.SetBlocked(true);
+                CTriangle triangle;
+                triangle.V3 = {graphTriangle.GetTriangle().Vertices.A.x, 0.f, graphTriangle.GetTriangle().Vertices.A.y};
+                triangle.V2 = {graphTriangle.GetTriangle().Vertices.B.x, 0.f, graphTriangle.GetTriangle().Vertices.B.y};
+                triangle.V1 = {graphTriangle.GetTriangle().Vertices.C.x, 0.f, graphTriangle.GetTriangle().Vertices.C.y};
+                triangle.Color = FColor(0xFF0000FF);
+                AddComponent(e, triangle);
+            }
+        }
+    }
 }
 
 }
