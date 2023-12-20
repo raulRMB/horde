@@ -178,9 +178,11 @@ void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
     flatbuffers::FlatBufferBuilder builder;
     auto x = FlatBufferUtil::CreateTransform(builder, t);
     Net::SyncTransformBuilder stb = Net::SyncTransformBuilder(builder);
-    stb.add_netId(NetworkDriver::GetNetworkedEntities().Get(e));
+    u32 netId = NetworkDriver::GetNetworkedEntities().Get(e);
+    stb.add_netId(netId);
     stb.add_transform(x);
     auto payload = stb.Finish();
+    //printf("Sync %u to pos %f, %f, %f\n", netId, t.Position.x, t.Position.y, t.Position.z);
     Send(builder, Net::Events::Events_SyncTransform, payload.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
 }
 

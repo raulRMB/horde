@@ -10,6 +10,7 @@ namespace tX {
             static entt::entity Player(CTransform& t);
             static entt::entity Spawner();
             static entt::entity Map();
+            static entt::entity Enemy(CTransform& t);
     };
 }
 

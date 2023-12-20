@@ -13,6 +13,8 @@
 #include "systems/SEnemy.h"
 #include "components/CSpawner.h"
 #include "glm/ext/quaternion_trigonometric.hpp"
+#include "components/CShapes.h"
+#include "components/CEnemy.h"
 
 namespace tX
 {
@@ -97,11 +99,51 @@ namespace tX
         return e;
     }
 
+    entt::entity Builder::Enemy(CTransform& t) {
+        entt::registry& registry = Game::GetRegistry();
+        entt::entity e = registry.create();
+        registry.emplace<CTransform>(e, t);
+
+        if(!Game::IsStandalone()) {
+            CNetwork net = CNetwork{};
+            net.TargetTransform = t;
+            registry.emplace<CNetwork>(e, net);
+        }
+
+        if(!Game::IsServer()) {
+            CSphere sphereComponent{};
+            sphereComponent.Color = FColor(0xFF0000FF);
+            sphereComponent.Radius = .5f;
+            registry.emplace<CSphere>(e, sphereComponent);
+        }
+
+        CFollow followComp{};
+        registry.emplace<CFollow>(e, followComp);
+        CPhysics2D physics{};
+        physics.Speed = 10.f;
+        physics.MaxSpeed = 10.f;
+        registry.emplace<CPhysics2D>(e, physics);
+        CEnemy enemy{};
+        registry.emplace<CEnemy>(e, enemy);
+        std::list<FAttribute> attributes;
+        FAttribute Health = {
+                .id="health",
+                .base=500,
+                .max=1000,
+                .min=0,
+        };
+        attributes.push_back(Health);
+        CAttributeSet ac{attributes};
+        registry.emplace<CAttributeSet>(e, ac);
+        return e;
+    }
+
     entt::entity Builder::Spawner() {
         entt::entity spawner = Game::GetRegistry().create();
         CTransform d = CTransform {};
         d.Position = v3{15, 0, 15};
         CSpawner s = CSpawner{2};
+        s.SpawnRate = 5;
         Game::GetRegistry().emplace<CTransform>(spawner, d);
         Game::GetRegistry().emplace<CSpawner>(spawner, s);
         return spawner;

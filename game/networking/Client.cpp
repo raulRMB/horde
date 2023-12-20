@@ -12,6 +12,7 @@
 #include "util/Util.h"
 #include "components/CTransform.h"
 #include "components/CNetwork.h"
+#include "util/Builder.h"
 
 namespace raylib
 {
@@ -137,9 +138,12 @@ void Client::OnInboundMessage(const Net::Header* header) {
         case Net::Events_SyncTransform: {
             auto res = header->Event_as_SyncTransform();
             if(NetworkDriver::GetNetworkedEntities().Exists(res->netId())) {
-                CNetwork &t = Game::GetRegistry().get<CNetwork>(
+                CNetwork* t = Game::GetRegistry().try_get<CNetwork>(
                         NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-                t.TargetTransform = FlatBufferUtil::NetTransformToTransform(res->transform());
+                //printf("Sync %u to pos %f, %f, %f\n", res->netId(), res->transform()->translation()->x(), res->transform()->translation()->y(), res->transform()->translation()->z());
+                if(t != nullptr) {
+                    t->TargetTransform = FlatBufferUtil::NetTransformToTransform(res->transform());
+                }
             }
             break;
         }
@@ -173,7 +177,11 @@ void Client::OnInboundMessage(const Net::Header* header) {
         case Net::Events_SpawnEntity:
         {
             const Net::SpawnEntity* res = header->Event_as_SpawnEntity();
-            // Spawn logic here
+            if(res->entityType() == 1) {
+                CTransform t = FlatBufferUtil::NetTransformToTransform(res->location());
+                entt::entity e = Builder::Enemy(t);
+                NetworkDriver::GetNetworkedEntities().Add(e, res->netid());
+            }
             break;
         }
         case Net::Events_SpawnProjectile:

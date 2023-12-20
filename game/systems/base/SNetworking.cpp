@@ -41,7 +41,7 @@ void SNetworking::Update(float deltaSeconds)
             CTransform& t = Game::GetRegistry().get<CTransform>(entity);
             CNetwork& cn = Game::GetRegistry().get<CNetwork>(entity);
 
-            t.Position = glm::mix(t.Position, cn.TargetTransform.Position, 0.1);
+            t.Position = glm::mix(t.Position, cn.TargetTransform.Position, 0.9);
             t.Rotation = cn.TargetTransform.Rotation;
             t.Scale = cn.TargetTransform.Scale;
         }
