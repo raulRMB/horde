@@ -266,7 +266,9 @@ void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std
         }
     }
 
-    path = ReconstructPath(endTriangle, startTriangle, portals);
+    if(!portals.empty()) {
+        path = ReconstructPath(endTriangle, startTriangle, portals);
+    }
 }
 
 void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std::vector<Edge2D>& portals, std::vector<TriangleNode>& graphTriangles)
@@ -334,7 +336,9 @@ void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std
         }
     }
 
-    path = ReconstructPath(endTriangle, startTriangle, portals);
+    if(!portals.empty()) {
+        path = ReconstructPath(endTriangle, startTriangle, portals);
+    }
 }
 
 float TriangleArea2(const v2 &A, const v2 &B, const v2 &C)
