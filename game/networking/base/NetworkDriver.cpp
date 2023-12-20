@@ -47,6 +47,11 @@ void NetworkDriver::ProcessQueues() {
     while(!GetInboundQueue().empty()) {
         inboundProcessed += 1;
         auto msg = GetInboundQueue().front();
+
+        if(msg.data == nullptr) {
+            continue;
+        }
+
         auto header = Net::GetHeader(msg.data);
         if(Game::IsServer()) {
             Instance().server->OnInboundMessage(header, msg.peer);

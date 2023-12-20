@@ -149,12 +149,17 @@ void Client::OnInboundMessage(const Net::Header* header) {
         }
         case Net::Events_SyncAttributeComponent: {
             const Net::SyncAttributeComponent* res = header->Event_as_SyncAttributeComponent();
-            CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-            std::vector stdVector(res->attributes()->begin(), res->attributes()->end());
-            for(auto a : stdVector) {
-                FAttribute* attr = Util::GetAttribute(ac, a->name()->str());
-                attr->base = a->value();
-                attr->max = a->max();
+            auto netid = res->netId();
+            if(NetworkDriver::GetNetworkedEntities().Exists(netid)) {
+                CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(NetworkDriver::GetNetworkedEntities().Get(netid));
+                std::vector stdVector(res->attributes()->begin(), res->attributes()->end());
+                for(auto a : stdVector) {
+                    FAttribute* attr = Util::GetAttribute(ac, a->name()->str());
+                    if(attr != nullptr) {
+                        attr->base = a->value();
+                        attr->max = a->max();
+                    }
+                }
             }
             break;
         }
