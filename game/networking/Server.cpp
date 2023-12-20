@@ -29,6 +29,7 @@ Server::Server() {
     address.host = ENET_HOST_ANY;
     address.port = 7777;
     server = enet_host_create(&address, 32, 2, 0, 0);
+    enet_peer_timeout(server->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
     if (server == nullptr) {
         raylib::TraceLog(raylib::LOG_INFO, "Failed to create server");
         enet_deinitialize();

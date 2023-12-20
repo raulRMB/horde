@@ -5,6 +5,7 @@
 #include "networking/Client.h"
 #include "NetMessage.h"
 #include "networking/base/NetworkedEntities.h"
+#include "ThreadSafeQueue.h"
 #include <queue>
 #include <chrono>
 #include <thread>
@@ -26,16 +27,16 @@ class NetworkDriver {
     class Server* server;
     NetworkedEntities networkedEntities;
     std::vector<ENetPeer*> connections;
-    std::queue<IncomingMessage> inboundQueue;
-    std::queue<OutboundMessage> outboundQueue;
+    ThreadSafeQueue<IncomingMessage> inboundQueue;
+    ThreadSafeQueue<OutboundMessage> outboundQueue;
 
 public:
     void Init(long long periodMicroseconds);
     static void Start(long long periodMicroseconds) { Instance().Init(periodMicroseconds); };
     static class Server* GetServer();
     static class Client* GetClient();
-    static std::queue<IncomingMessage>& GetInboundQueue() { return Instance().inboundQueue; };
-    static std::queue<OutboundMessage>& GetOutboundQueue() { return Instance().outboundQueue; };
+    static ThreadSafeQueue<IncomingMessage>& GetInboundQueue() { return Instance().inboundQueue; };
+    static ThreadSafeQueue<OutboundMessage>& GetOutboundQueue() { return Instance().outboundQueue; };
     static std::vector<ENetPeer*>& GetConnections() { return Instance().connections; };
     static void ProcessQueues();
     static NetworkedEntities& GetNetworkedEntities();

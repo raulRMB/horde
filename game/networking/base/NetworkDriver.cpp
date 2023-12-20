@@ -45,12 +45,13 @@ void NetworkDriver::ProcessQueues() {
     int inboundProcessed = 0;
     int outboundProcessed = 0;
     while(!GetInboundQueue().empty()) {
-        inboundProcessed += 1;
         auto msg = GetInboundQueue().front();
 
         if(msg.data == nullptr) {
+            GetInboundQueue().pop();
             continue;
         }
+        inboundProcessed += 1;
 
         auto header = Net::GetHeader(msg.data);
         if(Game::IsServer()) {
@@ -61,12 +62,14 @@ void NetworkDriver::ProcessQueues() {
         GetInboundQueue().pop();
     }
     while(!GetOutboundQueue().empty()) {
-        outboundProcessed += 1;
         OutboundMessage som = GetOutboundQueue().front();
-        if(Game::IsServer()) {
-            Instance().server->SendOutboundMessage(som);
-        } else {
-            Instance().client->SendOutboundMessage(som.Packet);
+        if(som.Packet != nullptr) {
+            outboundProcessed += 1;
+            if (Game::IsServer()) {
+                Instance().server->SendOutboundMessage(som);
+            } else {
+                Instance().client->SendOutboundMessage(som.Packet);
+            }
         }
         GetOutboundQueue().pop();
     }

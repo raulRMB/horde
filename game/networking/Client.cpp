@@ -27,6 +27,7 @@ Client::Client() {
         raylib::TraceLog(raylib::LOG_INFO, "Failed to initialize ENet");
     }
     client = enet_host_create(nullptr, 1, 2, 0, 0);
+    enet_peer_timeout(client->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
     if (client == nullptr) {
         raylib::TraceLog(raylib::LOG_INFO, "Failed to create server");
         enet_deinitialize();
