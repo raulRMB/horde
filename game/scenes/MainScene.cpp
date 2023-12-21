@@ -127,21 +127,21 @@ void MainScene::HandleInput()
             cam.Target -= leftRight;
         }
     }
-    if(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_RIGHT)) {
-        v2 mousePos = Util::GetMouseWorldPosition2D();
-        if(System::Get<SNavigation>().IsValidPoint(mousePos))
-        {
-            if(Game::IsClient()) {
-                auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
-                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
-            } else {
-                CFollow &followComponent = Game::GetRegistry().get<CFollow>(GetActivePlayer());
-                followComponent.FollowState = EFollowState::Dirty;
-                followComponent.Index = 1;
-                followComponent.Goal = mousePos;
-            }
-        }
-    }
+//    if(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_RIGHT)) {
+//        v2 mousePos = Util::GetMouseWorldPosition2D();
+//        if(System::Get<SNavigation>().IsValidPoint(mousePos))
+//        {
+//            if(Game::IsClient()) {
+//                auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
+//                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
+//            } else {
+//                CFollow &followComponent = Game::GetRegistry().get<CFollow>(GetActivePlayer());
+//                followComponent.FollowState = EFollowState::Dirty;
+//                followComponent.Index = 1;
+//                followComponent.Goal = mousePos;
+//            }
+//        }
+//    }
     if(raylib::IsMouseButtonPressed(raylib::MOUSE_BUTTON_RIGHT))
     {
         auto e = Game::GetRegistry().create();
@@ -193,7 +193,7 @@ void MainScene::Update(float deltaSeconds)
         mainCanvas->Update();
         CCamera3D& cam = Game::Instance().GetActiveCamera();
         entt::entity player = GetActivePlayer();
-        if(cameraLock) {
+        if(cameraLock && Game::GetPlayer() != entt::null) {
             const v3& playerPos = GetRegistry().get<CTransform>(player).Position;
             cam.Position = glm::mix(cam.Position, v3{playerPos.x - 40, cam.Position.y, playerPos.z - 40}, 0.05);
             cam.Target = glm::mix(cam.Target, playerPos, 0.05);

@@ -21,6 +21,7 @@ void SNetworking::Update(float deltaSeconds)
                 NetworkDriver::GetServer()->Sync(entity, t, NetworkDriver::GetConnections());
             }
         }
+        NetworkDriver::GetServer()->SendBatchTransforms(NetworkDriver::GetConnections());
         for (const entt::entity &entity: Game::GetRegistry().view<CAttributeSet, CNetwork>()) {
             CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(entity);
             if(ac.bNeedsNetSync) {

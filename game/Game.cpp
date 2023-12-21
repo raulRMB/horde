@@ -59,7 +59,7 @@ void Game::Loop() {
         Update(1.0f / tickRate);
     }
     if(!Game::IsStandalone()) {
-        NetworkDriver::ProcessQueues();
+        NetworkDriver::Process();
     }
     if(!Game::IsServer()) {
         raylib::BeginDrawing();

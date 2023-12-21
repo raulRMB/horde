@@ -15,8 +15,10 @@ class Client
 public:
     ENetHost* client;
     ENetPeer* peer;
+    bool connected = false;
     Client();
     void Loop();
+    void Connect();
     void SendMoveTo(v2 pos, uint32_t NetworkId);
     void TriggerAbility(u32 networkId, int abilityId, v3 targeting);
     void OnInboundMessage(const Net::Header* header);
@@ -25,8 +27,6 @@ public:
     void flush() { enet_host_flush(client); }
     void Close();
 private:
-    std::map<Net::Events, long> lastMessageTimestamp;
-    bool ExpiredMessage(Net::Events type, long timestamp);
     void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data);
 };
 

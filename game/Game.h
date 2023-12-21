@@ -11,7 +11,7 @@ namespace tX
 {
 class Game
 {
-    entt::entity OwnedPlayer;
+    entt::entity OwnedPlayer = entt::null;
     int FrameCount = 0;
 
     bool showFPS = true;

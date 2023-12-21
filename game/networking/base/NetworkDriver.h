@@ -17,6 +17,7 @@ namespace tX
 class NetworkDriver {
 
     NetworkDriver();
+    bool useOwnThread = true;
 
     static NetworkDriver& Instance();
 
@@ -38,7 +39,7 @@ public:
     static ThreadSafeQueue<IncomingMessage>& GetInboundQueue() { return Instance().inboundQueue; };
     static ThreadSafeQueue<OutboundMessage>& GetOutboundQueue() { return Instance().outboundQueue; };
     static std::vector<ENetPeer*>& GetConnections() { return Instance().connections; };
-    static void ProcessQueues();
+    static void Process();
     static NetworkedEntities& GetNetworkedEntities();
 };
 

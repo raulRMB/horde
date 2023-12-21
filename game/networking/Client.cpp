@@ -22,26 +22,42 @@ namespace raylib
 namespace tX
 {
 
+void Client::Connect() {
+    if(Game::IsClient()) {
+        if (enet_initialize() != 0) {
+            raylib::TraceLog(raylib::LOG_ERROR, "Failed to initialize ENet");
+        }
+        client = enet_host_create(nullptr, 1, 2, 0, 0);
+        client->maximumPacketSize = 64 * 1024 * 1024;
+        client->maximumWaitingData = 64 * 1024 * 1024;
+        enet_peer_timeout(client->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
+        if (client == nullptr) {
+            raylib::TraceLog(raylib::LOG_ERROR, "Failed to create server");
+            enet_deinitialize();
+        }
+        ENetAddress address;
+        enet_address_set_host(&address, "localhost");
+        address.port = 7777;
+        peer = enet_host_connect(client, &address, 2, 0);
+        if (peer == nullptr) {
+            raylib::TraceLog(raylib::LOG_ERROR, "No available peers for initiating an ENet connection");
+            enet_host_destroy(client);
+            enet_deinitialize();
+        }
+
+        ENetEvent event;
+        if(enet_host_service(client, &event, 5000) > 0) {
+            if (event.type == ENET_EVENT_TYPE_CONNECT) {
+                connected = true;
+                SendInitialConnection();
+                raylib::TraceLog(raylib::LOG_INFO, "Client Running");
+            }
+        }
+    }
+}
+
 Client::Client() {
-    if (enet_initialize() != 0) {
-        raylib::TraceLog(raylib::LOG_INFO, "Failed to initialize ENet");
-    }
-    client = enet_host_create(nullptr, 1, 2, 0, 0);
-    enet_peer_timeout(client->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
-    if (client == nullptr) {
-        raylib::TraceLog(raylib::LOG_INFO, "Failed to create server");
-        enet_deinitialize();
-    }
-    ENetAddress address;
-    enet_address_set_host(&address, "localhost");
-    address.port = 7777;
-    peer = enet_host_connect(client, &address, 2, 0);
-    if (peer == nullptr) {
-        raylib::TraceLog(raylib::LOG_INFO, "No available peers for initiating an ENet connection");
-        enet_host_destroy(client);
-        enet_deinitialize();
-    }
-    raylib::TraceLog(raylib::LOG_INFO, "Client Running");
+    Connect();
 }
 
 void Client::SendMoveTo(v2 pos, uint32_t NetworkId) {
@@ -63,9 +79,10 @@ void Client::TriggerAbility(u32 networkId, int abilityId, v3 targeting)
 }
 
 void Client::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data) {
-    auto header = CreateHeader(builder, Util::GenerateTimestamp(), type, data);
+    auto header = CreateHeader(builder, type, data);
     builder.Finish(header);
-    ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), ENET_PACKET_FLAG_RELIABLE);
+    size_t size = builder.GetSize();
+    ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), size, ENET_PACKET_FLAG_RELIABLE);
     OutboundMessage msg = OutboundMessage{};
     msg.Packet = packet;
     msg.Connections.push_back(peer);
@@ -77,54 +94,50 @@ void Client::SendInitialConnection() {
     auto sec = builder.CreateString("YOOO");
     Net::OnConnectionBuilder cbuilder(builder);
     cbuilder.add_secret(sec);
+    if(NetworkDriver::GetNetworkedEntities().Exists(Game::GetPlayer())) {
+        cbuilder.add_netId(NetworkDriver::GetNetworkedEntities().Get(Game::GetPlayer()));
+    } else {
+        cbuilder.add_netId(-1);
+    }
     auto d = cbuilder.Finish();
     Send(builder, Net::Events::Events_OnConnection, d.Union());
 }
 
 void Client::Loop() {
-    if(client == nullptr) {
+    if (client == nullptr || !connected) {
         return;
     }
     ENetEvent event;
-    if(enet_host_service(client, &event, 2000) > 0)
-    {
-        if(event.type == ENET_EVENT_TYPE_CONNECT) {
+    if (enet_host_service(client, &event, 0) > 0) {
+        if (event.type == ENET_EVENT_TYPE_CONNECT) {
+            connected = true;
             raylib::TraceLog(raylib::LOG_INFO, "CONNECT!");
             SendInitialConnection();
-        } else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
+        } else if (event.type == ENET_EVENT_TYPE_RECEIVE) {
             IncomingMessage msg;
-            enet_uint8* dataCopy = new enet_uint8[event.packet->dataLength];
+            enet_uint8 *dataCopy = new enet_uint8[event.packet->dataLength];
             std::memcpy(dataCopy, event.packet->data, event.packet->dataLength);
             msg.data = dataCopy;
             msg.peer = event.peer;
             NetworkDriver::GetInboundQueue().push(msg);
             enet_packet_destroy(event.packet);
-        } else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
-            raylib::TraceLog(raylib::LOG_INFO, "DISCONNECT!");
+        } else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
+            connected = false;
+            raylib::TraceLog(raylib::LOG_INFO, "DISCONNECTED!");
+            //Connect();
         }
     }
-}
-
-bool Client::ExpiredMessage(Net::Events type, long timestamp) {
-    if (lastMessageTimestamp.find(type) != lastMessageTimestamp.end()) {
-        if(lastMessageTimestamp[type] < timestamp) {
-            lastMessageTimestamp[type] = timestamp;
-            return false;
-        }
-    } else {
-        lastMessageTimestamp[type] = timestamp;
-        return false;
-    }
-    return true;
 }
 
 int gotPackets = 0;
 void Client::OnInboundMessage(const Net::Header* header) {
-//    if(ExpiredMessage(header->Event_type(), header->Timestamp())) {
-//        return;
-//    }
     gotPackets++;
-    switch (header->Event_type()) {
+
+    Net::Events event = Net::Events::Events_NONE;
+    try {
+        event = header->Event_type();
+    } catch(int s) {}
+    switch(event) {
         case Net::Events_OnConnectionResponse: {
             auto res = header->Event_as_OnConnectionResponse();
             auto t = FlatBufferUtil::NetTransformToTransform(res->self()->location());
@@ -144,6 +157,20 @@ void Client::OnInboundMessage(const Net::Header* header) {
                 //printf("Sync %u to pos %f, %f, %f\n", res->netId(), res->transform()->translation()->x(), res->transform()->translation()->y(), res->transform()->translation()->z());
                 if(t != nullptr) {
                     t->TargetTransform = FlatBufferUtil::NetTransformToTransform(res->transform());
+                }
+            }
+            break;
+        }
+        case Net::Events_BatchSyncTransform: {
+            auto res = header->Event_as_BatchSyncTransform();
+            std::vector entities(res->entities()->begin(), res->entities()->end());
+            for(auto entity : entities) {
+                if(NetworkDriver::GetNetworkedEntities().Exists(entity->netId())) {
+                    CNetwork* t = Game::GetRegistry().try_get<CNetwork>(
+                            NetworkDriver::GetNetworkedEntities().Get(entity->netId()));
+                    if(t != nullptr) {
+                        t->TargetTransform = FlatBufferUtil::NetTransformToTransform(entity->transform());
+                    }
                 }
             }
             break;
@@ -204,7 +231,9 @@ void Client::OnInboundMessage(const Net::Header* header) {
 }
 
 void Client::SendOutboundMessage(ENetPacket* packet) {
-    enet_peer_send(peer, 0, packet);
+    if(connected) {
+        enet_peer_send(peer, 0, packet);
+    }
 }
 
 void Client::Close() {

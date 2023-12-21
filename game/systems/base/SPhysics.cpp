@@ -21,31 +21,31 @@ void SPhysics::Update(float deltaSeconds)
 
     entt::registry& registry = Game::GetRegistry();
 
-    auto entities = registry.view<CPhysics2D, CTransform>();
-    for (auto it = entities.begin(); it != entities.end(); ++it) {
-        AddAffectedEntity(*it);
-        for (auto jt = std::next(it); jt != entities.end(); ++jt) {
-            AddAffectedEntity(*jt);
-            entt::entity x = *it;
-            entt::entity y = *jt;
-            CPhysics2D &xP = entities.get<CPhysics2D>(x);
-            CTransform &xT = entities.get<CTransform>(x);
-            CPhysics2D &yP = entities.get<CPhysics2D>(y);
-            CTransform &yT = entities.get<CTransform>(y);
-            if(Util::Check2DCollision(xP, xT, yP, yT)) {
-                auto ac = registry.try_get<CAttributeSet>(y);
-                auto eff = registry.try_get<FEffect>(x);
-                if(ac != nullptr && eff != nullptr && eff->source != y) {
-                    eff->target = y;
-                    Game::GetDispatcher().trigger(*eff);
-                    toDestroy.insert(x);
-                }
-                if(!Game::IsServer() && eff != nullptr && eff->source != y) {
-                    toDestroy.insert(x);
-                }
-            }
-        }
-    }
+//    auto entities = registry.view<CPhysics2D, CTransform>();
+//    for (auto it = entities.begin(); it != entities.end(); ++it) {
+//        AddAffectedEntity(*it);
+//        for (auto jt = std::next(it); jt != entities.end(); ++jt) {
+//            AddAffectedEntity(*jt);
+//            entt::entity x = *it;
+//            entt::entity y = *jt;
+//            CPhysics2D &xP = entities.get<CPhysics2D>(x);
+//            CTransform &xT = entities.get<CTransform>(x);
+//            CPhysics2D &yP = entities.get<CPhysics2D>(y);
+//            CTransform &yT = entities.get<CTransform>(y);
+//            if(Util::Check2DCollision(xP, xT, yP, yT)) {
+//                auto ac = registry.try_get<CAttributeSet>(y);
+//                auto eff = registry.try_get<FEffect>(x);
+//                if(ac != nullptr && eff != nullptr && eff->source != y) {
+//                    eff->target = y;
+//                    Game::GetDispatcher().trigger(*eff);
+//                    toDestroy.insert(x);
+//                }
+//                if(!Game::IsServer() && eff != nullptr && eff->source != y) {
+//                    toDestroy.insert(x);
+//                }
+//            }
+//        }
+//    }
 
     for(entt::entity x : toDestroy) {
         auto found = registry.try_get<CTransform>(x);

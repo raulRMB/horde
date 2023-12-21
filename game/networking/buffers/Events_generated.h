@@ -36,6 +36,9 @@ struct SyncAttributeComponentBuilder;
 struct SyncTransform;
 struct SyncTransformBuilder;
 
+struct BatchSyncTransform;
+struct BatchSyncTransformBuilder;
+
 struct OnPlayerJoined;
 struct OnPlayerJoinedBuilder;
 
@@ -78,11 +81,12 @@ enum Events : uint8_t {
   Events_TriggerAbility = 8,
   Events_SpawnProjectile = 9,
   Events_SpawnEntity = 10,
+  Events_BatchSyncTransform = 11,
   Events_MIN = Events_NONE,
-  Events_MAX = Events_SpawnEntity
+  Events_MAX = Events_BatchSyncTransform
 };
 
-inline const Events (&EnumValuesEvents())[11] {
+inline const Events (&EnumValuesEvents())[12] {
   static const Events values[] = {
     Events_NONE,
     Events_OnConnectionResponse,
@@ -94,13 +98,14 @@ inline const Events (&EnumValuesEvents())[11] {
     Events_SyncCharacterAnimState,
     Events_TriggerAbility,
     Events_SpawnProjectile,
-    Events_SpawnEntity
+    Events_SpawnEntity,
+    Events_BatchSyncTransform
   };
   return values;
 }
 
 inline const char * const *EnumNamesEvents() {
-  static const char * const names[12] = {
+  static const char * const names[13] = {
     "NONE",
     "OnConnectionResponse",
     "OnConnection",
@@ -112,13 +117,14 @@ inline const char * const *EnumNamesEvents() {
     "TriggerAbility",
     "SpawnProjectile",
     "SpawnEntity",
+    "BatchSyncTransform",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameEvents(Events e) {
-  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_SpawnEntity)) return "";
+  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_BatchSyncTransform)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesEvents()[index];
 }
@@ -165,6 +171,10 @@ template<> struct EventsTraits<Net::SpawnProjectile> {
 
 template<> struct EventsTraits<Net::SpawnEntity> {
   static const Events enum_value = Events_SpawnEntity;
+};
+
+template<> struct EventsTraits<Net::BatchSyncTransform> {
+  static const Events enum_value = Events_BatchSyncTransform;
 };
 
 bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Events type);
@@ -608,6 +618,58 @@ inline ::flatbuffers::Offset<SyncTransform> CreateSyncTransform(
   return builder_.Finish();
 }
 
+struct BatchSyncTransform FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef BatchSyncTransformBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ENTITIES = 4
+  };
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>> *entities() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>> *>(VT_ENTITIES);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_ENTITIES) &&
+           verifier.VerifyVector(entities()) &&
+           verifier.VerifyVectorOfTables(entities()) &&
+           verifier.EndTable();
+  }
+};
+
+struct BatchSyncTransformBuilder {
+  typedef BatchSyncTransform Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_entities(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>>> entities) {
+    fbb_.AddOffset(BatchSyncTransform::VT_ENTITIES, entities);
+  }
+  explicit BatchSyncTransformBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<BatchSyncTransform> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<BatchSyncTransform>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<BatchSyncTransform> CreateBatchSyncTransform(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>>> entities = 0) {
+  BatchSyncTransformBuilder builder_(_fbb);
+  builder_.add_entities(entities);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<BatchSyncTransform> CreateBatchSyncTransformDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<::flatbuffers::Offset<Net::SyncTransform>> *entities = nullptr) {
+  auto entities__ = entities ? _fbb.CreateVector<::flatbuffers::Offset<Net::SyncTransform>>(*entities) : 0;
+  return Net::CreateBatchSyncTransform(
+      _fbb,
+      entities__);
+}
+
 struct OnPlayerJoined FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef OnPlayerJoinedBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -780,13 +842,18 @@ inline ::flatbuffers::Offset<OnConnectionResponse> CreateOnConnectionResponseDir
 struct OnConnection FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef OnConnectionBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SECRET = 4
+    VT_NETID = 4,
+    VT_SECRET = 6
   };
+  int32_t netId() const {
+    return GetField<int32_t>(VT_NETID, 0);
+  }
   const ::flatbuffers::String *secret() const {
     return GetPointer<const ::flatbuffers::String *>(VT_SECRET);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<int32_t>(verifier, VT_NETID, 4) &&
            VerifyOffset(verifier, VT_SECRET) &&
            verifier.VerifyString(secret()) &&
            verifier.EndTable();
@@ -797,6 +864,9 @@ struct OnConnectionBuilder {
   typedef OnConnection Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_netId(int32_t netId) {
+    fbb_.AddElement<int32_t>(OnConnection::VT_NETID, netId, 0);
+  }
   void add_secret(::flatbuffers::Offset<::flatbuffers::String> secret) {
     fbb_.AddOffset(OnConnection::VT_SECRET, secret);
   }
@@ -813,18 +883,22 @@ struct OnConnectionBuilder {
 
 inline ::flatbuffers::Offset<OnConnection> CreateOnConnection(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t netId = 0,
     ::flatbuffers::Offset<::flatbuffers::String> secret = 0) {
   OnConnectionBuilder builder_(_fbb);
   builder_.add_secret(secret);
+  builder_.add_netId(netId);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<OnConnection> CreateOnConnectionDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t netId = 0,
     const char *secret = nullptr) {
   auto secret__ = secret ? _fbb.CreateString(secret) : 0;
   return Net::CreateOnConnection(
       _fbb,
+      netId,
       secret__);
 }
 
@@ -1151,13 +1225,9 @@ inline ::flatbuffers::Offset<SpawnEntity> CreateSpawnEntity(
 struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef HeaderBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_TIMESTAMP = 4,
-    VT_EVENT_TYPE = 6,
-    VT_EVENT = 8
+    VT_EVENT_TYPE = 4,
+    VT_EVENT = 6
   };
-  int64_t Timestamp() const {
-    return GetField<int64_t>(VT_TIMESTAMP, 0);
-  }
   Net::Events Event_type() const {
     return static_cast<Net::Events>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
   }
@@ -1195,9 +1265,11 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const Net::SpawnEntity *Event_as_SpawnEntity() const {
     return Event_type() == Net::Events_SpawnEntity ? static_cast<const Net::SpawnEntity *>(Event()) : nullptr;
   }
+  const Net::BatchSyncTransform *Event_as_BatchSyncTransform() const {
+    return Event_type() == Net::Events_BatchSyncTransform ? static_cast<const Net::BatchSyncTransform *>(Event()) : nullptr;
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<int64_t>(verifier, VT_TIMESTAMP, 8) &&
            VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
            VerifyOffset(verifier, VT_EVENT) &&
            VerifyEvents(verifier, Event(), Event_type()) &&
@@ -1245,13 +1317,14 @@ template<> inline const Net::SpawnEntity *Header::Event_as<Net::SpawnEntity>() c
   return Event_as_SpawnEntity();
 }
 
+template<> inline const Net::BatchSyncTransform *Header::Event_as<Net::BatchSyncTransform>() const {
+  return Event_as_BatchSyncTransform();
+}
+
 struct HeaderBuilder {
   typedef Header Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_Timestamp(int64_t Timestamp) {
-    fbb_.AddElement<int64_t>(Header::VT_TIMESTAMP, Timestamp, 0);
-  }
   void add_Event_type(Net::Events Event_type) {
     fbb_.AddElement<uint8_t>(Header::VT_EVENT_TYPE, static_cast<uint8_t>(Event_type), 0);
   }
@@ -1271,11 +1344,9 @@ struct HeaderBuilder {
 
 inline ::flatbuffers::Offset<Header> CreateHeader(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    int64_t Timestamp = 0,
     Net::Events Event_type = Net::Events_NONE,
     ::flatbuffers::Offset<void> Event = 0) {
   HeaderBuilder builder_(_fbb);
-  builder_.add_Timestamp(Timestamp);
   builder_.add_Event(Event);
   builder_.add_Event_type(Event_type);
   return builder_.Finish();
@@ -1324,6 +1395,10 @@ inline bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Eve
     }
     case Events_SpawnEntity: {
       auto ptr = reinterpret_cast<const Net::SpawnEntity *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case Events_BatchSyncTransform: {
+      auto ptr = reinterpret_cast<const Net::BatchSyncTransform *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

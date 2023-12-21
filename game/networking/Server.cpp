@@ -21,20 +21,25 @@ namespace raylib
 namespace tX
 {
 
-Server::Server() {
-    if (enet_initialize() != 0) {
-        raylib::TraceLog(raylib::LOG_INFO, "Failed to initialize ENet");
+    Server::Server() {
+    if(Game::IsServer()) {
+        if (enet_initialize() != 0) {
+            raylib::TraceLog(raylib::LOG_ERROR, "Failed to initialize ENet");
+        }
+        ENetAddress address;
+        address.host = ENET_HOST_ANY;
+        address.port = 7777;
+        server = enet_host_create(&address, 32, 2, 0, 0);
+        server->maximumPacketSize = 64 * 1024 * 1024;
+        server->maximumWaitingData = 64 * 1024 * 1024;
+
+        enet_peer_timeout(server->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
+        if (server == nullptr) {
+            raylib::TraceLog(raylib::LOG_ERROR, "Failed to create server");
+            enet_deinitialize();
+        }
+        raylib::TraceLog(raylib::LOG_INFO, "Server Running");
     }
-    ENetAddress address;
-    address.host = ENET_HOST_ANY;
-    address.port = 7777;
-    server = enet_host_create(&address, 32, 2, 0, 0);
-    enet_peer_timeout(server->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
-    if (server == nullptr) {
-        raylib::TraceLog(raylib::LOG_INFO, "Failed to create server");
-        enet_deinitialize();
-    }
-    raylib::TraceLog(raylib::LOG_INFO, "Server Running");
 }
 
 void Server::Loop() {
@@ -42,7 +47,7 @@ void Server::Loop() {
         return;
     }
      ENetEvent event;
-     if(enet_host_service(server, &event, 2000) > 0)
+     if(enet_host_service(server, &event, 0) > 0)
      {
         if(event.type == ENET_EVENT_TYPE_CONNECT) {}
         else if(event.type == ENET_EVENT_TYPE_RECEIVE) {
@@ -63,18 +68,26 @@ void Server::Loop() {
 void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
     switch (header->Event_type()) {
         case Net::Events_OnConnection: {
-            OnConnect(peer);
+            auto res = header->Event_as_OnConnection();
+            auto netId = res->netId();
+            if(netId > 0) {
+                //OnReconnect(peer, netId);
+            } else {
+                OnConnect(peer);
+            }
             break;
         }
         case Net::Events_OnMoveTo: {
             auto res = header->Event_as_OnMoveTo();
             v2 vec = v2{res->pos()->x(), res->pos()->y()};
             if (System::Get<SNavigation>().IsValidPoint(vec)) {
-                auto e = NetworkDriver::GetNetworkedEntities().Get(res->netId());
-                CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
-                followComponent.FollowState = EFollowState::Dirty;
-                followComponent.Index = 1;
-                followComponent.Goal = vec;
+                if(NetworkDriver::GetNetworkedEntities().Exists(res->netId())) {
+                    auto e = NetworkDriver::GetNetworkedEntities().Get(res->netId());
+                    CFollow &followComponent = Game::GetRegistry().get<CFollow>(e);
+                    followComponent.FollowState = EFollowState::Dirty;
+                    followComponent.Index = 1;
+                    followComponent.Goal = vec;
+                }
                 break;
             }
         }
@@ -103,7 +116,6 @@ void Server::OnInboundMessage(const Net::Header* header, ENetPeer* peer) {
 }
 
 void Server::SendPlayerJoined(uint32_t netId, CTransform& t) {
-    flatbuffers::FlatBufferBuilder builder;
     auto fbt = FlatBufferUtil::CreateTransform(builder, t);
     Net::OnPlayerJoinedBuilder pjb(builder);
     pjb.add_netId(netId);
@@ -113,7 +125,6 @@ void Server::SendPlayerJoined(uint32_t netId, CTransform& t) {
 }
 
 void Server::SendSpawnEntity(uint32_t netId, uint32_t entityType, CTransform& t) {
-    flatbuffers::FlatBufferBuilder builder;
     auto fbt = FlatBufferUtil::CreateTransform(builder, t);
     Net::SpawnEntityBuilder seb(builder);
     seb.add_netid(netId);
@@ -125,7 +136,6 @@ void Server::SendSpawnEntity(uint32_t netId, uint32_t entityType, CTransform& t)
 
 void Server::SendSpawnProjectile(u32 netId, v2 pos, v2 dir, float speed, float lifetime)
 {
-    flatbuffers::FlatBufferBuilder builder;
     flatbuffers::Offset<Net::SpawnProjectile> msg = FlatBufferUtil::CreateSpawnProjectile(builder, netId, pos, dir, speed, lifetime);
     Send(builder, Net::Events::Events_SpawnProjectile, msg.Union(), NetworkDriver::GetConnections(), ENET_PACKET_FLAG_RELIABLE);
 }
@@ -146,12 +156,12 @@ int packetsSent = 0;
 void Server::SendOutboundMessage(OutboundMessage msg) {
     for(ENetPeer* peer : msg.Connections) {
         packetsSent++;
-        enet_peer_send(peer, 0, msg.Packet);
+        auto channel = msg.Packet->flags == ENET_PACKET_FLAG_RELIABLE ? 1 : 0;
+        enet_peer_send(peer, channel, msg.Packet);
     }
 }
 
 void Server::SendConnectResponse(ENetPeer* peer, uint32_t netId) {
-    flatbuffers::FlatBufferBuilder builder;
     auto otherPlayers = FlatBufferUtil::GetOtherPlayers(builder, peer);
     CTransform& t = Game::GetRegistry().get<CTransform>(NetworkDriver::GetNetworkedEntities().Get(netId));
     flatbuffers::Offset<Net::PlayerSpawn> ps = FlatBufferUtil::CreatePlayerSpawn(builder, t, netId);
@@ -166,36 +176,47 @@ void Server::SendConnectResponse(ENetPeer* peer, uint32_t netId) {
 
 void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c,
                   ENetPacketFlag flag) {
-    auto header = CreateHeader(builder, Util::GenerateTimestamp(), type, data);
+    auto header = CreateHeader(builder, type, data);
     builder.Finish(header);
     ENetPacket* packet = enet_packet_create(builder.GetBufferPointer(), builder.GetSize(), flag);
     OutboundMessage msg = OutboundMessage{};
     msg.Packet = packet;
     msg.Connections = c;
     NetworkDriver::GetOutboundQueue().push(msg);
+    builder = flatbuffers::FlatBufferBuilder();
 }
 
+std::vector<flatbuffers::Offset<Net::SyncTransform>> transformsToSync;
+
 void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
-    flatbuffers::FlatBufferBuilder builder;
     auto x = FlatBufferUtil::CreateTransform(builder, t);
     Net::SyncTransformBuilder stb = Net::SyncTransformBuilder(builder);
     u32 netId = NetworkDriver::GetNetworkedEntities().Get(e);
     stb.add_netId(netId);
     stb.add_transform(x);
     auto payload = stb.Finish();
-    //printf("Sync %u to pos %f, %f, %f\n", netId, t.Position.x, t.Position.y, t.Position.z);
-    Send(builder, Net::Events::Events_SyncTransform, payload.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
+    transformsToSync.push_back(payload);
+}
+
+void Server::SendBatchTransforms(std::vector<ENetPeer*> c) {
+    if(!transformsToSync.empty()) {
+        auto t = builder.CreateVector(transformsToSync);
+        Net::BatchSyncTransformBuilder stb = Net::BatchSyncTransformBuilder(builder);
+
+        stb.add_entities(t);
+        auto payload = stb.Finish();
+        Send(builder, Net::Events::Events_BatchSyncTransform, payload.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
+        transformsToSync.clear();
+    }
 }
 
 void Server::Sync(entt::entity e, CAttributeSet& ac, std::vector<ENetPeer*> c) {
-    flatbuffers::FlatBufferBuilder builder;
     auto x = FlatBufferUtil::CreateSyncAttributes(builder, ac, NetworkDriver::GetNetworkedEntities().Get(e));
     Send(builder, Net::Events::Events_SyncAttributeComponent, x.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
 }
 
 void Server::Sync(entt::entity e, CCharacterAnimation& ca, std::vector<ENetPeer*> c)
 {
-    flatbuffers::FlatBufferBuilder builder;
     auto msg = Net::CreateSyncCharacterAnimState(builder, NetworkDriver::GetNetworkedEntities().Get(e), (int)ca.AnimState);
     Send(builder, Net::Events::Events_SyncCharacterAnimState, msg.Union(), c, ENET_PACKET_FLAG_RELIABLE);
 

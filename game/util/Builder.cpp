@@ -15,9 +15,32 @@
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "components/CShapes.h"
 #include "components/CEnemy.h"
+#include "components/CParticle.h"
 
 namespace tX
 {
+
+    inline FSpawner s = [](entt::entity e, CTransform& transform, entt::registry& registry, CParticle pc) {
+        pc.MaxLife = 5.0f;
+
+        CPhysics3D phc = {};
+        phc.Velocity = Util::RandVec3(-5, 5);
+        phc.MaxSpeed = 100;
+
+        CTransform t = {};
+        t.Position = Util::RandVec3(-1, 1) * v3(1., 0., 1.) * 0.6f;
+        t.Position += transform.Position;
+
+        pc.ColorsOverLife = {
+                {0.0f, FColor{0xFF0000FF}},
+                {0.2f, FColor{0xFFFF00C0}},
+                {1.0f, FColor{0x00FF0000}},
+        };
+
+        registry.emplace<CParticle>(e, pc);
+        registry.emplace<CPhysics3D>(e, phc);
+        registry.emplace<CTransform>(e, t);
+    };
 
     entt::entity Builder::Player(CTransform& t) {
         entt::entity e = Game::GetRegistry().create();
@@ -125,16 +148,16 @@ namespace tX
         registry.emplace<CPhysics2D>(e, physics);
         CEnemy enemy{};
         registry.emplace<CEnemy>(e, enemy);
-        std::list<FAttribute> attributes;
-        FAttribute Health = {
-                .id="health",
-                .base=500,
-                .max=1000,
-                .min=0,
-        };
-        attributes.push_back(Health);
-        CAttributeSet ac{attributes};
-        registry.emplace<CAttributeSet>(e, ac);
+//        std::list<FAttribute> attributes;
+//        FAttribute Health = {
+//                .id="health",
+//                .base=500,
+//                .max=1000,
+//                .min=0,
+//        };
+//        attributes.push_back(Health);
+//        CAttributeSet ac{attributes};
+        //registry.emplace<CAttributeSet>(e, ac);
         return e;
     }
 

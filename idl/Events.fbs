@@ -40,6 +40,10 @@ table SyncTransform {
     netId: uint;
 }
 
+table BatchSyncTransform {
+    entities: [SyncTransform];
+}
+
 table OnPlayerJoined {
     netId: uint;
     transform: Transform;
@@ -56,6 +60,7 @@ table OnConnectionResponse {
 }
 
 table OnConnection {
+    netId: int;
     secret: string;
 }
 
@@ -104,11 +109,11 @@ union Events {
     SyncCharacterAnimState,
     TriggerAbility,
     SpawnProjectile,
-    SpawnEntity
+    SpawnEntity,
+    BatchSyncTransform
 }
 
 table Header {
-    Timestamp: long;
     Event: Events;
 }
 
