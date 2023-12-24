@@ -1,15 +1,26 @@
 #include "game/Game.h"
-#include <cstring>
+#include <CLI11.hpp>
 
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
-    if(argc <= 1) {
-        return tX::Game::Instance().Run(tX::EngineMode::Standalone);
+    CLI::App app{"Horde"};
+
+    bool server = false;
+    bool client = false;
+
+    app.add_flag("-s,--server", server, "Run in server mode");
+    app.add_flag("-c,--client", client, "Run in client mode");
+
+    CLI11_PARSE(app, argc, argv);
+
+    if(server) {
+        return tX::Game::Instance().Run(tX::EngineMode::Server);
     }
-    else if(std::strcmp(argv[1], "-s") == 0) {
-       return tX::Game::Instance().Run(tX::EngineMode::Server);
-    }
-    else if(std::strcmp(argv[1], "-c") == 0) {
+    else if(client) {
         return tX::Game::Instance().Run(tX::EngineMode::Client);
     }
+    else {
+        return tX::Game::Instance().Run(tX::EngineMode::Standalone);
+    }
+
 }
