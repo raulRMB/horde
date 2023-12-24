@@ -1,5 +1,7 @@
 namespace Net;
 
+/* base structs */
+
 table Vector2 {
     x: float;
     y: float;
@@ -30,6 +32,10 @@ table Attribute {
     max: float;
 }
 
+/* end base structs */
+
+/* syncs */
+
 table SyncAttributeComponent {
     netId: uint;
     attributes: [Attribute];
@@ -40,9 +46,18 @@ table SyncTransform {
     netId: uint;
 }
 
-table BatchSyncTransform {
-    entities: [SyncTransform];
+table SyncCharacterAnimState {
+    netId: uint;
+    state: int;
 }
+
+table Sync {
+    transforms: [SyncTransform];
+    attributes: [SyncAttributeComponent];
+    anims: [SyncCharacterAnimState];
+}
+
+/* end syncs */
 
 table OnPlayerJoined {
     netId: uint;
@@ -64,26 +79,22 @@ table OnConnection {
     secret: string;
 }
 
+/* client game messages */
+
 table OnMoveTo {
     netId: uint;
     pos: Vector2;
 }
 
-table SyncCharacterAnimState
-{
-    netId: uint;
-    state: int;
-}
-
-table TriggerAbility
-{
+table TriggerAbility {
     netId: uint;
     abilityId: uint;
     targetVec: Vector3;
 }
 
-table SpawnProjectile
-{
+/* end client game messages */
+
+table SpawnProjectile {
     netid: uint;
     porjectileId: uint;
     position: Vector2;
@@ -92,8 +103,7 @@ table SpawnProjectile
     lifetime: float;
 }
 
-table SpawnEntity
-{
+table SpawnEntity {
     netid: uint;
     entityType: uint;
     location: Transform;
@@ -103,14 +113,11 @@ union Events {
     OnConnectionResponse,
     OnConnection,
     OnMoveTo,
-    SyncTransform,
     OnPlayerJoined,
-    SyncAttributeComponent,
-    SyncCharacterAnimState,
     TriggerAbility,
     SpawnProjectile,
     SpawnEntity,
-    BatchSyncTransform
+    Sync
 }
 
 table Header {

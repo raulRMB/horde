@@ -148,16 +148,16 @@ namespace tX
         registry.emplace<CPhysics2D>(e, physics);
         CEnemy enemy{};
         registry.emplace<CEnemy>(e, enemy);
-//        std::list<FAttribute> attributes;
-//        FAttribute Health = {
-//                .id="health",
-//                .base=500,
-//                .max=1000,
-//                .min=0,
-//        };
-//        attributes.push_back(Health);
-//        CAttributeSet ac{attributes};
-        //registry.emplace<CAttributeSet>(e, ac);
+        std::list<FAttribute> attributes;
+        FAttribute Health = {
+                .id="health",
+                .base=500,
+                .max=1000,
+                .min=0,
+        };
+        attributes.push_back(Health);
+        CAttributeSet ac{attributes};
+        registry.emplace<CAttributeSet>(e, ac);
         return e;
     }
 

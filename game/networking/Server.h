@@ -32,7 +32,7 @@ public:
     void Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c);
     void Sync(entt::entity e, struct CAttributeSet& ac, std::vector<ENetPeer*> c);
     void Sync(entt::entity e, struct CCharacterAnimation& ca, std::vector<ENetPeer*> c);
-    void SendBatchTransforms(std::vector<ENetPeer*> c);
+    void SendSync(std::vector<ENetPeer*> c);
     void SendSpawnEntity(uint32_t netId, uint32_t entityType, CTransform& t);
 private:
     void Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, flatbuffers::Offset<> data, std::vector<ENetPeer*>& c,

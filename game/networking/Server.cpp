@@ -187,6 +187,8 @@ void Server::Send(flatbuffers::FlatBufferBuilder &builder, Net::Events type, fla
 }
 
 std::vector<flatbuffers::Offset<Net::SyncTransform>> transformsToSync;
+std::vector<flatbuffers::Offset<Net::SyncAttributeComponent>> attributesToSync;
+std::vector<flatbuffers::Offset<Net::SyncCharacterAnimState>> animsToSync;
 
 void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
     auto x = FlatBufferUtil::CreateTransform(builder, t);
@@ -198,28 +200,32 @@ void Server::Sync(entt::entity e, CTransform& t, std::vector<ENetPeer*> c) {
     transformsToSync.push_back(payload);
 }
 
-void Server::SendBatchTransforms(std::vector<ENetPeer*> c) {
-    if(!transformsToSync.empty()) {
-        auto t = builder.CreateVector(transformsToSync);
-        Net::BatchSyncTransformBuilder stb = Net::BatchSyncTransformBuilder(builder);
-
-        stb.add_entities(t);
-        auto payload = stb.Finish();
-        Send(builder, Net::Events::Events_BatchSyncTransform, payload.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
-        transformsToSync.clear();
-    }
+void Server::SendSync(std::vector<ENetPeer*> c) {
+        if(!transformsToSync.empty() || !attributesToSync.empty() || !animsToSync.empty()) {
+            auto t = builder.CreateVector(transformsToSync);
+            auto a = builder.CreateVector(attributesToSync);
+            auto anim = builder.CreateVector(animsToSync);
+            Net::SyncBuilder stb = Net::SyncBuilder(builder);
+            stb.add_transforms(t);
+            stb.add_attributes(a);
+            stb.add_anims(anim);
+            auto payload = stb.Finish();
+            Send(builder, Net::Events::Events_Sync, payload.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
+            transformsToSync.clear();
+            attributesToSync.clear();
+            animsToSync.clear();
+        }
 }
 
 void Server::Sync(entt::entity e, CAttributeSet& ac, std::vector<ENetPeer*> c) {
     auto x = FlatBufferUtil::CreateSyncAttributes(builder, ac, NetworkDriver::GetNetworkedEntities().Get(e));
-    Send(builder, Net::Events::Events_SyncAttributeComponent, x.Union(), c, ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
+    attributesToSync.push_back(x);
 }
 
 void Server::Sync(entt::entity e, CCharacterAnimation& ca, std::vector<ENetPeer*> c)
 {
     auto msg = Net::CreateSyncCharacterAnimState(builder, NetworkDriver::GetNetworkedEntities().Get(e), (int)ca.AnimState);
-    Send(builder, Net::Events::Events_SyncCharacterAnimState, msg.Union(), c, ENET_PACKET_FLAG_RELIABLE);
-
+    animsToSync.push_back(msg);
 }
 
 void Server::Close() {
