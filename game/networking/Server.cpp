@@ -28,7 +28,7 @@ namespace tX
         }
         ENetAddress address;
         address.host = ENET_HOST_ANY;
-        address.port = 7777;
+        address.port = NetworkDriver::GetPort();
         server = enet_host_create(&address, 32, 2, 0, 0);
         server->maximumPacketSize = 64 * 1024 * 1024;
         server->maximumWaitingData = 64 * 1024 * 1024;

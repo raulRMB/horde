@@ -21,6 +21,9 @@ class NetworkDriver {
 
     static NetworkDriver& Instance();
 
+    std::string ip;
+    int port;
+
     NetworkDriver(const NetworkDriver&) = delete;
     NetworkDriver& operator=(const NetworkDriver&) = delete;
 
@@ -40,6 +43,10 @@ public:
     static ThreadSafeQueue<OutboundMessage>& GetOutboundQueue() { return Instance().outboundQueue; };
     static std::vector<ENetPeer*>& GetConnections() { return Instance().connections; };
     static void Process();
+    static int GetPort() { return Instance().port; };
+    static void SetPort(int newPort) { Instance().port = newPort; }
+    static std::string GetIP() { return Instance().ip; };
+    static void SetIP(std::string newIp) { Instance().ip = newIp; }
     static NetworkedEntities& GetNetworkedEntities();
 };
 

@@ -36,8 +36,8 @@ void Client::Connect() {
             enet_deinitialize();
         }
         ENetAddress address;
-        enet_address_set_host(&address, "localhost");
-        address.port = 7777;
+        enet_address_set_host(&address, NetworkDriver::GetIP().c_str());
+        address.port = NetworkDriver::GetPort();
         peer = enet_host_connect(client, &address, 2, 0);
         if (peer == nullptr) {
             raylib::TraceLog(raylib::LOG_ERROR, "No available peers for initiating an ENet connection");
