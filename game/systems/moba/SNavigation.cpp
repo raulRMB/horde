@@ -21,7 +21,8 @@ void SNavigation::Update(float deltaSeconds)
     }
 }
 
-void SNavigation::Process(entt::entity e, entt::registry& r, float deltaSeconds) {
+void SNavigation::Process(entt::entity e, entt::registry& r, float deltaSeconds)
+{
     CFollow& followComponent = r.get<CFollow>(e);
     EFollowState& bFollowing = followComponent.FollowState;
     if(bFollowing != EFollowState::Dirty)

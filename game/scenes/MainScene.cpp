@@ -53,10 +53,10 @@ void MainScene::LoadSystems()
     }
 
     if(!Game::IsClient()) {
-        UpdateSystems.push_back(&System::Get<SFollow>());
-        UpdateSystems.push_back(&System::Get<SNavigation>());
-        UpdateSystems.push_back(&System::Get<SSpawn>());
         UpdateSystems.push_back(&System::Get<SEnemy>());
+        UpdateSystems.push_back(&System::Get<SNavigation>());
+        UpdateSystems.push_back(&System::Get<SFollow>());
+        UpdateSystems.push_back(&System::Get<SSpawn>());
         UpdateSystems.push_back(&System::Get<SAttribute>());
         UpdateSystems.push_back(&System::Get<SCharacterAnimation>());
     }

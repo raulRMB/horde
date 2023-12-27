@@ -50,7 +50,7 @@ void SFollow::Process(entt::entity e, entt::registry& r, float deltaSeconds) {
     v2 followPos2d = {followPos.x, followPos.z};
     CPhysics2D& physics = r.get<CPhysics2D>(e);
 
-    if(constexpr float minDist = 0.3f; glm::distance2(followPos2d, targetPos) > minDist * minDist)
+    if(constexpr float minDist = 0.3f * 0.3f; glm::distance2(followPos2d, targetPos) > minDist)
     {
         v2 direction = targetPos - followPos2d;
         v2 nDirection = glm::normalize(direction);
@@ -70,7 +70,7 @@ void SFollow::Process(entt::entity e, entt::registry& r, float deltaSeconds) {
         }
         else
         {
-            followComponent.FollowState = EFollowState::Idle;
+            followState = EFollowState::Idle;
             CTransform& t = r.get<CTransform>(e);
             t.Position = v3{targetPos.x, 0 , targetPos.y};
             physics.Velocity = {0.f, 0.f};
