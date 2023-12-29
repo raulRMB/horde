@@ -28,6 +28,12 @@
 #include "bgfx/bgfx.h"
 #include "bx/math.h"
 #include "renderer/Renderer.h"
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define TINYGLTF_NOEXCEPTION
+#define JSON_NOEXCEPTION
+#include "tiny_gltf.h"
 
 namespace tX
 {
@@ -64,6 +70,15 @@ void MainScene::LoadSystems()
     }
 }
 
+struct PosNormalVertex
+{
+    float x, y, z;
+    float nx, ny, nz;
+};
+
+bgfx::VertexBufferHandle vbh;
+bgfx::IndexBufferHandle ibh;
+
 void MainScene::Start()
 {
     LoadSystems();
@@ -89,6 +104,61 @@ void MainScene::Start()
         Game::SpawnPlayer(1, t, true);
     }
     Scene::Start();
+
+    tinygltf::TinyGLTF loader;
+    tinygltf::Model model;
+    std::string err;
+    std::string warn;
+
+    bool ret = loader.LoadBinaryFromFile(&model, &err, &warn, "../assets/models/anim.glb");
+    if (!warn.empty()) {
+        printf("Warn: %s\n", warn.c_str());
+    }
+
+    if (!err.empty()) {
+        printf("Err: %s\n", err.c_str());
+    }
+
+    if (!ret) {
+        printf("Failed to parse glTF\n");
+    }
+    else
+    {
+        printf("Loaded glTF\n");
+    }
+
+//    // Extract vertex and index data from glTF
+//    std::vector<PosNormalVertex> vertices;
+//    std::vector<uint16_t> indices;
+//
+//    for (const auto& mesh : model.meshes) {
+//        for (const auto& primitive : mesh.primitives) {
+//            const tinygltf::Accessor& accessor = model.accessors[primitive.indices];
+//            const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
+//            const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+//
+//            const void* indexData = &buffer.data[bufferView.byteOffset + accessor.byteOffset];
+//            const uint32_t indexCount = static_cast<uint32_t>(accessor.count);
+//
+//            indices.resize(indexCount);
+//            memcpy(indices.data(), indexData, indexCount * sizeof(uint16_t));
+//
+//            const tinygltf::Accessor& positionAccessor = model.accessors[primitive.attributes.at("POSITION")];
+//            const tinygltf::BufferView& positionView = model.bufferViews[positionAccessor.bufferView];
+//            const tinygltf::Buffer& positionBuffer = model.buffers[positionView.buffer];
+//
+//            const void* positionData = &positionBuffer.data[positionView.byteOffset + positionAccessor.byteOffset];
+//            const uint32_t vertexCount = static_cast<uint32_t>(positionAccessor.count);
+//
+//            vertices.resize(vertexCount);
+//            memcpy(vertices.data(), positionData, vertexCount * sizeof(PosNormalVertex));
+//        }
+//    }
+//
+//    // Create BGFX buffers
+//    vbh = bgfx::createVertexBuffer(bgfx::makeRef(vertices.data(), vertices.size() * sizeof(PosNormalVertex)),  bgfx::Attrib::Position | bgfx::Attrib::Normal);
+//
+//    ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices.data(), indices.size() * sizeof(uint16_t)));
 }
 
 void MainScene::InitUI()

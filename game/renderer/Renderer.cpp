@@ -25,7 +25,7 @@ namespace tX {
 #elif BX_PLATFORM_OSX
         init.platformData.nwh = glfwGetCocoaWindow(Instance().window);
 #elif BX_PLATFORM_WINDOWS
-        init.platformData.nwh = glfwGetWin32Window(window);
+        init.platformData.nwh = glfwGetWin32Window(GetWindow());
 #endif
         glfwGetWindowSize(Instance().window, &Instance().width, &Instance().height);
         init.resolution.width = (uint32_t)Instance().width;

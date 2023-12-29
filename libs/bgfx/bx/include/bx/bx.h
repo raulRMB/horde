@@ -6,7 +6,11 @@
 #ifndef BX_H_HEADER_GUARD
 #define BX_H_HEADER_GUARD
 
-#include <alloca.h> // alloca
+#if defined(WIN32) || defined(__WIN32) || defined(__WIN32__)
+#include <malloc.h>
+#else
+#include <alloca.h>
+#endif
 #include <stdarg.h> // va_list
 #include <stdint.h> // uint32_t
 #include <stdlib.h> // size_t
