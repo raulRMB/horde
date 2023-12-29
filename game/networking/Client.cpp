@@ -36,8 +36,8 @@ void Client::Connect() {
             enet_deinitialize();
         }
         ENetAddress address;
-        enet_address_set_host(&address, "localhost");
-        address.port = 7777;
+        enet_address_set_host(&address, NetworkDriver::GetIP().c_str());
+        address.port = NetworkDriver::GetPort();
         peer = enet_host_connect(client, &address, 2, 0);
         if (peer == nullptr) {
             raylib::TraceLog(raylib::LOG_ERROR, "No available peers for initiating an ENet connection");
@@ -149,44 +149,38 @@ void Client::OnInboundMessage(const Net::Header* header) {
             }
             break;
         }
-        case Net::Events_SyncTransform: {
-            auto res = header->Event_as_SyncTransform();
-            if(NetworkDriver::GetNetworkedEntities().Exists(res->netId())) {
-                CNetwork* t = Game::GetRegistry().try_get<CNetwork>(
-                        NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-                //printf("Sync %u to pos %f, %f, %f\n", res->netId(), res->transform()->translation()->x(), res->transform()->translation()->y(), res->transform()->translation()->z());
-                if(t != nullptr) {
-                    t->TargetTransform = FlatBufferUtil::NetTransformToTransform(res->transform());
-                }
-            }
-            break;
-        }
-        case Net::Events_BatchSyncTransform: {
-            auto res = header->Event_as_BatchSyncTransform();
-            std::vector entities(res->entities()->begin(), res->entities()->end());
-            for(auto entity : entities) {
-                if(NetworkDriver::GetNetworkedEntities().Exists(entity->netId())) {
+        case Net::Events_Sync: {
+            auto res = header->Event_as_Sync();
+            std::vector transforms(res->transforms()->begin(), res->transforms()->end());
+            for(auto transform : transforms) {
+                if(NetworkDriver::GetNetworkedEntities().Exists(transform->netId())) {
                     CNetwork* t = Game::GetRegistry().try_get<CNetwork>(
-                            NetworkDriver::GetNetworkedEntities().Get(entity->netId()));
+                            NetworkDriver::GetNetworkedEntities().Get(transform->netId()));
                     if(t != nullptr) {
-                        t->TargetTransform = FlatBufferUtil::NetTransformToTransform(entity->transform());
+                        t->TargetTransform = FlatBufferUtil::NetTransformToTransform(transform->transform());
                     }
                 }
             }
-            break;
-        }
-        case Net::Events_SyncAttributeComponent: {
-            const Net::SyncAttributeComponent* res = header->Event_as_SyncAttributeComponent();
-            auto netid = res->netId();
-            if(NetworkDriver::GetNetworkedEntities().Exists(netid)) {
-                CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(NetworkDriver::GetNetworkedEntities().Get(netid));
-                std::vector stdVector(res->attributes()->begin(), res->attributes()->end());
-                for(auto a : stdVector) {
-                    FAttribute* attr = Util::GetAttribute(ac, a->name()->str());
-                    if(attr != nullptr) {
-                        attr->base = a->value();
-                        attr->max = a->max();
+            std::vector attributes(res->attributes()->begin(), res->attributes()->end());
+            for(auto attribute : attributes) {
+                if(NetworkDriver::GetNetworkedEntities().Exists(attribute->netId())) {
+                    CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(NetworkDriver::GetNetworkedEntities().Get((attribute->netId())));
+                    std::vector stdVector(attribute->attributes()->begin(), attribute->attributes()->end());
+                    for(auto a : stdVector) {
+                        FAttribute* attr = Util::GetAttribute(ac, a->name()->str());
+                        if(attr != nullptr) {
+                            attr->base = a->value();
+                            attr->max = a->max();
+                        }
                     }
+                }
+            }
+            std::vector anims(res->anims()->begin(), res->anims()->end());
+            for(auto anim : anims) {
+                if(NetworkDriver::GetNetworkedEntities().Exists(anim->netId())) {
+                    CCharacterAnimation &ca = Game::GetRegistry().get<CCharacterAnimation>(
+                            NetworkDriver::GetNetworkedEntities().Get(anim->netId()));
+                    ca.AnimState = static_cast<ECharacterAnimState>(anim->state());
                 }
             }
             break;
@@ -195,16 +189,6 @@ void Client::OnInboundMessage(const Net::Header* header) {
             const Net::OnPlayerJoined* res = header->Event_as_OnPlayerJoined();
             CTransform t = FlatBufferUtil::NetTransformToTransform(res->transform());
             Game::SpawnPlayer(res->netId(), t, false);
-            break;
-        }
-        case Net::Events_SyncCharacterAnimState :
-        {
-            const Net::SyncCharacterAnimState* res = header->Event_as_SyncCharacterAnimState();
-            if(NetworkDriver::GetNetworkedEntities().Exists(res->netId())) {
-                CCharacterAnimation &ca = Game::GetRegistry().get<CCharacterAnimation>(
-                        NetworkDriver::GetNetworkedEntities().Get(res->netId()));
-                ca.AnimState = static_cast<ECharacterAnimState>(res->state());
-            }
             break;
         }
         case Net::Events_SpawnEntity:

@@ -11,6 +11,7 @@ namespace raylib
 }
 #include "util/raylibEx.h"
 #include "components/CRay.h"
+#include "components/CFollow.h"
 
 namespace tX
 {
@@ -104,6 +105,20 @@ void SShapeDrawing::Draw()
             raylib::Vector3 v1 = {poly.Vertices[i].x, 0.0f, poly.Vertices[i].y};
             raylib::Vector3 v2 = {poly.Vertices[i + 1].x, 0.0f, poly.Vertices[i + 1].y};
             raylib::DrawLine3D(v1, v2, raylib::GREEN);
+        }
+    }
+
+    for(const entt::entity& entity : GetView<CFollow>())
+    {
+        const CFollow& followComponent = GetComponent<CFollow>(entity);
+        if(followComponent.FollowState == EFollowState::Following)
+        {
+            for(int i = 0; i < followComponent.StringPath.size() - 1; i++)
+            {
+                raylib::Vector3 v1 = {followComponent.StringPath[i].x, 0.0f, followComponent.StringPath[i].y};
+                raylib::Vector3 v2 = {followComponent.StringPath[i + 1].x, 0.0f, followComponent.StringPath[i + 1].y};
+                raylib::DrawLine3D(v1, v2, raylib::RED);
+            }
         }
     }
 }

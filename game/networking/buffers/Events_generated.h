@@ -36,8 +36,11 @@ struct SyncAttributeComponentBuilder;
 struct SyncTransform;
 struct SyncTransformBuilder;
 
-struct BatchSyncTransform;
-struct BatchSyncTransformBuilder;
+struct SyncCharacterAnimState;
+struct SyncCharacterAnimStateBuilder;
+
+struct Sync;
+struct SyncBuilder;
 
 struct OnPlayerJoined;
 struct OnPlayerJoinedBuilder;
@@ -53,9 +56,6 @@ struct OnConnectionBuilder;
 
 struct OnMoveTo;
 struct OnMoveToBuilder;
-
-struct SyncCharacterAnimState;
-struct SyncCharacterAnimStateBuilder;
 
 struct TriggerAbility;
 struct TriggerAbilityBuilder;
@@ -74,57 +74,48 @@ enum Events : uint8_t {
   Events_OnConnectionResponse = 1,
   Events_OnConnection = 2,
   Events_OnMoveTo = 3,
-  Events_SyncTransform = 4,
-  Events_OnPlayerJoined = 5,
-  Events_SyncAttributeComponent = 6,
-  Events_SyncCharacterAnimState = 7,
-  Events_TriggerAbility = 8,
-  Events_SpawnProjectile = 9,
-  Events_SpawnEntity = 10,
-  Events_BatchSyncTransform = 11,
+  Events_OnPlayerJoined = 4,
+  Events_TriggerAbility = 5,
+  Events_SpawnProjectile = 6,
+  Events_SpawnEntity = 7,
+  Events_Sync = 8,
   Events_MIN = Events_NONE,
-  Events_MAX = Events_BatchSyncTransform
+  Events_MAX = Events_Sync
 };
 
-inline const Events (&EnumValuesEvents())[12] {
+inline const Events (&EnumValuesEvents())[9] {
   static const Events values[] = {
     Events_NONE,
     Events_OnConnectionResponse,
     Events_OnConnection,
     Events_OnMoveTo,
-    Events_SyncTransform,
     Events_OnPlayerJoined,
-    Events_SyncAttributeComponent,
-    Events_SyncCharacterAnimState,
     Events_TriggerAbility,
     Events_SpawnProjectile,
     Events_SpawnEntity,
-    Events_BatchSyncTransform
+    Events_Sync
   };
   return values;
 }
 
 inline const char * const *EnumNamesEvents() {
-  static const char * const names[13] = {
+  static const char * const names[10] = {
     "NONE",
     "OnConnectionResponse",
     "OnConnection",
     "OnMoveTo",
-    "SyncTransform",
     "OnPlayerJoined",
-    "SyncAttributeComponent",
-    "SyncCharacterAnimState",
     "TriggerAbility",
     "SpawnProjectile",
     "SpawnEntity",
-    "BatchSyncTransform",
+    "Sync",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameEvents(Events e) {
-  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_BatchSyncTransform)) return "";
+  if (::flatbuffers::IsOutRange(e, Events_NONE, Events_Sync)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesEvents()[index];
 }
@@ -145,20 +136,8 @@ template<> struct EventsTraits<Net::OnMoveTo> {
   static const Events enum_value = Events_OnMoveTo;
 };
 
-template<> struct EventsTraits<Net::SyncTransform> {
-  static const Events enum_value = Events_SyncTransform;
-};
-
 template<> struct EventsTraits<Net::OnPlayerJoined> {
   static const Events enum_value = Events_OnPlayerJoined;
-};
-
-template<> struct EventsTraits<Net::SyncAttributeComponent> {
-  static const Events enum_value = Events_SyncAttributeComponent;
-};
-
-template<> struct EventsTraits<Net::SyncCharacterAnimState> {
-  static const Events enum_value = Events_SyncCharacterAnimState;
 };
 
 template<> struct EventsTraits<Net::TriggerAbility> {
@@ -173,8 +152,8 @@ template<> struct EventsTraits<Net::SpawnEntity> {
   static const Events enum_value = Events_SpawnEntity;
 };
 
-template<> struct EventsTraits<Net::BatchSyncTransform> {
-  static const Events enum_value = Events_BatchSyncTransform;
+template<> struct EventsTraits<Net::Sync> {
+  static const Events enum_value = Events_Sync;
 };
 
 bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Events type);
@@ -618,56 +597,137 @@ inline ::flatbuffers::Offset<SyncTransform> CreateSyncTransform(
   return builder_.Finish();
 }
 
-struct BatchSyncTransform FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef BatchSyncTransformBuilder Builder;
+struct SyncCharacterAnimState FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef SyncCharacterAnimStateBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ENTITIES = 4
+    VT_NETID = 4,
+    VT_STATE = 6
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>> *entities() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>> *>(VT_ENTITIES);
+  uint32_t netId() const {
+    return GetField<uint32_t>(VT_NETID, 0);
+  }
+  int32_t state() const {
+    return GetField<int32_t>(VT_STATE, 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_ENTITIES) &&
-           verifier.VerifyVector(entities()) &&
-           verifier.VerifyVectorOfTables(entities()) &&
+           VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
+           VerifyField<int32_t>(verifier, VT_STATE, 4) &&
            verifier.EndTable();
   }
 };
 
-struct BatchSyncTransformBuilder {
-  typedef BatchSyncTransform Table;
+struct SyncCharacterAnimStateBuilder {
+  typedef SyncCharacterAnimState Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_entities(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>>> entities) {
-    fbb_.AddOffset(BatchSyncTransform::VT_ENTITIES, entities);
+  void add_netId(uint32_t netId) {
+    fbb_.AddElement<uint32_t>(SyncCharacterAnimState::VT_NETID, netId, 0);
   }
-  explicit BatchSyncTransformBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  void add_state(int32_t state) {
+    fbb_.AddElement<int32_t>(SyncCharacterAnimState::VT_STATE, state, 0);
+  }
+  explicit SyncCharacterAnimStateBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<BatchSyncTransform> Finish() {
+  ::flatbuffers::Offset<SyncCharacterAnimState> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<BatchSyncTransform>(end);
+    auto o = ::flatbuffers::Offset<SyncCharacterAnimState>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<BatchSyncTransform> CreateBatchSyncTransform(
+inline ::flatbuffers::Offset<SyncCharacterAnimState> CreateSyncCharacterAnimState(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>>> entities = 0) {
-  BatchSyncTransformBuilder builder_(_fbb);
-  builder_.add_entities(entities);
+    uint32_t netId = 0,
+    int32_t state = 0) {
+  SyncCharacterAnimStateBuilder builder_(_fbb);
+  builder_.add_state(state);
+  builder_.add_netId(netId);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<BatchSyncTransform> CreateBatchSyncTransformDirect(
+struct Sync FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef SyncBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_TRANSFORMS = 4,
+    VT_ATTRIBUTES = 6,
+    VT_ANIMS = 8
+  };
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>> *transforms() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>> *>(VT_TRANSFORMS);
+  }
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncAttributeComponent>> *attributes() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncAttributeComponent>> *>(VT_ATTRIBUTES);
+  }
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncCharacterAnimState>> *anims() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncCharacterAnimState>> *>(VT_ANIMS);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_TRANSFORMS) &&
+           verifier.VerifyVector(transforms()) &&
+           verifier.VerifyVectorOfTables(transforms()) &&
+           VerifyOffset(verifier, VT_ATTRIBUTES) &&
+           verifier.VerifyVector(attributes()) &&
+           verifier.VerifyVectorOfTables(attributes()) &&
+           VerifyOffset(verifier, VT_ANIMS) &&
+           verifier.VerifyVector(anims()) &&
+           verifier.VerifyVectorOfTables(anims()) &&
+           verifier.EndTable();
+  }
+};
+
+struct SyncBuilder {
+  typedef Sync Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_transforms(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>>> transforms) {
+    fbb_.AddOffset(Sync::VT_TRANSFORMS, transforms);
+  }
+  void add_attributes(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncAttributeComponent>>> attributes) {
+    fbb_.AddOffset(Sync::VT_ATTRIBUTES, attributes);
+  }
+  void add_anims(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncCharacterAnimState>>> anims) {
+    fbb_.AddOffset(Sync::VT_ANIMS, anims);
+  }
+  explicit SyncBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<Sync> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<Sync>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<Sync> CreateSync(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<Net::SyncTransform>> *entities = nullptr) {
-  auto entities__ = entities ? _fbb.CreateVector<::flatbuffers::Offset<Net::SyncTransform>>(*entities) : 0;
-  return Net::CreateBatchSyncTransform(
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncTransform>>> transforms = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncAttributeComponent>>> attributes = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Net::SyncCharacterAnimState>>> anims = 0) {
+  SyncBuilder builder_(_fbb);
+  builder_.add_anims(anims);
+  builder_.add_attributes(attributes);
+  builder_.add_transforms(transforms);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<Sync> CreateSyncDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<::flatbuffers::Offset<Net::SyncTransform>> *transforms = nullptr,
+    const std::vector<::flatbuffers::Offset<Net::SyncAttributeComponent>> *attributes = nullptr,
+    const std::vector<::flatbuffers::Offset<Net::SyncCharacterAnimState>> *anims = nullptr) {
+  auto transforms__ = transforms ? _fbb.CreateVector<::flatbuffers::Offset<Net::SyncTransform>>(*transforms) : 0;
+  auto attributes__ = attributes ? _fbb.CreateVector<::flatbuffers::Offset<Net::SyncAttributeComponent>>(*attributes) : 0;
+  auto anims__ = anims ? _fbb.CreateVector<::flatbuffers::Offset<Net::SyncCharacterAnimState>>(*anims) : 0;
+  return Net::CreateSync(
       _fbb,
-      entities__);
+      transforms__,
+      attributes__,
+      anims__);
 }
 
 struct OnPlayerJoined FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
@@ -954,57 +1014,6 @@ inline ::flatbuffers::Offset<OnMoveTo> CreateOnMoveTo(
   return builder_.Finish();
 }
 
-struct SyncCharacterAnimState FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef SyncCharacterAnimStateBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_NETID = 4,
-    VT_STATE = 6
-  };
-  uint32_t netId() const {
-    return GetField<uint32_t>(VT_NETID, 0);
-  }
-  int32_t state() const {
-    return GetField<int32_t>(VT_STATE, 0);
-  }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint32_t>(verifier, VT_NETID, 4) &&
-           VerifyField<int32_t>(verifier, VT_STATE, 4) &&
-           verifier.EndTable();
-  }
-};
-
-struct SyncCharacterAnimStateBuilder {
-  typedef SyncCharacterAnimState Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_netId(uint32_t netId) {
-    fbb_.AddElement<uint32_t>(SyncCharacterAnimState::VT_NETID, netId, 0);
-  }
-  void add_state(int32_t state) {
-    fbb_.AddElement<int32_t>(SyncCharacterAnimState::VT_STATE, state, 0);
-  }
-  explicit SyncCharacterAnimStateBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<SyncCharacterAnimState> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<SyncCharacterAnimState>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<SyncCharacterAnimState> CreateSyncCharacterAnimState(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint32_t netId = 0,
-    int32_t state = 0) {
-  SyncCharacterAnimStateBuilder builder_(_fbb);
-  builder_.add_state(state);
-  builder_.add_netId(netId);
-  return builder_.Finish();
-}
-
 struct TriggerAbility FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef TriggerAbilityBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -1244,17 +1253,8 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const Net::OnMoveTo *Event_as_OnMoveTo() const {
     return Event_type() == Net::Events_OnMoveTo ? static_cast<const Net::OnMoveTo *>(Event()) : nullptr;
   }
-  const Net::SyncTransform *Event_as_SyncTransform() const {
-    return Event_type() == Net::Events_SyncTransform ? static_cast<const Net::SyncTransform *>(Event()) : nullptr;
-  }
   const Net::OnPlayerJoined *Event_as_OnPlayerJoined() const {
     return Event_type() == Net::Events_OnPlayerJoined ? static_cast<const Net::OnPlayerJoined *>(Event()) : nullptr;
-  }
-  const Net::SyncAttributeComponent *Event_as_SyncAttributeComponent() const {
-    return Event_type() == Net::Events_SyncAttributeComponent ? static_cast<const Net::SyncAttributeComponent *>(Event()) : nullptr;
-  }
-  const Net::SyncCharacterAnimState *Event_as_SyncCharacterAnimState() const {
-    return Event_type() == Net::Events_SyncCharacterAnimState ? static_cast<const Net::SyncCharacterAnimState *>(Event()) : nullptr;
   }
   const Net::TriggerAbility *Event_as_TriggerAbility() const {
     return Event_type() == Net::Events_TriggerAbility ? static_cast<const Net::TriggerAbility *>(Event()) : nullptr;
@@ -1265,8 +1265,8 @@ struct Header FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const Net::SpawnEntity *Event_as_SpawnEntity() const {
     return Event_type() == Net::Events_SpawnEntity ? static_cast<const Net::SpawnEntity *>(Event()) : nullptr;
   }
-  const Net::BatchSyncTransform *Event_as_BatchSyncTransform() const {
-    return Event_type() == Net::Events_BatchSyncTransform ? static_cast<const Net::BatchSyncTransform *>(Event()) : nullptr;
+  const Net::Sync *Event_as_Sync() const {
+    return Event_type() == Net::Events_Sync ? static_cast<const Net::Sync *>(Event()) : nullptr;
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1289,20 +1289,8 @@ template<> inline const Net::OnMoveTo *Header::Event_as<Net::OnMoveTo>() const {
   return Event_as_OnMoveTo();
 }
 
-template<> inline const Net::SyncTransform *Header::Event_as<Net::SyncTransform>() const {
-  return Event_as_SyncTransform();
-}
-
 template<> inline const Net::OnPlayerJoined *Header::Event_as<Net::OnPlayerJoined>() const {
   return Event_as_OnPlayerJoined();
-}
-
-template<> inline const Net::SyncAttributeComponent *Header::Event_as<Net::SyncAttributeComponent>() const {
-  return Event_as_SyncAttributeComponent();
-}
-
-template<> inline const Net::SyncCharacterAnimState *Header::Event_as<Net::SyncCharacterAnimState>() const {
-  return Event_as_SyncCharacterAnimState();
 }
 
 template<> inline const Net::TriggerAbility *Header::Event_as<Net::TriggerAbility>() const {
@@ -1317,8 +1305,8 @@ template<> inline const Net::SpawnEntity *Header::Event_as<Net::SpawnEntity>() c
   return Event_as_SpawnEntity();
 }
 
-template<> inline const Net::BatchSyncTransform *Header::Event_as<Net::BatchSyncTransform>() const {
-  return Event_as_BatchSyncTransform();
+template<> inline const Net::Sync *Header::Event_as<Net::Sync>() const {
+  return Event_as_Sync();
 }
 
 struct HeaderBuilder {
@@ -1369,20 +1357,8 @@ inline bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Eve
       auto ptr = reinterpret_cast<const Net::OnMoveTo *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Events_SyncTransform: {
-      auto ptr = reinterpret_cast<const Net::SyncTransform *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
     case Events_OnPlayerJoined: {
       auto ptr = reinterpret_cast<const Net::OnPlayerJoined *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
-    case Events_SyncAttributeComponent: {
-      auto ptr = reinterpret_cast<const Net::SyncAttributeComponent *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
-    case Events_SyncCharacterAnimState: {
-      auto ptr = reinterpret_cast<const Net::SyncCharacterAnimState *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case Events_TriggerAbility: {
@@ -1397,8 +1373,8 @@ inline bool VerifyEvents(::flatbuffers::Verifier &verifier, const void *obj, Eve
       auto ptr = reinterpret_cast<const Net::SpawnEntity *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Events_BatchSyncTransform: {
-      auto ptr = reinterpret_cast<const Net::BatchSyncTransform *>(obj);
+    case Events_Sync: {
+      auto ptr = reinterpret_cast<const Net::Sync *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

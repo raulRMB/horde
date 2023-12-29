@@ -21,7 +21,6 @@ void SNetworking::Update(float deltaSeconds)
                 NetworkDriver::GetServer()->Sync(entity, t, NetworkDriver::GetConnections());
             }
         }
-        NetworkDriver::GetServer()->SendBatchTransforms(NetworkDriver::GetConnections());
         for (const entt::entity &entity: Game::GetRegistry().view<CAttributeSet, CNetwork>()) {
             CAttributeSet& ac = Game::GetRegistry().get<CAttributeSet>(entity);
             if(ac.bNeedsNetSync) {
@@ -37,12 +36,13 @@ void SNetworking::Update(float deltaSeconds)
                 characterAnim.bNeedsNetSync = false;
             }
         }
+        NetworkDriver::GetServer()->SendSync(NetworkDriver::GetConnections());
     } else {
         for (const entt::entity &entity: Game::GetRegistry().view<CTransform, CNetwork>()) {
             CTransform& t = Game::GetRegistry().get<CTransform>(entity);
             CNetwork& cn = Game::GetRegistry().get<CNetwork>(entity);
 
-            t.Position = glm::mix(t.Position, cn.TargetTransform.Position, 0.9);
+            t.Position = glm::mix(t.Position, cn.TargetTransform.Position, 0.2);
             t.Rotation = cn.TargetTransform.Rotation;
             t.Scale = cn.TargetTransform.Scale;
         }

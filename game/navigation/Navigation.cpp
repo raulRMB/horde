@@ -336,9 +336,7 @@ void AStar(const v2 &start, const v2 &end, std::vector<TriangleNode*> &path, std
         }
     }
 
-    if(!portals.empty()) {
-        path = ReconstructPath(endTriangle, startTriangle, portals);
-    }
+    path = ReconstructPath(endTriangle, startTriangle, portals);
 }
 
 float TriangleArea2(const v2 &A, const v2 &B, const v2 &C)
@@ -350,7 +348,7 @@ float TriangleArea2(const v2 &A, const v2 &B, const v2 &C)
     return bx*ay - ax*by;
 }
 
-struct CFunnelLeft
+struct CFunnelPoint
 {
     v2 pos;
 
@@ -358,28 +356,7 @@ struct CFunnelLeft
     {
         this->pos = pos;
     }
-} funnelLeft;
-
-struct CFunnelRight
-{
-    v2 pos;
-
-    void operator = (const v2& pos)
-    {
-        this->pos = pos;
-    }
-} funnelRight;
-
-struct CFunnelApex
-{
-    v2 pos;
-
-    void operator = (const v2& pos)
-    {
-        this->pos = pos;
-    }
-} funnelApex;
-
+};
 
 std::vector<v2> StringPull(std::vector<Edge2D> &portals, const v2 &start, const v2 &end)
 {
@@ -398,8 +375,11 @@ std::vector<v2> StringPull(std::vector<Edge2D> &portals, const v2 &start, const 
     portals.push_back({end, end});
     int apexIndex = 0, leftIndex = 0, rightIndex = 0;
 
+    CFunnelPoint funnelLeft{};
     funnelLeft = portalLeft;
+    CFunnelPoint funnelRight{};
     funnelRight = portalRight;
+    CFunnelPoint funnelApex{};
     funnelApex = portalApex;
 
     path.push_back(portalApex);
