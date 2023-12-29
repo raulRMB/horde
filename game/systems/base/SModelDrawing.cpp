@@ -2,7 +2,6 @@
 #include "entt/entt.hpp"
 #include "components/CModel.h"
 #include "components/CTransform.h"
-#include "util/raylibEx.h"
 #include "glm/ext/quaternion_trigonometric.hpp"
 
 namespace tX
@@ -20,7 +19,7 @@ void SModelDrawing::Draw()
             auto fq = t.Rotation * rotate;
             float angle = glm::degrees(glm::angle(fq));
             glm::vec3 axis = glm::axis(fq);
-            raylib::DrawModelEx(modelComponent.Model, ToRaylibVector3(t.Position), ToRaylibVector3(axis), angle, ToRaylibVector3(t.Scale), raylib::WHITE);
+            //raylib::DrawModelEx(modelComponent.Model, ToRaylibVector3(t.Position), ToRaylibVector3(axis), angle, ToRaylibVector3(t.Scale), raylib::WHITE);
         }
     }
 }

@@ -14,25 +14,18 @@
 #include "components/CNetwork.h"
 #include "util/Builder.h"
 
-namespace raylib
-{
-#include "raylib.h"
-}
-
 namespace tX
 {
 
 void Client::Connect() {
     if(Game::IsClient()) {
         if (enet_initialize() != 0) {
-            raylib::TraceLog(raylib::LOG_ERROR, "Failed to initialize ENet");
         }
         client = enet_host_create(nullptr, 1, 2, 0, 0);
         client->maximumPacketSize = 64 * 1024 * 1024;
         client->maximumWaitingData = 64 * 1024 * 1024;
         enet_peer_timeout(client->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
         if (client == nullptr) {
-            raylib::TraceLog(raylib::LOG_ERROR, "Failed to create server");
             enet_deinitialize();
         }
         ENetAddress address;
@@ -40,7 +33,6 @@ void Client::Connect() {
         address.port = NetworkDriver::GetPort();
         peer = enet_host_connect(client, &address, 2, 0);
         if (peer == nullptr) {
-            raylib::TraceLog(raylib::LOG_ERROR, "No available peers for initiating an ENet connection");
             enet_host_destroy(client);
             enet_deinitialize();
         }
@@ -50,7 +42,6 @@ void Client::Connect() {
             if (event.type == ENET_EVENT_TYPE_CONNECT) {
                 connected = true;
                 SendInitialConnection();
-                raylib::TraceLog(raylib::LOG_INFO, "Client Running");
             }
         }
     }
@@ -111,7 +102,6 @@ void Client::Loop() {
     if (enet_host_service(client, &event, 0) > 0) {
         if (event.type == ENET_EVENT_TYPE_CONNECT) {
             connected = true;
-            raylib::TraceLog(raylib::LOG_INFO, "CONNECT!");
             SendInitialConnection();
         } else if (event.type == ENET_EVENT_TYPE_RECEIVE) {
             IncomingMessage msg;
@@ -123,7 +113,6 @@ void Client::Loop() {
             enet_packet_destroy(event.packet);
         } else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
             connected = false;
-            raylib::TraceLog(raylib::LOG_INFO, "DISCONNECTED!");
             //Connect();
         }
     }

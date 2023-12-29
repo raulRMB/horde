@@ -1,14 +1,9 @@
-//
-// Created by Raul on 11/17/2023.
-//
-
 #include "SPhysics.h"
 #include "components/CPhysics.h"
 
 #include "entt/entt.hpp"
 #include "components/CAttribute.h"
 #include "components/CTransform.h"
-#include "util/raymathEx.h"
 #include "util/Util.h"
 
 namespace tX

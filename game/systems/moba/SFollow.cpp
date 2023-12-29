@@ -1,16 +1,9 @@
 #include "SFollow.h"
 
-namespace raylib
-{
-#include "raylib.h"
-#include "raymath.h"
-}
-
 #include "components/CFollow.h"
 
 #include "glm/gtx/quaternion.hpp"
 
-#include "util/raymathEx.h"
 #include "components/CModel.h"
 #include "components/CPhysics.h"
 #include "components/CTransform.h"

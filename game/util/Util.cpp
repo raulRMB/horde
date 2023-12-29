@@ -1,12 +1,6 @@
 #include "Util.h"
 #include "components/CPhysics.h"
 
-#include "raymathEx.h"
-namespace raylib
-{
-#include "raylib.h"
-}
-
 #include "components/CAttribute.h"
 #include "primitives/RayCollision.h"
 #include "components/CPhysics.h"
@@ -20,9 +14,9 @@ namespace tX
 
 v3 Util::RandVec3(int min, int max) {
     return v3 {
-            static_cast<float>(raylib::GetRandomValue(min, max)),
-            static_cast<float>(raylib::GetRandomValue(min, max)),
-            static_cast<float>(raylib::GetRandomValue(min, max))
+//            static_cast<float>(raylib::GetRandomValue(min, max)),
+//            static_cast<float>(raylib::GetRandomValue(min, max)),
+//            static_cast<float>(raylib::GetRandomValue(min, max))
     };
 }
 
@@ -45,38 +39,37 @@ tX::FAttribute* Util::GetAttribute(tX::CAttributeSet& ac, const std::string& att
     {
         return &(*it);
     }
-    raylib::TraceLog(raylib::LOG_ERROR, "Attribute %s not found", attr.c_str());
     return nullptr;
 }
 
 FRayCollision Util::GetMouseCollision()
 {
-    raylib::Ray ray = raylib::GetMouseRay(raylib::GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
-    ray.direction.x = ray.direction.x * 1000.f;
-    ray.direction.y = ray.direction.y * 1000.f;
-    ray.direction.z = ray.direction.z * 1000.f;
-    raylib::Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-    raylib::Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-    raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-    raylib::Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+//    raylib::Ray ray = raylib::GetMouseRay(raylib::GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
+//    ray.direction.x = ray.direction.x * 1000.f;
+//    ray.direction.y = ray.direction.y * 1000.f;
+//    ray.direction.z = ray.direction.z * 1000.f;
+//    raylib::Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+//    raylib::Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+//    raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+//    raylib::Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
 
-    raylib::RayCollision raylibCol = raylib::GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
-    FRayCollision collision{};
-    collision.point = v3(raylibCol.point.x, raylibCol.point.y, raylibCol.point.z);
-    collision.normal = v3(raylibCol.normal.x, raylibCol.normal.y, raylibCol.normal.z);
-    collision.distance = raylibCol.distance;
-    collision.hit = raylibCol.hit;
-    return collision;
+//    raylib::RayCollision raylibCol = raylib::GetRayCollisionQuad(ray, TopRight, TopLeft, BottomLeft, BottomRight);
+//    FRayCollision collision{};
+//    collision.point = v3(raylibCol.point.x, raylibCol.point.y, raylibCol.point.z);
+//    collision.normal = v3(raylibCol.normal.x, raylibCol.normal.y, raylibCol.normal.z);
+//    collision.distance = raylibCol.distance;
+//    collision.hit = raylibCol.hit;
+//    return collision;
 }
 
 bool Util::Check2DCollision(CPhysics2D& x, CTransform& xT, CPhysics2D& y, CTransform& yT) {
-    raylib::Vector2 xVec = raylib::Vector2{xT.Position.x, xT.Position.z};
-    raylib::Vector2 yVec = raylib::Vector2{yT.Position.x, yT.Position.z};
-    if(x.CollisionType == ECollision2DType::Circle && y.CollisionType == ECollision2DType::Circle)
-    {
-        return CheckCollisionCircles(xVec, x.CollisionRadius, yVec, y.CollisionRadius);
-    }
-    return false;
+//    raylib::Vector2 xVec = raylib::Vector2{xT.Position.x, xT.Position.z};
+//    raylib::Vector2 yVec = raylib::Vector2{yT.Position.x, yT.Position.z};
+//    if(x.CollisionType == ECollision2DType::Circle && y.CollisionType == ECollision2DType::Circle)
+//    {
+//        return CheckCollisionCircles(xVec, x.CollisionRadius, yVec, y.CollisionRadius);
+//    }
+//    return false;
 }
 
 FColor Util::RandColor() {
@@ -90,13 +83,13 @@ FColor Util::RandColor() {
 
 v3 Util::GetMouseWorldPosition()
 {
-    const raylib::Ray ray = raylib::GetMouseRay(raylib::GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
-    constexpr raylib::Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
-    constexpr raylib::Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
-    constexpr raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
-    constexpr raylib::Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
-    const raylib::RayCollision Collision = raylib::GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
-    return v3(Collision.point.x, Collision.point.y, Collision.point.z);
+//    const raylib::Ray ray = raylib::GetMouseRay(raylib::GetMousePosition(), ToRaylibCamera(Game::Instance().GetActiveCamera()));
+//    constexpr raylib::Vector3 TopLeft = {-1000.0f, 0.0f, -1000.0f};
+//    constexpr raylib::Vector3 TopRight = {1000.0f, 0.0f, -1000.0f};
+//    constexpr raylib::Vector3 BottomLeft = {-1000.0f, 0.0f, 1000.0f};
+//    constexpr raylib::Vector3 BottomRight = {1000.0f, 0.0f, 1000.0f};
+//    const raylib::RayCollision Collision = raylib::GetRayCollisionQuad(ray, TopRight, TopLeft , BottomLeft, BottomRight);
+//    return v3(Collision.point.x, Collision.point.y, Collision.point.z);
 }
 
 v2 Util::GetMouseWorldPosition2D()
@@ -187,7 +180,6 @@ v2 Util::MinimumTranslationVector(const Polygon2D &polygon, const v2 &point)
 {
     if (polygon.Vertices.size() < 3)
     {
-        raylib::TraceLog(raylib::LOG_ERROR, "Error: Polygon must have at least 3 vertices.\n");
         return {0.0, 0.0};
     }
 

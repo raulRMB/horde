@@ -30,21 +30,21 @@ void Hotbar::OnWindowResize(v2 screenSize) {
     float slotHeight = slotWidth;
     float height = slotWidth;
 
-    hotbarBox = {(screenSize.x/2) - (width/2), screenSize.y - height, width, height};
+    //hotbarBox = {(screenSize.x/2) - (width/2), screenSize.y - height, width, height};
     int slotIndex = 0;
 
     float px = 6;
     float py = 10;
-    for(Slot* slot : slots) {
-        raylib::Rectangle slotBox = raylib::Rectangle{
-            hotbarBox.x + (slotIndex * slotWidth) + (px * slotIndex) + slotIndex,
-            hotbarBox.y - py,
-            slotWidth,
-            slotHeight
-        };
-        slot->SetBox(slotBox);
-        slotIndex++;
-    }
+//    for(Slot* slot : slots) {
+//        raylib::Rectangle slotBox = raylib::Rectangle{
+//            hotbarBox.x + (slotIndex * slotWidth) + (px * slotIndex) + slotIndex,
+//            hotbarBox.y - py,
+//            slotWidth,
+//            slotHeight
+//        };
+//        slot->SetBox(slotBox);
+//        slotIndex++;
+//    }
 }
 
 void Hotbar::OnHoverExit() {
@@ -69,10 +69,10 @@ void Hotbar::OnAdded() {
 }
 
 void Hotbar::AddSlot(std::string texturePath) {
-    Slot* slot = new Slot({0, 0, 0, 0});
+    //Slot* slot = new Slot({0, 0, 0, 0});
 //    auto slotImg = raylib::LoadTexture(texturePath.c_str());
 //    slot->SetImage(slotImg);
-    slots.push_back(slot);
+    //slots.push_back(slot);
 }
 
 }

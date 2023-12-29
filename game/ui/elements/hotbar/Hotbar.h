@@ -8,7 +8,7 @@ namespace tX
 class Hotbar : public Element {
 
     std::vector<Slot*> slots;
-    raylib::Rectangle hotbarBox;
+    //raylib::Rectangle hotbarBox;
 
 public:
     virtual bool isHovered() override;

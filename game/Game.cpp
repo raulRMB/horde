@@ -4,18 +4,11 @@
 #include <thread>
 #include <chrono>
 #include "networking/base/NetworkDriver.h"
-#include "util/raylibEx.h"
 #include "components/CTransform.h"
-#include "imgui.h"
+//#include "imgui.h"
 #include "tools/SystemViewer.h"
 #include "util/Builder.h"
 #include "renderer/Renderer.h"
-
-//namespace raylib
-//{
-//#include "rlImGui.h"
-//
-//}
 
 namespace tX
 {
@@ -29,7 +22,7 @@ Game::Game() : ActiveScene(nullptr), bRunning(false), BackgroundColor(0x00000000
     Camera.Target = {0.0f, 0.0f, 0.0f};
     Camera.Up = {0.0f, 1.0f, 0.0f};
     Camera.Fovy = 55.0f;
-    Camera.Projection = raylib::CAMERA_PERSPECTIVE;
+//    Camera.Projection = raylib::CAMERA_PERSPECTIVE;
 }
 
 Game& Game::Instance()
@@ -55,7 +48,8 @@ entt::entity Game::GetPlayer() {
 void Game::Loop() {
     if(!Game::IsServer()) {
         HandleInput();
-        Update(raylib::GetFrameTime());
+        //Update(raylib::GetFrameTime());
+        Update(1.0f / tickRate);
     }
     else {
         Update(1.0f / tickRate);

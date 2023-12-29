@@ -1,10 +1,6 @@
 #ifndef HORDE_ANIMATION_COMPONENT_H
 #define HORDE_ANIMATION_COMPONENT_H
 
-namespace raylib
-{
-#include "raylib.h"
-}
 namespace tX
 {
 
@@ -16,7 +12,7 @@ struct CAnimation
     bool bPlaying;
     float CurrentFrameTime;
     float FrameTime;
-    raylib::ModelAnimation* Animations;
+    //raylib::ModelAnimation* Animations;
     void Reset(int index) {
         AnimsIndex = index;
         CurrentFrame = 0;

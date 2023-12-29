@@ -1,15 +1,11 @@
 #include "SAttributeUI.h"
 
 #include "entt/entt.hpp"
-namespace raylib
-{
-#include "raylib.h"
-}
 #include "components/CAttribute.h"
 #include "util/Util.h"
 #include "components/CTransform.h"
 
-static raylib::Font font;
+//static raylib::Font font;
 namespace tX
 {
 

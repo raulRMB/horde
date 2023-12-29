@@ -3,7 +3,6 @@
 #include "ui/elements/slot/Slot.h"
 #include "ui/elements/hotbar/Hotbar.h"
 #include "systems/moba/SNavigation.h"
-#include "util/raylibEx.h"
 #include "abilities/Projectile.h"
 #include "components/CModel.h"
 #include "util/Util.h"
@@ -106,30 +105,30 @@ void MainScene::InitUI()
 void MainScene::HandleInput()
 {
     entt::entity player = GetActivePlayer();
-    if(raylib::IsKeyPressed(raylib::KEY_Y)) {
-        cameraLock = !cameraLock;
-    }
-    if(!cameraLock) {
-        CCamera3D& cam = Game::Instance().GetActiveCamera();
-        v3 upDown = v3{0.1, 0, 0.1};
-        v3 leftRight = v3{0.1, 0, -0.1};
-        if (raylib::IsKeyDown(raylib::KEY_UP)) {
-            cam.Position += upDown;
-            cam.Target += upDown;
-        }
-        if (raylib::IsKeyDown(raylib::KEY_DOWN)) {
-            cam.Position -= upDown;
-            cam.Target -= upDown;
-        }
-        if (raylib::IsKeyDown(raylib::KEY_LEFT)) {
-            cam.Position += leftRight;
-            cam.Target += leftRight;
-        }
-        if (raylib::IsKeyDown(raylib::KEY_RIGHT)) {
-            cam.Position -= leftRight;
-            cam.Target -= leftRight;
-        }
-    }
+//    if(raylib::IsKeyPressed(raylib::KEY_Y)) {
+//        cameraLock = !cameraLock;
+//    }
+//    if(!cameraLock) {
+//        CCamera3D& cam = Game::Instance().GetActiveCamera();
+//        v3 upDown = v3{0.1, 0, 0.1};
+//        v3 leftRight = v3{0.1, 0, -0.1};
+//        if (raylib::IsKeyDown(raylib::KEY_UP)) {
+//            cam.Position += upDown;
+//            cam.Target += upDown;
+//        }
+//        if (raylib::IsKeyDown(raylib::KEY_DOWN)) {
+//            cam.Position -= upDown;
+//            cam.Target -= upDown;
+//        }
+//        if (raylib::IsKeyDown(raylib::KEY_LEFT)) {
+//            cam.Position += leftRight;
+//            cam.Target += leftRight;
+//        }
+//        if (raylib::IsKeyDown(raylib::KEY_RIGHT)) {
+//            cam.Position -= leftRight;
+//            cam.Target -= leftRight;
+//        }
+//    }
 //    if(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_RIGHT)) {
 //        v2 mousePos = Util::GetMouseWorldPosition2D();
 //        if(System::Get<SNavigation>().IsValidPoint(mousePos))
@@ -145,43 +144,43 @@ void MainScene::HandleInput()
 //            }
 //        }
 //    }
-    if(raylib::IsMouseButtonPressed(raylib::MOUSE_BUTTON_RIGHT))
-    {
-        auto e = Game::GetRegistry().create();
-        CMoveCircle mc = CMoveCircle {};
-        mc.Position = Util::GetMouseWorldPosition();
-        mc.Radius = 2.2;
-
-        Game::GetRegistry().emplace<CMoveCircle>(e, mc);
-        v2 mousePos = Util::GetMouseWorldPosition2D();
-        if(System::Get<SNavigation>().IsValidPoint(mousePos))
-        {
-            if(Game::IsClient()) {
-                auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
-                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
-            } else {
-                CFollow &followComponent = Game::GetRegistry().get<CFollow>(GetActivePlayer());
-                followComponent.FollowState = EFollowState::Dirty;
-                followComponent.Index = 1;
-                followComponent.Goal = mousePos;
-            }
-        }
-    }
-    if(raylib::IsKeyPressed(raylib::KEY_Q))
-    {
-        FRayCollision Collision = Util::GetMouseCollision();
-        auto vec = v3(Collision.point.x, 0.0f, Collision.point.z);
-        if(Game::IsClient()) {
-            auto netId = NetworkDriver::GetNetworkedEntities().Get(Game::GetPlayer());
-            NetworkDriver::GetClient()->TriggerAbility(netId, 0, vec);
-        } else {
-            player = Game::GetPlayer();
-            entt::registry& registry = Game::GetRegistry();
-            CTransform clickPoint = CTransform{vec};
-            CTransform t = registry.get<CTransform>(player);
-            Projectile(player, clickPoint.Position, t.Position, 50, 1.2);
-        }
-    }
+//    if(raylib::IsMouseButtonPressed(raylib::MOUSE_BUTTON_RIGHT))
+//    {
+//        auto e = Game::GetRegistry().create();
+//        CMoveCircle mc = CMoveCircle {};
+//        mc.Position = Util::GetMouseWorldPosition();
+//        mc.Radius = 2.2;
+//
+//        Game::GetRegistry().emplace<CMoveCircle>(e, mc);
+//        v2 mousePos = Util::GetMouseWorldPosition2D();
+//        if(System::Get<SNavigation>().IsValidPoint(mousePos))
+//        {
+//            if(Game::IsClient()) {
+//                auto NetId = NetworkDriver::GetNetworkedEntities().Get(player);
+//                NetworkDriver::GetClient()->SendMoveTo(mousePos, NetId);
+//            } else {
+//                CFollow &followComponent = Game::GetRegistry().get<CFollow>(GetActivePlayer());
+//                followComponent.FollowState = EFollowState::Dirty;
+//                followComponent.Index = 1;
+//                followComponent.Goal = mousePos;
+//            }
+//        }
+//    }
+//    if(raylib::IsKeyPressed(raylib::KEY_Q))
+//    {
+//        FRayCollision Collision = Util::GetMouseCollision();
+//        auto vec = v3(Collision.point.x, 0.0f, Collision.point.z);
+//        if(Game::IsClient()) {
+//            auto netId = NetworkDriver::GetNetworkedEntities().Get(Game::GetPlayer());
+//            NetworkDriver::GetClient()->TriggerAbility(netId, 0, vec);
+//        } else {
+//            player = Game::GetPlayer();
+//            entt::registry& registry = Game::GetRegistry();
+//            CTransform clickPoint = CTransform{vec};
+//            CTransform t = registry.get<CTransform>(player);
+//            Projectile(player, clickPoint.Position, t.Position, 50, 1.2);
+//        }
+//    }
 }
 
 entt::entity MainScene::GetActivePlayer()
@@ -222,12 +221,12 @@ void MainScene::Draw()
     bx::mtxRotateXY(mtx, counter * 0.01f, counter * 0.01f);
     bgfx::setTransform(mtx);
 
-    for(const entt::entity& entity : Registry.view<raylib::Model, CTransform>())
-    {
-        const raylib::Model& model = Registry.get<raylib::Model>(entity);
-        const CTransform& transform = Registry.get<CTransform>(entity);
-        raylib::DrawModel(model, ToRaylibVector3(transform.Position), 0.1f, raylib::WHITE);
-    }
+//    for(const entt::entity& entity : Registry.view<raylib::Model, CTransform>())
+//    {
+//        const raylib::Model& model = Registry.get<raylib::Model>(entity);
+//        const CTransform& transform = Registry.get<CTransform>(entity);
+//        raylib::DrawModel(model, ToRaylibVector3(transform.Position), 0.1f, raylib::WHITE);
+//    }
     counter++;
 }
 

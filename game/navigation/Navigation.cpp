@@ -1,7 +1,6 @@
 #include "Navigation.h"
 #include <vector>
 #include <algorithm>
-#include "../util/raymathEx.h"
 #include <set>
 
 namespace tX::Navigation

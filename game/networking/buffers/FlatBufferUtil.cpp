@@ -1,9 +1,5 @@
 #include "FlatBufferUtil.h"
 
-namespace raylib
-{
-#include "raylib.h"
-}
 #include "../Server.h"
 #include "components/CFollow.h"
 #include "flatbuffers/flatbuffers.h"

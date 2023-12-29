@@ -1,8 +1,5 @@
 #include <enet/enet.h>
-namespace raylib
-{
-#include "raylib.h"
-}
+
 #include "Server.h"
 #include "Game.h"
 #include "networking/base/NetworkDriver.h"
@@ -24,7 +21,6 @@ namespace tX
     Server::Server() {
     if(Game::IsServer()) {
         if (enet_initialize() != 0) {
-            raylib::TraceLog(raylib::LOG_ERROR, "Failed to initialize ENet");
         }
         ENetAddress address;
         address.host = ENET_HOST_ANY;
@@ -35,10 +31,8 @@ namespace tX
 
         enet_peer_timeout(server->peers, ENET_PEER_TIMEOUT_LIMIT, ENET_PEER_TIMEOUT_MINIMUM, ENET_PEER_TIMEOUT_MAXIMUM);
         if (server == nullptr) {
-            raylib::TraceLog(raylib::LOG_ERROR, "Failed to create server");
             enet_deinitialize();
         }
-        raylib::TraceLog(raylib::LOG_INFO, "Server Running");
     }
 }
 
@@ -60,7 +54,6 @@ void Server::Loop() {
             enet_packet_destroy(event.packet);
         }
         else if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
-            raylib::TraceLog(raylib::LOG_INFO, "DISCONNECTED!");
         }
      }
 }

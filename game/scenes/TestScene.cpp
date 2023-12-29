@@ -5,11 +5,6 @@
 #include "primitives/Polygon.h"
 #include "components/CTransform.h"
 
-namespace raylib
-{
-#include <raylib.h>
-}
-
 namespace tX
 {
 
@@ -69,31 +64,6 @@ void TestScene::Clean()
 
 void TestScene::HandleInput()
 {
-    if(IsKeyDown(raylib::KEY_A))
-    {
-        v2 pos = Util::GetMouseWorldPosition2D();
-
-        entt::entity e = CreateEntity();
-        CSphere circle{};
-        circle.Radius = 1.f;
-        circle.Color = Util::RandColor();
-        AddComponent(e, circle);
-//        for(const entt::entity& entity : Game::GetRegistry().view<Triangle2D>())
-//        {
-//            const Triangle2D& triangle = Game::GetRegistry().get<Triangle2D>(entity);
-//            if(Util::IsPointInsideTriangle(triangle, pos))
-//            {
-//                Transform t{};
-//                t.translation = {pos.x, 0.f, pos.y};
-//                AddComponent(e, t);
-//                break;
-//            }
-//        }
-        pos -= Util::MinimumTranslationVector(polygon, pos);
-        CTransform t{};
-        t.Position = {pos.x, 0.f, pos.y};
-        AddComponent(e, t);
-    }
 }
 
 }

@@ -2,10 +2,6 @@
 #define HORDE_SPARTICLEDRAWING_H
 
 #include "systems/System.h"
-namespace raylib
-{
-#include "raylib.h"
-}
 
 #define MAX_INSTANCES 100000
 
@@ -18,9 +14,9 @@ class SParticleDrawing : public DrawingSystem
 {
     ParticleInstanceData* InstanceData{};
     i32 InstanceLocation{};
-    raylib::Mesh ParticleMesh{};
-    raylib::Material ParticleMaterial{};
-    raylib::Shader ParticleShader{};
+//    raylib::Mesh ParticleMesh{};
+//    raylib::Material ParticleMaterial{};
+//    raylib::Shader ParticleShader{};
 
 
 public:

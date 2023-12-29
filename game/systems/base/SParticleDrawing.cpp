@@ -1,13 +1,7 @@
 #include "SParticleDrawing.h"
 #include "components/CParticle.h"
-#include "util/raylibEx.h"
 #include "glm/gtc/quaternion.hpp"
 
-namespace raylib
-{
-#include "raymath.h"
-#include "rlgl.h"
-}
 namespace tX
 {
 void SParticleDrawing::Draw()
@@ -28,17 +22,17 @@ void SParticleDrawing::Draw()
         m4 mat = glm::translate(glm::mat4(1.0f), transform.Position);
         mat = glm::mat4_cast(transform.Rotation) * mat;
         mat = glm::scale(mat, transform.Scale);
-        InstanceData[idx].Transform = ToRaylibMatrix(mat);
-        InstanceData[idx].Color = GetComponent<CParticle>(entity).Color;
+        //InstanceData[idx].Transform = ToRaylibMatrix(mat);
+        //InstanceData[idx].Color = GetComponent<CParticle>(entity).Color;
         idx++;
     }
-    if(idx > 0)
-        DrawMeshInstancedWithColor(ParticleMesh, ParticleMaterial, InstanceData, idx < MAX_INSTANCES ? static_cast<i32>(idx) : MAX_INSTANCES);
+    //if(idx > 0)
+        //DrawMeshInstancedWithColor(ParticleMesh, ParticleMaterial, InstanceData, idx < MAX_INSTANCES ? static_cast<i32>(idx) : MAX_INSTANCES);
 }
 
 SParticleDrawing::SParticleDrawing()
 {
-    InstanceData = (ParticleInstanceData*)RL_CALLOC(MAX_INSTANCES, sizeof(ParticleInstanceData));
+    //InstanceData = (ParticleInstanceData*)RL_CALLOC(MAX_INSTANCES, sizeof(ParticleInstanceData));
 }
 
 void SParticleDrawing::Init()
@@ -60,6 +54,6 @@ void SParticleDrawing::Init()
 
     SParticleDrawing::~SParticleDrawing()
     {
-        RL_FREE(InstanceData);
+        //RL_FREE(InstanceData);
     }
 }
