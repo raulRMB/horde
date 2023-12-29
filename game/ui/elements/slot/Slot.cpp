@@ -31,18 +31,18 @@ void Slot::Draw(DrawData data) {
     if(isHovered() && data.activeDrag) {
         int op = 3;
         int os = op * 2;
-        raylib::DrawRectangleLines(box.x-op, box.y-op, box.width+os, box.height+os, {255,255,255,255});
+        //raylib::DrawRectangleLines(box.x-op, box.y-op, box.width+os, box.height+os, {255,255,255,255});
     }
     if(image.id <= 0) {
-        raylib::DrawRectangleRec(box, {255,255,255,255});
+        //raylib::DrawRectangleRec(box, {255,255,255,255});
     } else {
-        raylib::NPatchInfo npatchInfo = { 0 };
-        npatchInfo.source = { 0, 0, (float)image.width, (float)image.height };
-        npatchInfo.left = 0;
-        npatchInfo.top = 0;
-        npatchInfo.right = 0;
-        npatchInfo.bottom = 0;
-        raylib::DrawTextureNPatch(image, npatchInfo, box, {0,0}, 0, {255,255,255,255});
+        //raylib::NPatchInfo npatchInfo = { 0 };
+//        npatchInfo.source = { 0, 0, (float)image.width, (float)image.height };
+//        npatchInfo.left = 0;
+//        npatchInfo.top = 0;
+//        npatchInfo.right = 0;
+//        npatchInfo.bottom = 0;
+//        raylib::DrawTextureNPatch(image, npatchInfo, box, {0,0}, 0, {255,255,255,255});
     }
 }
 

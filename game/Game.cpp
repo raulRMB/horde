@@ -9,11 +9,13 @@
 #include "imgui.h"
 #include "tools/SystemViewer.h"
 #include "util/Builder.h"
+#include "renderer/Renderer.h"
 
-namespace raylib
-{
-#include "rlImGui.h"
-}
+//namespace raylib
+//{
+//#include "rlImGui.h"
+//
+//}
 
 namespace tX
 {
@@ -62,15 +64,16 @@ void Game::Loop() {
         NetworkDriver::Process();
     }
     if(!Game::IsServer()) {
-        raylib::BeginDrawing();
-        ClearBackground(ToRaylibColor(BackgroundColor));
+        //raylib::BeginDrawing();
+        //ClearBackground(ToRaylibColor(BackgroundColor));
+        Renderer::HandleWindow();
         Draw();
         DrawUI();
-        if(showFPS) {
-            raylib::DrawFPS(5, 5);
-        }
-        raylib::EndDrawing();
-        bRunning = bRunning && !raylib::WindowShouldClose();
+//        if(showFPS) {
+//            raylib::DrawFPS(5, 5);
+//        }
+//        raylib::EndDrawing();
+        bRunning = bRunning && !Renderer::WindowShouldClose();
     }
 }
 
@@ -98,20 +101,21 @@ bool Game::Run(EngineMode mode)
 }
 
 void Game::Fullscreen() {
-    auto monitor = raylib::GetCurrentMonitor();
-    int monitorWidth = raylib::GetMonitorWidth(monitor);
-    int monitorHeight = raylib::GetMonitorHeight(monitor);
-    raylib::SetWindowSize(monitorWidth , monitorHeight);
-    raylib::ToggleFullscreen();
+//    auto monitor = raylib::GetCurrentMonitor();
+//    int monitorWidth = raylib::GetMonitorWidth(monitor);
+//    int monitorHeight = raylib::GetMonitorHeight(monitor);
+    //raylib::SetWindowSize(monitorWidth , monitorHeight);
+    //raylib::ToggleFullscreen();
 }
 
 bool Game::Init()
 {
     if(!Game::IsServer()) {
-        SetConfigFlags(raylib::FLAG_WINDOW_RESIZABLE);
-        raylib::InitWindow(800, 600, "Horde");
+        //SetConfigFlags(raylib::FLAG_WINDOW_RESIZABLE);
+        //raylib::InitWindow(800, 600, "Horde");
         // Fullscreen();
-        raylib::rlImGuiSetup(true);
+        //raylib::rlImGuiSetup(true);
+        Renderer::Init();
     }
     bRunning = true;
     SetActiveScene(new MainScene());
@@ -151,22 +155,25 @@ void Game::Update(float deltaTime) const
 
 void Game::Draw() const
 {
-    BeginMode3D(ToRaylibCamera(Camera));
+    //BeginMode3D(ToRaylibCamera(Camera));
+    Renderer::BeginDraw();
     ActiveScene->Draw();
-    raylib::EndMode3D();
+    Renderer::EndDraw();
+    //raylib::EndMode3D();
 }
 
 void Game::DrawUI() const
 {
     ActiveScene->DrawUI();
-    raylib::rlImGuiBegin();
+    //raylib::rlImGuiBegin();
     SystemViewer::Instance().Draw();
-    raylib::rlImGuiEnd();
+    //raylib::rlImGuiEnd();
 }
 
 void Game::Clean() const
 {
-    raylib::rlImGuiShutdown();
+    //raylib::rlImGuiShutdown();
+    Renderer::Clean();
     ActiveScene->Clean();
     delete ActiveScene;
 }

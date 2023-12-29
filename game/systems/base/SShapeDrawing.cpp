@@ -93,7 +93,7 @@ void SShapeDrawing::Draw()
         auto physics = GetComponent<CPhysics2D>(entity);
         auto transform = GetComponent<CTransform>(entity);
         if(physics.CollisionType == ECollision2DType::Circle) {
-            raylib::DrawCircle3D(ToRaylibVector3(transform.Position), physics.CollisionRadius, raylib::Vector3{1.0f, 0.0f, 0.0f}, 90.0f, raylib::BLUE);
+            //raylib::DrawCircle3D(ToRaylibVector3(transform.Position), physics.CollisionRadius, raylib::Vector3{1.0f, 0.0f, 0.0f}, 90.0f, raylib::BLUE);
         }
     }
 

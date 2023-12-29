@@ -70,8 +70,8 @@ void Hotbar::OnAdded() {
 
 void Hotbar::AddSlot(std::string texturePath) {
     Slot* slot = new Slot({0, 0, 0, 0});
-    auto slotImg = raylib::LoadTexture(texturePath.c_str());
-    slot->SetImage(slotImg);
+//    auto slotImg = raylib::LoadTexture(texturePath.c_str());
+//    slot->SetImage(slotImg);
     slots.push_back(slot);
 }
 

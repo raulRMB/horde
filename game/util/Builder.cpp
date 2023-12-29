@@ -48,13 +48,13 @@ namespace tX
         System::Get<SEnemy>().SetPlayer(e);
 
         if(!Game::IsServer()) {
-            CAnimation animation{};
-            CModel mc = {raylib::LoadModel("../assets/models/playerCharacter.glb"), 0.05, false};
-            animation.Animations = raylib::LoadModelAnimations("../assets/models/playerCharacter.glb", &animation.AnimsCount);
-            animation.AnimsIndex = (i32)ECharacterAnimState::Idle;
-            animation.bPlaying = true;
-            Game::GetRegistry().emplace<CAnimation>(e, animation);
-            Game::GetRegistry().emplace<CModel>(e, mc);
+//            CAnimation animation{};
+//            CModel mc = {raylib::LoadModel("../assets/models/playerCharacter.glb"), 0.05, false};
+//            animation.Animations = raylib::LoadModelAnimations("../assets/models/playerCharacter.glb", &animation.AnimsCount);
+//            animation.AnimsIndex = (i32)ECharacterAnimState::Idle;
+//            animation.bPlaying = true;
+//            Game::GetRegistry().emplace<CAnimation>(e, animation);
+//            Game::GetRegistry().emplace<CModel>(e, mc);
         }
 
         if(!Game::IsStandalone()) {
@@ -178,9 +178,9 @@ namespace tX
         t.Rotation = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0));
         t.Scale = v3(250.f);
         Game::GetRegistry().emplace<CTransform>(e, t);
-        raylib::Model m = raylib::LoadModelFromMesh(raylib::GenMeshPlane(1, 1, 1, 1));
-        m.materials[0].maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
-        Game::GetRegistry().emplace<CModel>(e, CModel(m, 1.0f, false));
+//        raylib::Model m = raylib::LoadModelFromMesh(raylib::GenMeshPlane(1, 1, 1, 1));
+//        m.materials[0].maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/arena.png");
+//        Game::GetRegistry().emplace<CModel>(e, CModel(m, 1.0f, false));
         return e;
     }
 

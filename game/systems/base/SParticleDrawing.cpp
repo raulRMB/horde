@@ -17,7 +17,7 @@ void SParticleDrawing::Draw()
 
     const CCamera3D& camera = Game::Instance().GetActiveCamera();
     const float cameraPos[3] = { camera.Position.x, camera.Position.y, camera.Position.z };
-    SetShaderValue(ParticleShader, ParticleShader.locs[raylib::SHADER_LOC_VECTOR_VIEW], cameraPos, raylib::SHADER_UNIFORM_VEC3);
+    //SetShaderValue(ParticleShader, ParticleShader.locs[raylib::SHADER_LOC_VECTOR_VIEW], cameraPos, raylib::SHADER_UNIFORM_VEC3);
 
     for(const entt::entity& entity : registry.view<CParticle, CTransform>())
     {
@@ -44,18 +44,18 @@ SParticleDrawing::SParticleDrawing()
 void SParticleDrawing::Init()
     {
         System::Init();
-        ParticleMesh = raylib::GenMeshPlane(1.f, 1.f, 1.f, 1.f);
-
-        ParticleShader = raylib::LoadShader("../assets/shaders/instanced_test.vert", "../assets/shaders/base.frag");
-
-        ParticleShader.locs[raylib::SHADER_LOC_MATRIX_MVP] = GetShaderLocation(ParticleShader, "mvp");
-        ParticleShader.locs[raylib::SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(ParticleShader, "viewPos");
-        ParticleShader.locs[raylib::SHADER_LOC_MATRIX_MODEL] = GetShaderLocationAttrib(ParticleShader, "instanceTransform");
-        ParticleShader.locs[raylib::SHADER_LOC_COLOR_DIFFUSE] = GetShaderLocationAttrib(ParticleShader, "instanceColor");
-
-        ParticleMaterial = raylib::LoadMaterialDefault();
-        ParticleMaterial.shader = ParticleShader;
-        ParticleMaterial.maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/particle.png");
+//        ParticleMesh = raylib::GenMeshPlane(1.f, 1.f, 1.f, 1.f);
+//
+//        ParticleShader = raylib::LoadShader("../assets/shaders/instanced_test.vert", "../assets/shaders/base.frag");
+//
+//        ParticleShader.locs[raylib::SHADER_LOC_MATRIX_MVP] = GetShaderLocation(ParticleShader, "mvp");
+//        ParticleShader.locs[raylib::SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(ParticleShader, "viewPos");
+//        ParticleShader.locs[raylib::SHADER_LOC_MATRIX_MODEL] = GetShaderLocationAttrib(ParticleShader, "instanceTransform");
+//        ParticleShader.locs[raylib::SHADER_LOC_COLOR_DIFFUSE] = GetShaderLocationAttrib(ParticleShader, "instanceColor");
+//
+//        ParticleMaterial = raylib::LoadMaterialDefault();
+//        ParticleMaterial.shader = ParticleShader;
+//        ParticleMaterial.maps[raylib::MATERIAL_MAP_DIFFUSE].texture = raylib::LoadTexture("../assets/textures/particle.png");
     }
 
     SParticleDrawing::~SParticleDrawing()

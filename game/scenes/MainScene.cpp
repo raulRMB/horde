@@ -26,6 +26,9 @@
 #include "systems/base/SParticleDrawing.h"
 #include "systems/base/SLifetime.h"
 #include "systems/SEnemy.h"
+#include "bgfx/bgfx.h"
+#include "bx/math.h"
+#include "renderer/Renderer.h"
 
 namespace tX
 {
@@ -201,15 +204,31 @@ void MainScene::Update(float deltaSeconds)
     }
 }
 
+int counter = 0;
+
 void MainScene::Draw()
 {
     Scene::Draw();
+
+    const bx::Vec3 at = {0.0f, 0.0f,  0.0f};
+    const bx::Vec3 eye = {0.0f, 0.0f, -5.0f};
+    float view[16];
+    bx::mtxLookAt(view, eye, at);
+    float proj[16];
+    bx::mtxProj(proj, 60.0f, float(Renderer::GetWidth()) / float(Renderer::GetHeight()), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+    bgfx::setViewTransform(0, view, proj);
+
+    float mtx[16];
+    bx::mtxRotateXY(mtx, counter * 0.01f, counter * 0.01f);
+    bgfx::setTransform(mtx);
+
     for(const entt::entity& entity : Registry.view<raylib::Model, CTransform>())
     {
         const raylib::Model& model = Registry.get<raylib::Model>(entity);
         const CTransform& transform = Registry.get<CTransform>(entity);
         raylib::DrawModel(model, ToRaylibVector3(transform.Position), 0.1f, raylib::WHITE);
     }
+    counter++;
 }
 
 void MainScene::DrawUI()
