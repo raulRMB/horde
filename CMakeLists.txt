@@ -26,6 +26,6 @@ endif()
 
 add_executable(horde main.cpp ${CLI11} ${CORE_SOURCES} ${FLATBUFFER} ${GAME_SOURCES} ${GAME_HEADERS})
 
-target_include_directories(horde PUBLIC libs/enet/include glm libs/glfw/include libs/entt/single_include game/ libs/serialization libs/bgfx/bgfx/include libs/bgfx/bx/include libs/bimg/bx/include libs/CLI11 libs/tinygltf)
+target_include_directories(horde PUBLIC libs/enet/include glm libs/glfw/include libs/entt/single_include game/ libs/serialization libs/bgfx/bgfx/include libs/bgfx/bx/include libs/bgfx/bimg/include libs/CLI11 libs/tinygltf)
 target_link_libraries(horde enet glm glfw bgfx tinygltf)
 
